@@ -21,10 +21,7 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
@@ -79,6 +76,14 @@ class DefaultFirebaseOptions {
     authDomain: 'safetyreportproject.firebaseapp.com',
     storageBucket: 'safetyreportproject.appspot.com',
     measurementId: 'G-P96Q6BDNJQ',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyBfwf9TFemxIZyKgFZ_NW-FcVXx4Dr0REE',
+    appId: '1:54175991750:android:4a9efd567f0ca914aa54c7',
+    messagingSenderId: '54175991750',
+    projectId: 'safetyreportproject',
+    storageBucket: 'safetyreportproject.appspot.com',
   );
 
 }

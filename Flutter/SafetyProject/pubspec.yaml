@@ -38,6 +38,17 @@ dependencies:
   firebase_core: ^3.2.0
   firebase_cloud_firestore: ^5.0.1
   cloud_firestore: ^5.1.0
+  firebase_storage: ^12.1.1
+  image_picker: ^1.1.2
+  path_provider: ^2.1.3
+  image: ^4.2.0
+  cached_network_image: ^3.3.1
+  image_picker_for_web: ^3.0.4
+  universal_html: ^2.2.4
+  file_picker: ^8.0.6
+  auto_size_text: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+  syncfusion_flutter_datepicker: ^26.1.42
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +60,24 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/safety.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "assets/icons/safety.png"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/icons/safety.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/icons/safety.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
