@@ -1,23 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:project/core/providers/navigation_provider.dart';
 import 'package:project/features/auth/presentation/widgets/signup_form.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+class SingUpPage extends StatelessWidget {
+  const SingUpPage({super.key});
 
-  @override
-  State<SignUpPage> createState() => _SignUpPageState();
-}
-
-class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(backgroundColor: Colors.white),
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text("Alzheimer App"),
-      ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 70),
@@ -26,7 +18,7 @@ class _SignUpPageState extends State<SignUpPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Login Aplikasi",
+                "Buat Akun",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               ElevatedButton(
@@ -67,25 +59,6 @@ class _SignUpPageState extends State<SignUpPage> {
               Text(
                 "Lupa Password?",
                 style: TextStyle(color: Color(0xFFA1A4B2), fontSize: 12),
-              ),
-              RichText(
-                text: TextSpan(
-                  text: "Belum punya akun? ",
-                  style: TextStyle(
-                    color: Color(0xFFA1A4B2),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: "Daftar Disini!",
-                      style: TextStyle(
-                        color: Color(0xff7583CA),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ],
           ),

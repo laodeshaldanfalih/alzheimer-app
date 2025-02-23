@@ -10,17 +10,32 @@ class SignUpForm extends StatefulWidget {
 class _SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   bool _emailValid = true;
   bool _passwordValid = true;
+  bool _confirmPasswordValid = true;
+  String? _confirmPasswordError;
+  bool isChecked = false;
 
-  InputDecoration _buildInputDecoration(String label, bool isValid) {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  InputDecoration _buildInputDecoration(
+    String label,
+    String hintText,
+    bool isValid, [
+    String? errorText,
+  ]) {
     return InputDecoration(
       labelStyle: TextStyle(color: Color(0xffA1A4B2), fontSize: 12),
+      hintStyle: TextStyle(color: Color(0xffA1A4B2), fontSize: 12),
       floatingLabelBehavior: FloatingLabelBehavior.never,
       filled: true,
       fillColor: Color(0xffF2F3F7),
       labelText: label,
-      hintText: "Email",
+      hintText: hintText,
       border: OutlineInputBorder(
         borderSide: BorderSide.none,
         borderRadius: BorderRadius.circular(15),
@@ -37,6 +52,7 @@ class _SignUpFormState extends State<SignUpForm> {
         borderRadius: BorderRadius.circular(15),
       ),
       contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 18),
+      errorText: errorText, // Show error message dynamically
     );
   }
 
@@ -46,9 +62,15 @@ class _SignUpFormState extends State<SignUpForm> {
       key: _formKey,
       child: Column(
         children: <Widget>[
+          // ✅ Email Field
           TextFormField(
+            controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            decoration: _buildInputDecoration("Email", _emailValid),
+            decoration: _buildInputDecoration(
+              "Email",
+              "Enter your email",
+              _emailValid,
+            ),
             validator: (value) {
               bool isValid =
                   value != null &&
@@ -61,10 +83,14 @@ class _SignUpFormState extends State<SignUpForm> {
             },
           ),
           SizedBox(height: 20),
+
+          // ✅ Password Field
           TextFormField(
+            controller: _passwordController,
             obscureText: _obscurePassword,
             decoration: _buildInputDecoration(
               "Password",
+              "Enter your password",
               _passwordValid,
             ).copyWith(
               suffixIcon: IconButton(
@@ -82,44 +108,102 @@ class _SignUpFormState extends State<SignUpForm> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                setState(() {
-                  _passwordValid = false;
-                });
                 return "Password cannot be empty";
               } else if (value.length < 8) {
-                setState(() {
-                  _passwordValid = false;
-                });
                 return "Password must be at least 8 characters";
               } else if (!RegExp(r'^(?=.*[A-Z])').hasMatch(value)) {
-                setState(() {
-                  _passwordValid = false;
-                });
                 return "Password must contain at least 1 uppercase letter";
               } else if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-                setState(() {
-                  _passwordValid = false;
-                });
                 return "Password must contain at least 1 special character (@, #, \$, etc.)";
               }
-
-              setState(() {
-                _passwordValid = true;
-              });
               return null;
             },
           ),
+          SizedBox(height: 20),
+
+          // ✅ Confirm Password Field (Live Validation)
+          TextFormField(
+            controller: _confirmPasswordController,
+            obscureText: _obscureConfirmPassword,
+            decoration: _buildInputDecoration(
+              "Confirm Password",
+              "Re-enter your password",
+              _confirmPasswordValid,
+              _confirmPasswordError, // Dynamic error message
+            ).copyWith(
+              suffixIcon: IconButton(
+                icon: Icon(
+                  size: 20,
+                  _obscureConfirmPassword
+                      ? Icons.visibility
+                      : Icons.visibility_off,
+                  color: _confirmPasswordValid ? Colors.grey : Colors.red,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureConfirmPassword = !_obscureConfirmPassword;
+                  });
+                },
+              ),
+            ),
+            onChanged: (value) {
+              setState(() {
+                if (value.isEmpty) {
+                  _confirmPasswordValid = false;
+                  _confirmPasswordError = "Please confirm your password";
+                } else if (value != _passwordController.text) {
+                  _confirmPasswordValid = false;
+                  _confirmPasswordError = "Passwords do not match";
+                } else {
+                  _confirmPasswordValid = true;
+                  _confirmPasswordError = null;
+                }
+              });
+            },
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              RichText(
+                text: TextSpan(
+                  text: "I have read the ",
+                  style: TextStyle(
+                    color: Color(0xFFA1A4B2),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: "Privacy Policy",
+                      style: TextStyle(
+                        color: Color(0xff7583CA),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Checkbox(
+                checkColor: Colors.white,
+                value: isChecked,
+                onChanged: (bool? value) {
+                  setState(() {
+                    isChecked = value!;
+                  });
+                },
+              ),
+            ],
+          ),
           SizedBox(height: 30),
+          // ✅ Sign Up Button
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               minimumSize: Size(double.infinity, double.minPositive),
               backgroundColor: Color(0xffD9D9D9),
             ),
             onPressed: () {
-              // Validate returns true if the form is valid, or false otherwise.
               if (_formKey.currentState!.validate()) {
-                // If the form is valid, display a snackbar. In the real world,
-                // you'd often call a server or save the information in a database.
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Processing Data')),
                 );
@@ -128,7 +212,7 @@ class _SignUpFormState extends State<SignUpForm> {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 15),
               child: Text(
-                'LOG IN',
+                'SIGN UP',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,
