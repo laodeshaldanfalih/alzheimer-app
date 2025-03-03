@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project/core/providers/navigation_provider.dart';
 import 'package:project/features/auth/presentation/widgets/signin_form.dart';
@@ -10,6 +11,29 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  User? user;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth.authStateChanges().listen((event) {
+      setState(() {
+        user = event;
+      });
+    });
+  }
+
+  void _handleGoogleSignIn() async {
+    try {
+      GoogleAuthProvider _googleAuthProvider = GoogleAuthProvider();
+      _auth.signInWithProvider(_googleAuthProvider);
+    } catch (error) {
+      print(error);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +60,7 @@ class _SignInPageState extends State<SignInPage> {
                   elevation: 0,
                 ),
                 onPressed: () {
-                  print("Google Sign-In Clicked!");
+                  _handleGoogleSignIn();
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

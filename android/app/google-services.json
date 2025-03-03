@@ -12,7 +12,12 @@
           "package_name": "com.example.alzheimerApp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "281214992798-din63264drqq22lsskd2tajer9tjgcn7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDHxzCO-IERNGsq2P2zBRGlaZcrBZ6a8nk"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "281214992798-din63264drqq22lsskd2tajer9tjgcn7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "281214992798-3hu14ajvjs67b32hhf8aqiff60dan53j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.alzheimerApp"
+              }
+            }
+          ]
         }
       }
     }
