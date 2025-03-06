@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:project/core/providers/auth_provider.dart';
+import 'package:project/features/auth/presentation/pages/signin_page.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
+class HomePage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authNotifier = ref.read(
+      authProvider.notifier,
+    ); // Use Riverpod for auth
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -15,6 +20,18 @@ class HomePage extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await authNotifier.signOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => SignInPage()),
+              );
+            },
+          ),
+        ],
       ),
       body: Container(
         width: double.infinity,
@@ -119,16 +136,6 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.apps), label: 'Fitur Menu'),
-          BottomNavigationBarItem(icon: Icon(Icons.article), label: 'Buletin'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-        ],
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
       ),
     );
   }

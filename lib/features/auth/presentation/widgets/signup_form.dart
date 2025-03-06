@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/core/providers/auth_provider.dart';
 
-class SignUpForm extends StatefulWidget {
+class SignUpForm extends ConsumerStatefulWidget {
   const SignUpForm({super.key});
 
   @override
-  State<SignUpForm> createState() => _SignUpFormState();
+  ConsumerState<SignUpForm> createState() => _SignUpFormState();
 }
 
-class _SignUpFormState extends State<SignUpForm> {
+class _SignUpFormState extends ConsumerState<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _emailValid = true;
@@ -16,11 +21,6 @@ class _SignUpFormState extends State<SignUpForm> {
   bool _confirmPasswordValid = true;
   String? _confirmPasswordError;
   bool isChecked = false;
-
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
 
   InputDecoration _buildInputDecoration(
     String label,
@@ -52,8 +52,16 @@ class _SignUpFormState extends State<SignUpForm> {
         borderRadius: BorderRadius.circular(15),
       ),
       contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 18),
-      errorText: errorText, // Show error message dynamically
+      errorText: errorText,
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -62,7 +70,6 @@ class _SignUpFormState extends State<SignUpForm> {
       key: _formKey,
       child: Column(
         children: <Widget>[
-          // ✅ Email Field
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
@@ -83,8 +90,6 @@ class _SignUpFormState extends State<SignUpForm> {
             },
           ),
           SizedBox(height: 20),
-
-          // ✅ Password Field
           TextFormField(
             controller: _passwordController,
             obscureText: _obscurePassword,
@@ -108,20 +113,23 @@ class _SignUpFormState extends State<SignUpForm> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
+                setState(() {
+                  _passwordValid = false;
+                });
                 return "Password cannot be empty";
-              } else if (value.length < 8) {
-                return "Password must be at least 8 characters";
-              } else if (!RegExp(r'^(?=.*[A-Z])').hasMatch(value)) {
-                return "Password must contain at least 1 uppercase letter";
-              } else if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-                return "Password must contain at least 1 special character (@, #, \$, etc.)";
+              } else if (value.length < 6) {
+                setState(() {
+                  _passwordValid = false;
+                });
+                return "Password must be at least 6 characters";
               }
+              setState(() {
+                _passwordValid = true;
+              });
               return null;
             },
           ),
           SizedBox(height: 20),
-
-          // ✅ Confirm Password Field (Live Validation)
           TextFormField(
             controller: _confirmPasswordController,
             obscureText: _obscureConfirmPassword,
@@ -129,7 +137,7 @@ class _SignUpFormState extends State<SignUpForm> {
               "Confirm Password",
               "Re-enter your password",
               _confirmPasswordValid,
-              _confirmPasswordError, // Dynamic error message
+              _confirmPasswordError,
             ).copyWith(
               suffixIcon: IconButton(
                 icon: Icon(
@@ -146,19 +154,19 @@ class _SignUpFormState extends State<SignUpForm> {
                 },
               ),
             ),
-            onChanged: (value) {
-              setState(() {
-                if (value.isEmpty) {
-                  _confirmPasswordValid = false;
-                  _confirmPasswordError = "Please confirm your password";
-                } else if (value != _passwordController.text) {
+            validator: (value) {
+              if (value != _passwordController.text) {
+                setState(() {
                   _confirmPasswordValid = false;
                   _confirmPasswordError = "Passwords do not match";
-                } else {
-                  _confirmPasswordValid = true;
-                  _confirmPasswordError = null;
-                }
+                });
+                return "Passwords do not match";
+              }
+              setState(() {
+                _confirmPasswordValid = true;
+                _confirmPasswordError = null;
               });
+              return null;
             },
           ),
           SizedBox(height: 20),
@@ -196,16 +204,29 @@ class _SignUpFormState extends State<SignUpForm> {
             ],
           ),
           SizedBox(height: 30),
-          // ✅ Sign Up Button
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               minimumSize: Size(double.infinity, double.minPositive),
               backgroundColor: Color(0xffD9D9D9),
             ),
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
+            onPressed: () async {
+              if (_formKey.currentState!.validate() && isChecked) {
+                try {
+                  final authNotifier = ref.read(authProvider.notifier);
+                  await authNotifier.signUpWithEmail(
+                    _emailController.text.trim(),
+                    _passwordController.text,
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Registration failed: ${e.toString()}'),
+                    ),
+                  );
+                }
+              } else if (!isChecked) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Processing Data')),
+                  SnackBar(content: Text('Please accept the Privacy Policy')),
                 );
               }
             },

@@ -11,6 +11,6 @@ final navigatorKeyProvider = Provider<GlobalKey<NavigatorState>>((ref) {
 void navigateToRegister(BuildContext context) {
   Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => SingUpPage()),
+    MaterialPageRoute(builder: (context) => SignUpPage()),
   );
 }

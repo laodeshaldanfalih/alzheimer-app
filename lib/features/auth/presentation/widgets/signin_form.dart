@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/core/providers/auth_provider.dart';
+import 'package:project/features/auth/presentation/pages/signup_page.dart';
 
-class SignInForm extends StatefulWidget {
+class SignInForm extends ConsumerStatefulWidget {
   const SignInForm({super.key});
 
   @override
-  State<SignInForm> createState() => _SignInFormState();
+  ConsumerState<SignInForm> createState() => _SignInFormState();
 }
 
-class _SignInFormState extends State<SignInForm> {
+class _SignInFormState extends ConsumerState<SignInForm> {
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _emailValid = true;
   bool _passwordValid = true;
@@ -45,6 +50,137 @@ class _SignInFormState extends State<SignInForm> {
     );
   }
 
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Login Failed'),
+          content: Text(message),
+          actions: [
+            if (message.contains('user-not-found'))
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignUpPage()),
+                  );
+                },
+                child: Text(
+                  'Register Now',
+                  style: TextStyle(color: Color(0xff7583CA)),
+                ),
+              ),
+            if (message.contains('Incorrect password'))
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _showForgotPasswordDialog(context);
+                },
+                child: Text(
+                  'Forgot Password?',
+                  style: TextStyle(color: Color(0xff7583CA)),
+                ),
+              ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showForgotPasswordDialog(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Reset Password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Enter your email to receive a password reset link.'),
+              SizedBox(height: 16),
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                try {
+                  final authNotifier = ref.read(authProvider.notifier);
+                  await authNotifier.resetPassword(emailController.text.trim());
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Password reset email sent. Please check your inbox.',
+                      ),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Failed to send reset email. Please try again.',
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: Text(
+                'Send Reset Link',
+                style: TextStyle(color: Color(0xff7583CA)),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _getReadableErrorMessage(String errorCode) {
+    switch (errorCode) {
+      case 'user-not-found':
+        return 'No account found with this email. Would you like to register?';
+      case 'wrong-password':
+        return 'Incorrect password. Please try again.';
+      case 'invalid-email':
+        return 'Invalid email format.';
+      case 'user-disabled':
+        return 'This account has been disabled.';
+      case 'too-many-requests':
+        return 'Too many failed attempts. Please try again later.';
+      default:
+        return 'An error occurred. Please try again.';
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -52,6 +188,7 @@ class _SignInFormState extends State<SignInForm> {
       child: Column(
         children: <Widget>[
           TextFormField(
+            controller: _emailController,
             keyboardType: TextInputType.emailAddress,
             decoration: _buildInputDecoration("Email", "Email", _emailValid),
             validator: (value) {
@@ -67,6 +204,7 @@ class _SignInFormState extends State<SignInForm> {
           ),
           SizedBox(height: 20),
           TextFormField(
+            controller: _passwordController,
             obscureText: _obscurePassword,
             decoration: _buildInputDecoration(
               "Password",
@@ -92,23 +230,7 @@ class _SignInFormState extends State<SignInForm> {
                   _passwordValid = false;
                 });
                 return "Password cannot be empty";
-              } else if (value.length < 8) {
-                setState(() {
-                  _passwordValid = false;
-                });
-                return "Password must be at least 8 characters";
-              } else if (!RegExp(r'^(?=.*[A-Z])').hasMatch(value)) {
-                setState(() {
-                  _passwordValid = false;
-                });
-                return "Password must contain at least 1 uppercase letter";
-              } else if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-                setState(() {
-                  _passwordValid = false;
-                });
-                return "Password must contain at least 1 special character (@, #, \$, etc.)";
               }
-
               setState(() {
                 _passwordValid = true;
               });
@@ -121,14 +243,25 @@ class _SignInFormState extends State<SignInForm> {
               minimumSize: Size(double.infinity, double.minPositive),
               backgroundColor: Color(0xffD9D9D9),
             ),
-            onPressed: () {
-              // Validate returns true if the form is valid, or false otherwise.
+            onPressed: () async {
               if (_formKey.currentState!.validate()) {
-                // If the form is valid, display a snackbar. In the real world,
-                // you'd often call a server or save the information in a database.
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Processing Data')),
-                );
+                try {
+                  final authNotifier = ref.read(authProvider.notifier);
+                  await authNotifier.signInWithEmail(
+                    _emailController.text.trim(),
+                    _passwordController.text,
+                  );
+                } catch (e) {
+                  String errorCode = e.toString();
+                  // Extract error code from Firebase error message
+                  if (errorCode.contains(']')) {
+                    errorCode = errorCode.split('] ').last;
+                  }
+                  _showErrorDialog(
+                    context,
+                    _getReadableErrorMessage(errorCode),
+                  );
+                }
               }
             },
             child: Padding(

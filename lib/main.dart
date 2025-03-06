@@ -1,18 +1,18 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:project/features/auth/presentation/pages/signin_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/features/splash/presentation/pages/splash_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+
+  runApp(ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+class MyApp extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: SignInPage());
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp(debugShowCheckedModeBanner: false, home: SplashPage());
   }
 }
