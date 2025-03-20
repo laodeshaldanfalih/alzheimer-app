@@ -26,102 +26,112 @@ class SignInPage extends ConsumerWidget {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 70),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Login Aplikasi",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(38),
-                        side: BorderSide(width: 1, color: Color(0xffEBEAEC)),
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 40),
+                    Text(
+                      "Login Aplikasi",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
-                      elevation: 0,
                     ),
-                    onPressed:
-                        isLoading
-                            ? null
-                            : () async {
-                              try {
-                                ref.read(isLoadingProvider.notifier).state =
-                                    true;
-                                final authNotifier = ref.read(
-                                  authProvider.notifier,
-                                );
-                                await authNotifier.signInWithGoogle();
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Login failed: $e')),
-                                );
-                              } finally {
-                                ref.read(isLoadingProvider.notifier).state =
-                                    false;
-                              }
-                            },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          "assets/images/google_icons.png",
-                          width: 24,
+                    const SizedBox(height: 40),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(38),
+                          side: BorderSide(width: 1, color: Color(0xffEBEAEC)),
                         ),
-                        SizedBox(width: 10),
-                        Text(
-                          "CONTINUE WITH GOOGLE",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    "Atau login dengan email",
-                    style: TextStyle(color: Color(0XFFA1A4B2), fontSize: 12),
-                  ),
-                  SignInForm(),
-                  GestureDetector(
-                    onTap:
-                        isLoading
-                            ? null
-                            : () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SignUpPage(),
-                              ),
-                            ),
-                    child: RichText(
-                      text: TextSpan(
-                        text: "Belum punya akun? ",
-                        style: TextStyle(
-                          color: Color(0xFFA1A4B2),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        elevation: 0,
+                      ),
+                      onPressed:
+                          isLoading
+                              ? null
+                              : () async {
+                                try {
+                                  ref.read(isLoadingProvider.notifier).state =
+                                      true;
+                                  final authNotifier = ref.read(
+                                    authProvider.notifier,
+                                  );
+                                  await authNotifier.signInWithGoogle();
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Login failed: $e')),
+                                  );
+                                } finally {
+                                  ref.read(isLoadingProvider.notifier).state =
+                                      false;
+                                }
+                              },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          TextSpan(
-                            text: "Daftar Disini!",
+                          Image.asset(
+                            "assets/images/google_icons.png",
+                            width: 24,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "CONTINUE WITH GOOGLE",
                             style: TextStyle(
-                              color: Color(0xff7583CA),
+                              fontSize: 14,
                               fontWeight: FontWeight.w600,
+                              color: Colors.black,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 30),
+                    Text(
+                      "Atau login dengan email",
+                      style: TextStyle(color: Color(0XFFA1A4B2), fontSize: 12),
+                    ),
+                    const SizedBox(height: 30),
+                    SignInForm(),
+                    const SizedBox(height: 30),
+                    GestureDetector(
+                      onTap:
+                          isLoading
+                              ? null
+                              : () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SignUpPage(),
+                                ),
+                              ),
+                      child: RichText(
+                        text: TextSpan(
+                          text: "Belum punya akun? ",
+                          style: TextStyle(
+                            color: Color(0xFFA1A4B2),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: "Daftar Disini!",
+                              style: TextStyle(
+                                color: Color(0xff7583CA),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ),

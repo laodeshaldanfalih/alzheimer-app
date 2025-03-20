@@ -1,18 +1,6 @@
 import 'package:flutter/material.dart';
-
-class FeatureMenuItem {
-  final String title;
-  final String description;
-  final String imagePath;
-  final VoidCallback onTap;
-
-  FeatureMenuItem({
-    required this.title,
-    required this.description,
-    required this.imagePath,
-    required this.onTap,
-  });
-}
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/features/menu/domain/models/feature_menu_item.dart';
 
 class FeatureMenuPage extends StatelessWidget {
   FeatureMenuPage({super.key});
@@ -98,7 +86,7 @@ class FeatureMenuPage extends StatelessWidget {
                     crossAxisCount: 2,
                     crossAxisSpacing: 15,
                     mainAxisSpacing: 15,
-                    childAspectRatio: 0.8,
+                    childAspectRatio: 0.65,
                   ),
                   itemCount: features.length,
                   itemBuilder: (context, index) {
@@ -122,7 +110,7 @@ class FeatureMenuPage extends StatelessWidget {
         onTap: feature.onTap,
         borderRadius: BorderRadius.circular(15),
         child: Padding(
-          padding: const EdgeInsets.all(15),
+          padding: const EdgeInsets.all(8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -133,23 +121,32 @@ class FeatureMenuPage extends StatelessWidget {
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Image.asset(feature.imagePath, fit: BoxFit.cover),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(feature.imagePath, fit: BoxFit.cover),
+                  ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 6),
               Text(
                 feature.title,
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 13,
                   fontWeight: FontWeight.bold,
+                  height: 1.1,
                 ),
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.left,
               ),
-              const SizedBox(height: 5),
+              const SizedBox(height: 3),
               Text(
                 feature.description,
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey[600],
+                  height: 1.1,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),

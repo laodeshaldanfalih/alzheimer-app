@@ -55,76 +55,87 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 70),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Buat Akun",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(38),
-                        side: BorderSide(width: 1, color: Color(0xffEBEAEC)),
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 20),
+                    Text(
+                      "Buat Akun",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
-                      elevation: 0,
                     ),
-                    onPressed:
-                        isLoading
-                            ? null
-                            : () async {
-                              try {
-                                ref.read(isLoadingProvider.notifier).state =
-                                    true;
-                                final authNotifier = ref.read(
-                                  authProvider.notifier,
-                                );
-                                await authNotifier.signInWithGoogle();
-                              } catch (e) {
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Login failed: $e')),
-                                  );
-                                }
-                              } finally {
-                                if (mounted) {
+                    const SizedBox(height: 40),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(38),
+                          side: BorderSide(width: 1, color: Color(0xffEBEAEC)),
+                        ),
+                        elevation: 0,
+                      ),
+                      onPressed:
+                          isLoading
+                              ? null
+                              : () async {
+                                try {
                                   ref.read(isLoadingProvider.notifier).state =
-                                      false;
+                                      true;
+                                  final authNotifier = ref.read(
+                                    authProvider.notifier,
+                                  );
+                                  await authNotifier.signInWithGoogle();
+                                } catch (e) {
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Login failed: $e'),
+                                      ),
+                                    );
+                                  }
+                                } finally {
+                                  if (mounted) {
+                                    ref.read(isLoadingProvider.notifier).state =
+                                        false;
+                                  }
                                 }
-                              }
-                            },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          "assets/images/google_icons.png",
-                          width: 24,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "CONTINUE WITH GOOGLE",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                              },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            "assets/images/google_icons.png",
+                            width: 24,
                           ),
-                        ),
-                      ],
+                          SizedBox(width: 10),
+                          Text(
+                            "CONTINUE WITH GOOGLE",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Text(
-                    "Atau daftar dengan email",
-                    style: TextStyle(color: Color(0XFFA1A4B2), fontSize: 12),
-                  ),
-                  SignUpForm(),
-                ],
+                    const SizedBox(height: 30),
+                    Text(
+                      "Atau daftar dengan email",
+                      style: TextStyle(color: Color(0XFFA1A4B2), fontSize: 12),
+                    ),
+                    const SizedBox(height: 30),
+                    SignUpForm(),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ),

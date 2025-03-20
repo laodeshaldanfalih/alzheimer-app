@@ -117,12 +117,37 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                   _passwordValid = false;
                 });
                 return "Password cannot be empty";
-              } else if (value.length < 6) {
+              }
+
+              List<String> requirements = [];
+
+              // Check minimum length
+              if (value.length < 8) {
+                requirements.add("at least 8 characters");
+              }
+
+              // Check for uppercase letter
+              if (!value.contains(RegExp(r'[A-Z]'))) {
+                requirements.add("one uppercase letter");
+              }
+
+              // Check for number
+              if (!value.contains(RegExp(r'[0-9]'))) {
+                requirements.add("one number");
+              }
+
+              // Check for special character
+              if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+                requirements.add("one special character");
+              }
+
+              if (requirements.isNotEmpty) {
                 setState(() {
                   _passwordValid = false;
                 });
-                return "Password must be at least 6 characters";
+                return "Password must contain ${requirements.join(", ")}";
               }
+
               setState(() {
                 _passwordValid = true;
               });
