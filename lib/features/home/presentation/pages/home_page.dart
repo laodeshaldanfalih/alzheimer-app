@@ -6,8 +6,9 @@ import 'package:project/features/auth/presentation/pages/signin_page.dart';
 import 'package:project/features/home/domain/models/quick_feature_item.dart';
 import 'package:project/features/home/domain/models/article_item.dart';
 import 'package:project/features/home/presentation/pages/article_detail_page.dart';
+import 'dart:async';
 
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   HomePage({super.key});
 
   final List<QuickFeatureItem> quickFeatures = [
@@ -204,7 +205,78 @@ Nutrisi yang tepat adalah fondasi kesehatan yang baik bagi lansia. Berikut pandu
   ];
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  late Timer _timer;
+  late String _timeString;
+  late String _dateString;
+
+  @override
+  void initState() {
+    super.initState();
+    _timeString = _formatTime(DateTime.now());
+    _dateString = _formatDate(DateTime.now());
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (Timer timer) => _getTime(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void _getTime() {
+    final DateTime now = DateTime.now();
+    setState(() {
+      _timeString = _formatTime(now);
+      _dateString = _formatDate(now);
+    });
+  }
+
+  String _formatTime(DateTime dateTime) {
+    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+
+  String _formatDate(DateTime dateTime) {
+    final List<String> weekdays = [
+      'Senin',
+      'Selasa',
+      'Rabu',
+      'Kamis',
+      'Jumat',
+      'Sabtu',
+      'Minggu',
+    ];
+    final List<String> months = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+
+    final weekday = weekdays[dateTime.weekday - 1];
+    final day = dateTime.day;
+    final month = months[dateTime.month - 1];
+    final year = dateTime.year;
+
+    return '$weekday, $day $month $year';
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // Calculate width for each item (4 items per row)
     final screenWidth = MediaQuery.of(context).size.width;
     final itemWidth =
@@ -257,18 +329,18 @@ Nutrisi yang tepat adalah fondasi kesehatan yang baik bagi lansia. Berikut pandu
                       child: Align(
                         alignment: Alignment.topCenter,
                         child: Column(
-                          children: const [
+                          children: [
                             Text(
-                              "14:30",
-                              style: TextStyle(
+                              _timeString,
+                              style: const TextStyle(
                                 color: Color(0xffFFECCC),
                                 fontSize: 36,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
-                              "Rabu, 5 Februari 2025",
-                              style: TextStyle(
+                              _dateString,
+                              style: const TextStyle(
                                 color: Color(0xffFFECCC),
                                 fontSize: 12,
                               ),
@@ -312,7 +384,7 @@ Nutrisi yang tepat adalah fondasi kesehatan yang baik bagi lansia. Berikut pandu
                         spacing: 10, // Horizontal spacing between items
                         runSpacing: 15, // Vertical spacing between rows
                         children:
-                            quickFeatures
+                            widget.quickFeatures
                                 .map(
                                   (feature) => SizedBox(
                                     width: itemWidth,
@@ -330,7 +402,7 @@ Nutrisi yang tepat adalah fondasi kesehatan yang baik bagi lansia. Berikut pandu
                         ),
                       ),
                       const SizedBox(height: 40),
-                      ...articles
+                      ...widget.articles
                           .map((article) => _buildArticleItem(context, article))
                           .toList(),
                     ],
@@ -373,7 +445,7 @@ Nutrisi yang tepat adalah fondasi kesehatan yang baik bagi lansia. Berikut pandu
                 (context) => ArticleDetailPage(
                   article: article,
                   recommendedArticles:
-                      articles.where((a) => a != article).toList(),
+                      widget.articles.where((a) => a != article).toList(),
                 ),
           ),
         );

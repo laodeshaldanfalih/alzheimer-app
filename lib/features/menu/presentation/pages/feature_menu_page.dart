@@ -1,71 +1,75 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/features/game/presentation/pages/game_menu_page.dart';
 import 'package:project/features/menu/domain/models/feature_menu_item.dart';
 
 class FeatureMenuPage extends StatelessWidget {
   FeatureMenuPage({super.key});
 
-  final List<FeatureMenuItem> features = [
-    FeatureMenuItem(
-      title: 'Pengingat Obat',
-      description: 'Lorem ipsum is a dummy or placeholder text commonly',
-      imagePath: 'assets/images/google_icons.png',
-      onTap: () {
-        // TODO: Navigate to Medicine Reminder page
-      },
-    ),
-    FeatureMenuItem(
-      title: 'Pengingat Kegiatan',
-      description: 'Lorem ipsum is a dummy or placeholder text commonly',
-      imagePath: 'assets/images/google_icons.png',
-      onTap: () {
-        // TODO: Navigate to Activity Reminder page
-      },
-    ),
-    FeatureMenuItem(
-      title: 'Game',
-      description: 'Lorem ipsum is a dummy or placeholder text commonly',
-      imagePath: 'assets/images/google_icons.png',
-      onTap: () {
-        // TODO: Navigate to Game page
-      },
-    ),
-    FeatureMenuItem(
-      title: 'Musik',
-      description: 'Lorem ipsum is a dummy or placeholder text commonly',
-      imagePath: 'assets/images/google_icons.png',
-      onTap: () {
-        // TODO: Navigate to Music page
-      },
-    ),
-    FeatureMenuItem(
-      title: 'Alzheimer Scan',
-      description: 'Lorem ipsum is a dummy or placeholder text commonly',
-      imagePath: 'assets/images/google_icons.png',
-      onTap: () {
-        // TODO: Navigate to Alzheimer Scan page
-      },
-    ),
-    FeatureMenuItem(
-      title: 'Artikel Kesehatan',
-      description: 'Lorem ipsum is a dummy or placeholder text commonly',
-      imagePath: 'assets/images/google_icons.png',
-      onTap: () {
-        // TODO: Navigate to Health Article page
-      },
-    ),
-    FeatureMenuItem(
-      title: 'Chatbot',
-      description: 'Lorem ipsum is a dummy or placeholder text commonly',
-      imagePath: 'assets/images/google_icons.png',
-      onTap: () {
-        // TODO: Navigate to Chatbot page
-      },
-    ),
-  ];
+  late final List<FeatureMenuItem> features;
 
   @override
   Widget build(BuildContext context) {
+    features = [
+      FeatureMenuItem(
+        title: 'Pengingat Obat',
+        description: 'Lorem ipsum is a dummy or placeholder text commonly',
+        imagePath: 'assets/images/google_icons.png',
+        onTap: () {
+          // TODO: Navigate to Medicine Reminder page
+        },
+      ),
+      FeatureMenuItem(
+        title: 'Pengingat Kegiatan',
+        description: 'Lorem ipsum is a dummy or placeholder text commonly',
+        imagePath: 'assets/images/google_icons.png',
+        onTap: () {
+          // TODO: Navigate to Activity Reminder page
+        },
+      ),
+      FeatureMenuItem(
+        title: 'Game',
+        description: 'Lorem ipsum is a dummy or placeholder text commonly',
+        imagePath: 'assets/images/google_icons.png',
+        onTap: () {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => GameMenuPage()));
+        },
+      ),
+      FeatureMenuItem(
+        title: 'Musik',
+        description: 'Lorem ipsum is a dummy or placeholder text commonly',
+        imagePath: 'assets/images/google_icons.png',
+        onTap: () {
+          // TODO: Navigate to Music page
+        },
+      ),
+      FeatureMenuItem(
+        title: 'Alzheimer Scan',
+        description: 'Lorem ipsum is a dummy or placeholder text commonly',
+        imagePath: 'assets/images/google_icons.png',
+        onTap: () {
+          // TODO: Navigate to Alzheimer Scan page
+        },
+      ),
+      FeatureMenuItem(
+        title: 'Artikel Kesehatan',
+        description: 'Lorem ipsum is a dummy or placeholder text commonly',
+        imagePath: 'assets/images/google_icons.png',
+        onTap: () {
+          // TODO: Navigate to Health Article page
+        },
+      ),
+      FeatureMenuItem(
+        title: 'Chatbot',
+        description: 'Lorem ipsum is a dummy or placeholder text commonly',
+        imagePath: 'assets/images/google_icons.png',
+        onTap: () {
+          // TODO: Navigate to Chatbot page
+        },
+      ),
+    ];
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
