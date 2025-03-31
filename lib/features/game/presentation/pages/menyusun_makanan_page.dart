@@ -108,7 +108,7 @@ class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double boxSize = 90;
+    double boxSize = screenWidth * 0.2;
     int crossAxisCount = 2;
     double spacing = 10;
     double itemWidth =
@@ -118,118 +118,139 @@ class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
 
     return Scaffold(
       appBar: AppBar(),
-      body: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(17),
-            width: double.infinity,
-            decoration: BoxDecoration(color: Color(0xffAFDBC5)),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Menyusun Menu Makanan",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 10),
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.all(17),
+                width: double.infinity,
+                decoration: BoxDecoration(color: Color(0xffAFDBC5)),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Menyusun Menu Makanan",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: screenWidth * 0.06,
                       ),
-                    ],
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Container(
-                    height: screenWidth * 0.8,
-                    width: screenWidth * 0.8,
-                    margin: EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 0.5, color: Colors.grey),
-                      color: Colors.transparent,
-                      shape: BoxShape.circle,
                     ),
-                    child: Stack(
-                      children: [
-                        buildDragTarget(
-                          FoodCategory.Lauk,
-                          screenWidth,
-                          boxSize,
-                          right: screenWidth * 0.04,
-                          top: (screenWidth * 0.8 / 2) - (boxSize / 2),
+                    Container(
+                      margin: EdgeInsets.only(top: 10),
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Container(
+                        height: screenWidth * 0.8,
+                        width: screenWidth * 0.8,
+                        margin: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 0.5, color: Colors.grey),
+                          color: Colors.transparent,
+                          shape: BoxShape.circle,
                         ),
-                        buildDragTarget(
-                          FoodCategory.Karbo,
-                          screenWidth,
-                          boxSize,
-                          left: screenWidth * 0.04,
-                          top: (screenWidth * 0.8 / 2) - (boxSize / 2),
+                        child: Stack(
+                          children: [
+                            buildDragTarget(
+                              FoodCategory.Lauk,
+                              screenWidth,
+                              boxSize,
+                              right: screenWidth * 0.04,
+                              top: (screenWidth * 0.8 / 2) - (boxSize / 2),
+                            ),
+                            buildDragTarget(
+                              FoodCategory.Karbo,
+                              screenWidth,
+                              boxSize,
+                              left: screenWidth * 0.04,
+                              top: (screenWidth * 0.8 / 2) - (boxSize / 2),
+                            ),
+                            buildDragTarget(
+                              FoodCategory.Buah,
+                              screenWidth,
+                              boxSize,
+                              left: (screenWidth * 0.8 / 2) - (boxSize / 2),
+                              top: screenWidth * 0.04,
+                            ),
+                            buildDragTarget(
+                              FoodCategory.Sayur,
+                              screenWidth,
+                              boxSize,
+                              left: (screenWidth * 0.8 / 2) - (boxSize / 2),
+                              bottom: screenWidth * 0.04,
+                            ),
+                          ],
                         ),
-                        buildDragTarget(
-                          FoodCategory.Buah,
-                          screenWidth,
-                          boxSize,
-                          left: (screenWidth * 0.8 / 2) - (boxSize / 2),
-                          top: screenWidth * 0.04,
-                        ),
-                        buildDragTarget(
-                          FoodCategory.Sayur,
-                          screenWidth,
-                          boxSize,
-                          left: (screenWidth * 0.8 / 2) - (boxSize / 2),
-                          bottom: screenWidth * 0.04,
-                        ),
-                      ],
+                      ),
                     ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: GridView.builder(
+                    padding: EdgeInsets.zero,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: spacing,
+                      mainAxisSpacing: 15,
+                      childAspectRatio: aspectRatio,
+                    ),
+                    itemCount: availableQuickFoods.length,
+                    itemBuilder: (context, index) {
+                      return Draggable<QuickFoodItem>(
+                        data: availableQuickFoods[index],
+                        onDragStarted: () {
+                          setState(() {
+                            draggedItemTitle = availableQuickFoods[index].title;
+                          });
+                        },
+                        onDragEnd: (_) {
+                          setState(() {
+                            draggedItemTitle = null;
+                          });
+                        },
+                        feedback: Material(
+                          color: Colors.transparent,
+                          child: Transform.translate(
+                            offset: Offset(
+                              60,
+                              30,
+                            ), // geser 30 pixel ke kiri dan atas
+                            child: _buildQuickFoodItem(
+                              availableQuickFoods[index],
+                            ),
+                          ),
+                        ),
+
+                        childWhenDragging: Opacity(
+                          opacity: 0.3,
+                          child: _buildQuickFoodItem(
+                            availableQuickFoods[index],
+                          ),
+                        ),
+                        child: _buildQuickFoodItem(availableQuickFoods[index]),
+                      );
+                    },
                   ),
                 ),
-              ],
-            ),
-          ),
-          SizedBox(height: 10),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: spacing,
-                mainAxisSpacing: 15,
-                childAspectRatio: aspectRatio,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                children: List.generate(availableQuickFoods.length, (index) {
-                  return Draggable<QuickFoodItem>(
-                    data: availableQuickFoods[index],
-                    onDragStarted: () {
-                      setState(() {
-                        draggedItemTitle = availableQuickFoods[index].title;
-                      });
-                    },
-                    onDragEnd: (_) {
-                      setState(() {
-                        draggedItemTitle = null;
-                      });
-                    },
-                    feedback: Material(
-                      color: Colors.transparent,
-                      child: _buildQuickFoodItem(availableQuickFoods[index]),
-                    ),
-                    childWhenDragging: Opacity(
-                      opacity: 0.3,
-                      child: _buildQuickFoodItem(availableQuickFoods[index]),
-                    ),
-                    child: _buildQuickFoodItem(availableQuickFoods[index]),
-                  );
-                }),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -300,21 +321,15 @@ class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
         },
         onAccept: (item) {
           setState(() {
-            // Hapus item dari semua slot yang mungkin menyimpan item ini
-            droppedItems.updateAll((key, value) {
-              if (value == item) return null;
-              return value;
-            });
-
-            // Tambahkan ke kategori baru
+            droppedItems.updateAll(
+              (key, value) => value == item ? null : value,
+            );
             droppedItems[category] = item;
-
-            // Hapus dari menu bawah (sekali saja)
             availableQuickFoods.remove(item);
 
-            // Cek apakah semua slot sudah terisi
-            bool allFilled = droppedItems.values.every((item) => item != null);
-            if (allFilled) _checkForWin();
+            if (droppedItems.values.every((item) => item != null)) {
+              _checkForWin();
+            }
           });
         },
       ),
@@ -325,7 +340,6 @@ class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
     bool allCorrect = droppedItems.entries.every(
       (entry) => entry.value?.category == entry.key,
     );
-
     if (allCorrect) {
       _showWinDialog();
     } else {
@@ -336,58 +350,61 @@ class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
   void _showWinDialog() {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Congratulations!"),
-          content: Text(
-            "You've successfully placed all items in the correct categories!",
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                resetGame();
-              },
-              child: Text("Restart Game"),
+      builder:
+          (_) => AlertDialog(
+            title: Text("Congratulations!"),
+            content: Text(
+              "You've successfully placed all items in the correct categories!",
             ),
-          ],
-        );
-      },
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  resetGame();
+                },
+                child: Text("Restart Game"),
+              ),
+            ],
+          ),
     );
   }
 
   void _showIncorrectPlacementDialog() {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Incorrect Placement"),
-          content: Text("Some items are placed incorrectly. Please try again!"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                resetGame();
-                Navigator.of(context).pop();
-              },
-              child: Text("Try Again"),
+      builder:
+          (_) => AlertDialog(
+            title: Text("Incorrect Placement"),
+            content: Text(
+              "Some items are placed incorrectly. Please try again!",
             ),
-          ],
-        );
-      },
+            actions: [
+              TextButton(
+                onPressed: () {
+                  resetGame();
+                  Navigator.of(context).pop();
+                },
+                child: Text("Try Again"),
+              ),
+            ],
+          ),
     );
   }
 
   Widget _buildQuickFoodItem(QuickFoodItem item) {
     return SizedBox(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(item.image, width: 60, height: 60, fit: BoxFit.contain),
-          SizedBox(height: 10),
-          Text(
-            item.title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            textAlign: TextAlign.center,
+          Flexible(
+            child: Text(
+              item.title,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
