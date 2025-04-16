@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project/features/game/domain/models/game_menu_item.dart';
+import 'package:project/features/game/presentation/pages/menyocokkan_warna_page.dart';
 import 'package:project/features/game/presentation/pages/menyusun_makanan_page.dart';
 
 class GameMenuPage extends StatelessWidget {
@@ -14,7 +15,9 @@ class GameMenuPage extends StatelessWidget {
             'Permainan menyocokkan warna untuk melatih memori dan konsentrasi',
         imagePath: 'assets/images/google_icons.png',
         onTap: () {
-          print('Navigate to Color Matching Game');
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => ColorGame()));
         },
       ),
       GameMenuItem(
