@@ -1,6 +1,8 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:confetti/confetti.dart';
 import 'package:project/features/game/domain/models/quick_food_item.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class MenyusunMakananPage extends StatefulWidget {
   const MenyusunMakananPage({super.key});
@@ -13,6 +15,8 @@ class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
   late List<QuickFoodItem> originalQuickFoods;
   List<QuickFoodItem> allQuickFoods = [];
   List<QuickFoodItem> availableQuickFoods = [];
+  late ConfettiController _confettiController;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   Map<FoodCategory, QuickFoodItem?> droppedItems = {
     FoodCategory.Lauk: null,
@@ -22,6 +26,9 @@ class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
   };
 
   String? draggedItemTitle;
+  bool showWinOverlay = false;
+  bool showLoseOverlay = false;
+  double overlayOpacity = 0.0;
 
   @override
   void initState() {
@@ -30,227 +37,335 @@ class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
     originalQuickFoods = [
       QuickFoodItem(
         title: "Daging Sapi",
-        image: 'assets/images/google_icons.png',
+        image: '🥩',
         onTap: () {},
         category: FoodCategory.Lauk,
       ),
       QuickFoodItem(
         title: "Telur",
-        image: 'assets/images/google_icons.png',
+        image: '🥚',
         onTap: () {},
         category: FoodCategory.Lauk,
       ),
       QuickFoodItem(
         title: "Ikan",
-        image: 'assets/images/google_icons.png',
+        image: '🐟',
         onTap: () {},
         category: FoodCategory.Lauk,
       ),
       QuickFoodItem(
         title: "Nasi",
-        image: 'assets/images/google_icons.png',
+        image: '🍚',
         onTap: () {},
         category: FoodCategory.Karbo,
       ),
       QuickFoodItem(
         title: "Kentang",
-        image: 'assets/images/google_icons.png',
+        image: '🥔',
         onTap: () {},
         category: FoodCategory.Karbo,
       ),
       QuickFoodItem(
         title: "Singkong",
-        image: 'assets/images/google_icons.png',
+        image: '🌱',
         onTap: () {},
-        category: FoodCategory.Karbo,
+        category: FoodCategory.Sayur,
       ),
       QuickFoodItem(
         title: "Pisang",
-        image: 'assets/images/google_icons.png',
+        image: '🍌',
         onTap: () {},
         category: FoodCategory.Buah,
       ),
       QuickFoodItem(
         title: "Apel",
-        image: 'assets/images/google_icons.png',
+        image: '🍎',
         onTap: () {},
         category: FoodCategory.Buah,
       ),
       QuickFoodItem(
         title: "Mangga",
-        image: 'assets/images/google_icons.png',
+        image: '🥭',
         onTap: () {},
         category: FoodCategory.Buah,
       ),
       QuickFoodItem(
         title: "Bayam",
-        image: 'assets/images/google_icons.png',
+        image: '🥬',
         onTap: () {},
         category: FoodCategory.Sayur,
       ),
       QuickFoodItem(
         title: "Wortel",
-        image: 'assets/images/google_icons.png',
+        image: '🥕',
         onTap: () {},
         category: FoodCategory.Sayur,
       ),
       QuickFoodItem(
         title: "Kangkung",
-        image: 'assets/images/google_icons.png',
+        image: '🌿',
         onTap: () {},
         category: FoodCategory.Sayur,
       ),
     ];
 
+    _confettiController = ConfettiController(
+      duration: const Duration(seconds: 2),
+    );
+
     resetGame();
+  }
+
+  @override
+  void dispose() {
+    _confettiController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _playSound(String fileName) async {
+    await _audioPlayer.play(AssetSource('sounds/$fileName'));
   }
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double boxSize = screenWidth * 0.2;
-    int crossAxisCount = 2;
     double spacing = 10;
-    double itemWidth =
-        (screenWidth - ((crossAxisCount + 1) * spacing)) / crossAxisCount;
+    double itemWidth = (screenWidth - ((2 + 1) * spacing)) / 2;
     double itemHeight = itemWidth;
     double aspectRatio = itemWidth / (itemHeight * 0.8);
 
     return Scaffold(
       appBar: AppBar(),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(17),
-                width: double.infinity,
-                decoration: BoxDecoration(color: Color(0xffAFDBC5)),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "Menyusun Menu Makanan",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: screenWidth * 0.06,
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 10),
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            spreadRadius: 2,
-                            blurRadius: 10,
-                            offset: Offset(0, 4),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(17),
+                    width: double.infinity,
+                    decoration: BoxDecoration(color: Color(0xffAFDBC5)),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Menyusun Menu Makanan",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: screenWidth * 0.06,
                           ),
-                        ],
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Container(
-                        height: screenWidth * 0.8,
-                        width: screenWidth * 0.8,
-                        margin: EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 0.5, color: Colors.grey),
-                          color: Colors.transparent,
-                          shape: BoxShape.circle,
                         ),
-                        child: Stack(
-                          children: [
-                            buildDragTarget(
-                              FoodCategory.Lauk,
-                              screenWidth,
-                              boxSize,
-                              right: screenWidth * 0.04,
-                              top: (screenWidth * 0.8 / 2) - (boxSize / 2),
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                spreadRadius: 2,
+                                blurRadius: 10,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Container(
+                            height: screenWidth * 0.8,
+                            width: screenWidth * 0.8,
+                            margin: EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 0.5,
+                                color: Colors.grey,
+                              ),
+                              color: Colors.transparent,
+                              shape: BoxShape.circle,
                             ),
-                            buildDragTarget(
-                              FoodCategory.Karbo,
-                              screenWidth,
-                              boxSize,
-                              left: screenWidth * 0.04,
-                              top: (screenWidth * 0.8 / 2) - (boxSize / 2),
+                            child: Stack(
+                              children: [
+                                buildDragTarget(
+                                  FoodCategory.Lauk,
+                                  screenWidth,
+                                  boxSize,
+                                  right: screenWidth * 0.04,
+                                  top: (screenWidth * 0.8 / 2) - (boxSize / 2),
+                                ),
+                                buildDragTarget(
+                                  FoodCategory.Karbo,
+                                  screenWidth,
+                                  boxSize,
+                                  left: screenWidth * 0.04,
+                                  top: (screenWidth * 0.8 / 2) - (boxSize / 2),
+                                ),
+                                buildDragTarget(
+                                  FoodCategory.Buah,
+                                  screenWidth,
+                                  boxSize,
+                                  left: (screenWidth * 0.8 / 2) - (boxSize / 2),
+                                  top: screenWidth * 0.04,
+                                ),
+                                buildDragTarget(
+                                  FoodCategory.Sayur,
+                                  screenWidth,
+                                  boxSize,
+                                  left: (screenWidth * 0.8 / 2) - (boxSize / 2),
+                                  bottom: screenWidth * 0.04,
+                                ),
+                                Align(
+                                  alignment: Alignment.topCenter,
+                                  child: ConfettiWidget(
+                                    confettiController: _confettiController,
+                                    blastDirectionality:
+                                        BlastDirectionality.explosive,
+                                    shouldLoop: false,
+                                    numberOfParticles: 30,
+                                    maxBlastForce: 10,
+                                    minBlastForce: 5,
+                                    colors: [
+                                      Colors.green,
+                                      Colors.blue,
+                                      Colors.pink,
+                                      Colors.orange,
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                            buildDragTarget(
-                              FoodCategory.Buah,
-                              screenWidth,
-                              boxSize,
-                              left: (screenWidth * 0.8 / 2) - (boxSize / 2),
-                              top: screenWidth * 0.04,
-                            ),
-                            buildDragTarget(
-                              FoodCategory.Sayur,
-                              screenWidth,
-                              boxSize,
-                              left: (screenWidth * 0.8 / 2) - (boxSize / 2),
-                              bottom: screenWidth * 0.04,
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  child: GridView.builder(
-                    padding: EdgeInsets.zero,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: spacing,
-                      mainAxisSpacing: 15,
-                      childAspectRatio: aspectRatio,
-                    ),
-                    itemCount: availableQuickFoods.length,
-                    itemBuilder: (context, index) {
-                      return Draggable<QuickFoodItem>(
-                        data: availableQuickFoods[index],
-                        onDragStarted: () {
-                          setState(() {
-                            draggedItemTitle = availableQuickFoods[index].title;
-                          });
-                        },
-                        onDragEnd: (_) {
-                          setState(() {
-                            draggedItemTitle = null;
-                          });
-                        },
-                        feedback: Material(
-                          color: Colors.transparent,
-                          child: Transform.translate(
-                            offset: Offset(
-                              60,
-                              30,
-                            ), // geser 30 pixel ke kiri dan atas
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: GridView.builder(
+                        padding: EdgeInsets.zero,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: spacing,
+                          mainAxisSpacing: 15,
+                          childAspectRatio: aspectRatio,
+                        ),
+                        itemCount: availableQuickFoods.length,
+                        itemBuilder: (context, index) {
+                          return Draggable<QuickFoodItem>(
+                            data: availableQuickFoods[index],
+                            onDragStarted: () {
+                              setState(() {
+                                draggedItemTitle =
+                                    availableQuickFoods[index].title;
+                              });
+                            },
+                            onDragEnd: (_) {
+                              setState(() {
+                                draggedItemTitle = null;
+                              });
+                            },
+                            feedback: Material(
+                              color: Colors.transparent,
+                              child: Transform.translate(
+                                offset: Offset(60, 30),
+                                child: _buildQuickFoodItem(
+                                  availableQuickFoods[index],
+                                ),
+                              ),
+                            ),
+                            childWhenDragging: Opacity(
+                              opacity: 0.3,
+                              child: _buildQuickFoodItem(
+                                availableQuickFoods[index],
+                              ),
+                            ),
                             child: _buildQuickFoodItem(
                               availableQuickFoods[index],
                             ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (showWinOverlay)
+            AnimatedOpacity(
+              opacity: overlayOpacity,
+              duration: Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+              child: Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.7),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "🎉 KAMU MENANG!",
+                          style: TextStyle(
+                            fontSize: 36,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-
-                        childWhenDragging: Opacity(
-                          opacity: 0.3,
-                          child: _buildQuickFoodItem(
-                            availableQuickFoods[index],
-                          ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              showWinOverlay = false;
+                              resetGame();
+                            });
+                          },
+                          child: Text("Main Lagi"),
                         ),
-                        child: _buildQuickFoodItem(availableQuickFoods[index]),
-                      );
-                    },
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+          if (showLoseOverlay)
+            AnimatedOpacity(
+              opacity: overlayOpacity,
+              duration: Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+              child: Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.7),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "😓 Coba Lagi!",
+                          style: TextStyle(
+                            fontSize: 32,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              showLoseOverlay = false;
+                              resetGame();
+                            });
+                          },
+                          child: Text("Ulangi"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -298,6 +413,9 @@ class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
                             setState(() {
                               draggedItemTitle = dropped.title;
                               droppedItems[category] = null;
+                              if (!availableQuickFoods.contains(dropped)) {
+                                availableQuickFoods.add(dropped);
+                              }
                             });
                           },
                           onDragEnd: (_) {
@@ -326,7 +444,6 @@ class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
             );
             droppedItems[category] = item;
             availableQuickFoods.remove(item);
-
             if (droppedItems.values.every((item) => item != null)) {
               _checkForWin();
             }
@@ -347,48 +464,32 @@ class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
     }
   }
 
-  void _showWinDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (_) => AlertDialog(
-            title: Text("Congratulations!"),
-            content: Text(
-              "You've successfully placed all items in the correct categories!",
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  resetGame();
-                },
-                child: Text("Restart Game"),
-              ),
-            ],
-          ),
-    );
+  void _showWinDialog() async {
+    _confettiController.play();
+    await Future.delayed(Duration(seconds: 2));
+    _playSound('win.mp3');
+
+    setState(() {
+      showWinOverlay = true;
+      overlayOpacity = 0.0;
+    });
+
+    Future.delayed(Duration(milliseconds: 100), () {
+      setState(() => overlayOpacity = 1.0);
+    });
   }
 
   void _showIncorrectPlacementDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (_) => AlertDialog(
-            title: Text("Incorrect Placement"),
-            content: Text(
-              "Some items are placed incorrectly. Please try again!",
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  resetGame();
-                  Navigator.of(context).pop();
-                },
-                child: Text("Try Again"),
-              ),
-            ],
-          ),
-    );
+    _playSound('fail.mp3');
+
+    setState(() {
+      showLoseOverlay = true;
+      overlayOpacity = 0.0;
+    });
+
+    Future.delayed(Duration(milliseconds: 100), () {
+      setState(() => overlayOpacity = 1.0);
+    });
   }
 
   Widget _buildQuickFoodItem(QuickFoodItem item) {
@@ -397,7 +498,7 @@ class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(item.image, width: 60, height: 60, fit: BoxFit.contain),
+          Text(item.image, style: TextStyle(fontSize: 40)),
           Flexible(
             child: Text(
               item.title,
@@ -420,14 +521,19 @@ class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
         FoodCategory.Sayur: null,
       };
 
+      List<QuickFoodItem> previous = List.from(allQuickFoods);
       List<QuickFoodItem> selected = [];
       for (var cat in FoodCategory.values) {
         final items =
             originalQuickFoods.where((i) => i.category == cat).toList()
               ..shuffle();
-        if (items.isNotEmpty) selected.add(items.first);
+        for (var item in items) {
+          if (!previous.contains(item)) {
+            selected.add(item);
+            break;
+          }
+        }
       }
-
       allQuickFoods = selected;
       availableQuickFoods = List.from(selected);
     });
