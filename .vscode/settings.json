@@ -1,4 +1,5 @@
 {
     "dart.flutterWebRenderer": "auto",
-    "cmake.sourceDirectory": "D:/Flutter/alzheimer-app/linux"
+    "cmake.sourceDirectory": "D:/Flutter/alzheimer-app/linux",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

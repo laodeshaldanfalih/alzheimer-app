@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:project/color_game.dart';
+import 'package:project/game/color_game.dart';
+import 'package:project/firebase/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:project/menu_game.dart';
-import 'package:project/dump/responsive_mpg.dart';
-import 'package:project/responsive/responsive_meal_planning_game.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Tambahkan ini dulu!
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -17,9 +21,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Roboto'),
-      home: const MenuGame()
- ,
-      
+      home: const MenuGame(),
+
       debugShowCheckedModeBanner: false,
     );
   }

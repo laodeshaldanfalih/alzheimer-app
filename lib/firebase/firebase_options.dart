@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -51,7 +48,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDHxzCO-IERNGsq2P2zBRGlaZcrBZ6a8nk',
-    appId: '1:281214992798:android:f08e33c703eec18528568f',
+    appId: '1:281214992798:android:d6e6c536ab69e58d28568f',
     messagingSenderId: '281214992798',
     projectId: 'alzheimer-app-c23db',
     storageBucket: 'alzheimer-app-c23db.firebasestorage.app',
@@ -67,4 +64,14 @@ class DefaultFirebaseOptions {
     iosClientId: '281214992798-5tefemeis69q9u29sapm5j4mdaoicofp.apps.googleusercontent.com',
     iosBundleId: 'com.example.project',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyA5tgaSQM6AvrPQg1nBERp1KscW9mdHSc0',
+    appId: '1:281214992798:web:9c49ac4f7408215928568f',
+    messagingSenderId: '281214992798',
+    projectId: 'alzheimer-app-c23db',
+    authDomain: 'alzheimer-app-c23db.firebaseapp.com',
+    storageBucket: 'alzheimer-app-c23db.firebasestorage.app',
+  );
+
 }
