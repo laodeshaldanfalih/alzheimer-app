@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:project/game/color_game.dart';
 import 'package:project/firebase/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:project/menu_game.dart';

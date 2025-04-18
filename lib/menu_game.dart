@@ -3,7 +3,6 @@ import 'package:project/dump/prayer/prayer_times_page.dart';
 import 'package:project/dump/prayer_time_page.dart';
 import 'package:project/dump/vertex_ai_page.dart';
 import 'package:project/game/color_game.dart';
-import 'package:project/feature/feature_menu_item.dart';
 import 'package:project/feature/feature_menu_page.dart';
 
 import 'package:project/game/responsive_meal_planning_game.dart';

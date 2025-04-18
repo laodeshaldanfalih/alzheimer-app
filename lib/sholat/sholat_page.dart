@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
 import 'package:project/sholat/Sholat_service.dart';
+import 'package:project/sholat/sholat_time_tile.dart';
+import 'package:project/sholat/sholat_utilities.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'sholat_notification_service.dart';
 
 class SholatPage extends StatefulWidget {
   const SholatPage({super.key});
@@ -30,13 +32,17 @@ class _SholatPageState extends State<SholatPage> {
   late String currentTime;
   Timer? _timer;
   ValueNotifier<bool> showCollapsedAppBar = ValueNotifier(false);
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  Map<String, bool> notificationEnabled = {};
+  bool allNotificationsEnabled = true;
 
   @override
   void initState() {
     super.initState();
     _initializeDateFormatting();
     loadAllData();
-
+    SholatNotificationService().initialize();
     _scrollController.addListener(() {
       final triggerOffset = 180; // Adjust as needed
       if (_scrollController.offset > triggerOffset && !isScrolledPastHeader) {
@@ -107,117 +113,89 @@ class _SholatPageState extends State<SholatPage> {
     return {'name': first.key, 'time': time};
   }
 
-  //LoadData tanpa Cache
-  // Future<void> loadAllData() async {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-
-  //   try {
-  //     // Ambil lokasi
-  //     final pos = await _service.getCurrentPosition();
-  //     final loc = await _service.getLocationName(pos.latitude, pos.longitude);
-
-  //     // Hitung waktu sholat lokal
-  //     final timings = _service.calculatePrayerTimes(
-  //       pos.latitude,
-  //       pos.longitude,
-  //     );
-
-  //     final nextPrayer = _getNextPrayerTime(timings);
-  //     setState(() {
-  //       nextPrayerName = nextPrayer['name'];
-  //       nextPrayerTime = nextPrayer['time'];
-  //     });
-
-  //     setState(() {
-  //       locationName = loc;
-  //       prayerTimes = timings;
-  //       isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     setState(() {
-  //       errorMessage = e.toString();
-  //       isLoading = false;
-  //     });
-  //     if (!mounted) return;
-  //     ScaffoldMessenger.of(
-  //       context,
-  //     ).showSnackBar(SnackBar(content: Text('Terjadi kesalahan: $e')));
-  //   }
-  // }
-
   //LoadData dengan Cache
   Future<void> loadAllData() async {
-  setState(() {
-    isLoading = true;
-  });
-
-  final prefs = await SharedPreferences.getInstance();
-
-  try {
-    // Ambil lokasi
-    final pos = await _service.getCurrentPosition();
-    final loc = await _service.getLocationName(pos.latitude, pos.longitude);
-
-    // Hitung waktu sholat lokal
-    final timings = _service.calculatePrayerTimes(
-      pos.latitude,
-      pos.longitude,
-    );
-
-    final nextPrayer = _getNextPrayerTime(timings);
-
-    // Simpan ke cache
-    await prefs.setString('locationName', loc);
-    await prefs.setString('prayerTimes', jsonEncode(timings));
-
     setState(() {
-      locationName = loc;
-      prayerTimes = timings;
-      nextPrayerName = nextPrayer['name'];
-      nextPrayerTime = nextPrayer['time'];
-      isLoading = false;
-      errorMessage = null;
+      isLoading = true;
     });
-  } catch (e) {
-    // Jika error (misal: lokasi tidak diizinkan), ambil data dari cache
-    final cachedLocation = prefs.getString('locationName');
-    final cachedPrayerTimes = prefs.getString('prayerTimes');
 
-    if (cachedLocation != null && cachedPrayerTimes != null) {
-      final decodedTimes =
-          Map<String, String>.from(jsonDecode(cachedPrayerTimes));
+    final prefs = await SharedPreferences.getInstance();
 
-      final nextPrayer = _getNextPrayerTime(decodedTimes);
+    try {
+      // Ambil lokasi
+      final pos = await _service.getCurrentPosition();
+      final loc = await _service.getLocationName(pos.latitude, pos.longitude);
+
+      // Hitung waktu sholat lokal
+      final timings = _service.calculatePrayerTimes(
+        pos.latitude,
+        pos.longitude,
+      );
+
+      final nextPrayer = _getNextPrayerTime(timings);
+
+      // Simpan ke cache
+      await prefs.setString('locationName', loc);
+      await prefs.setString('prayerTimes', jsonEncode(timings));
 
       setState(() {
-        locationName = cachedLocation;
-        prayerTimes = decodedTimes;
+        locationName = loc;
+        prayerTimes = timings;
         nextPrayerName = nextPrayer['name'];
         nextPrayerTime = nextPrayer['time'];
         isLoading = false;
         errorMessage = null;
       });
-    } else {
-      setState(() {
-        isLoading = false;
-        errorMessage = 'Gagal mendapatkan data lokasi atau cache tidak ditemukan.';
-      });
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Terjadi kesalahan: $e')),
+      notificationEnabled = {for (var key in timings.keys) key: true};
+      await SholatNotificationService().schedulePrayerNotifications(
+        timings.map((key, value) {
+          if (notificationEnabled[key] == true) {
+            return MapEntry(key, value);
+          } else {
+            return MapEntry(key, ''); // Kosongkan jika nonaktif
+          }
+        })..removeWhere((key, value) => value == ''),
       );
+    } catch (e) {
+      // Jika error (misal: lokasi tidak diizinkan), ambil data dari cache
+      final cachedLocation = prefs.getString('locationName');
+      final cachedPrayerTimes = prefs.getString('prayerTimes');
+
+      if (cachedLocation != null && cachedPrayerTimes != null) {
+        final decodedTimes = Map<String, String>.from(
+          jsonDecode(cachedPrayerTimes),
+        );
+
+        final nextPrayer = _getNextPrayerTime(decodedTimes);
+
+        setState(() {
+          locationName = cachedLocation;
+          prayerTimes = decodedTimes;
+          nextPrayerName = nextPrayer['name'];
+          nextPrayerTime = nextPrayer['time'];
+          isLoading = false;
+          errorMessage = null;
+        });
+        notificationEnabled = {for (var key in decodedTimes.keys) key: true};
+      } else {
+        setState(() {
+          isLoading = false;
+          errorMessage =
+              'Gagal mendapatkan data lokasi atau cache tidak ditemukan.';
+        });
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Terjadi kesalahan: $e')));
+      }
     }
   }
-}
 
   @override
   void dispose() {
     _debounce?.cancel();
     _scrollController.dispose();
     _timer?.cancel();
-
     super.dispose();
   }
 
@@ -252,6 +230,11 @@ class _SholatPageState extends State<SholatPage> {
               backgroundColor:
                   collapsed ? Colors.transparent : Colors.transparent,
               foregroundColor: collapsed ? Colors.white : Colors.white,
+              actions: [
+                AppBarMoreOptions(
+                  onRefresh: () => loadAllData(),
+                ),
+              ],
             );
           },
         ),
@@ -563,44 +546,190 @@ class _SholatPageState extends State<SholatPage> {
                                               ),
                                             ),
                                           ),
-                                          child: ListTile(
-                                            contentPadding: EdgeInsets.zero,
-                                            title: Text(
-                                              entry.key,
-                                              style: TextStyle(
-                                                fontWeight:
-                                                    isCurrent || isNext
-                                                        ? FontWeight.bold
-                                                        : FontWeight.normal,
-                                                fontSize: 16,
-                                                color:
-                                                    isCurrent
-                                                        ? Colors.blue[700]
-                                                        : isNext
-                                                        ? Colors.green[700]
-                                                        : Colors.black,
-                                              ),
-                                            ),
-                                            trailing: Text(
-                                              entry.value,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight:
-                                                    isCurrent || isNext
-                                                        ? FontWeight.bold
-                                                        : FontWeight.normal,
-                                                color:
-                                                    isCurrent
-                                                        ? Colors.blue[700]
-                                                        : isNext
-                                                        ? Colors.green[700]
-                                                        : Colors.grey[600],
-                                              ),
-                                            ),
+                                          child: PrayerTimeTile(
+                                            name: entry.key,
+                                            time: entry.value,
+                                            isCurrent: isCurrent,
+                                            isNext: isNext,
+                                            isNotificationOn:
+                                                notificationEnabled[entry
+                                                    .key] ??
+                                                true,
+                                            onNotificationToggle: () {
+                                              setState(() {
+                                                notificationEnabled[entry.key] =
+                                                    !(notificationEnabled[entry
+                                                            .key] ??
+                                                        true);
+                                                allNotificationsEnabled =
+                                                    !notificationEnabled.values
+                                                        .contains(false);
+                                              });
+
+                                              if (prayerTimes != null) {
+                                                SholatNotificationService()
+                                                    .schedulePrayerNotifications(
+                                                      prayerTimes!.map((
+                                                        key,
+                                                        value,
+                                                      ) {
+                                                        if (notificationEnabled[key] ==
+                                                            true) {
+                                                          return MapEntry(
+                                                            key,
+                                                            value,
+                                                          );
+                                                        } else {
+                                                          return MapEntry(
+                                                            key,
+                                                            '',
+                                                          );
+                                                        }
+                                                      })..removeWhere(
+                                                        (key, value) =>
+                                                            value == '',
+                                                      ),
+                                                    );
+                                              }
+                                            },
                                           ),
+                                          // child: ListTile(
+                                          //   contentPadding: EdgeInsets.zero,
+                                          //   title: Text(
+                                          //     entry.key,
+                                          //     style: TextStyle(
+                                          //       fontWeight:
+                                          //           isCurrent || isNext
+                                          //               ? FontWeight.bold
+                                          //               : FontWeight.normal,
+                                          //       fontSize: 16,
+                                          //       color:
+                                          //           isCurrent
+                                          //               ? Colors.blue[700]
+                                          //               : isNext
+                                          //               ? Colors.green[700]
+                                          //               : Colors.black,
+                                          //     ),
+                                          //   ),
+                                          //   trailing: Row(
+                                          //     mainAxisSize: MainAxisSize.min,
+                                          //     children: [
+                                          //       Text(
+                                          //         entry.value,
+                                          //         style: TextStyle(
+                                          //           fontSize: 16,
+                                          //           fontWeight:
+                                          //               isCurrent || isNext
+                                          //                   ? FontWeight.bold
+                                          //                   : FontWeight.normal,
+                                          //           color:
+                                          //               isCurrent
+                                          //                   ? Colors.blue[700]
+                                          //                   : isNext
+                                          //                   ? Colors.green[700]
+                                          //                   : Colors.grey[600],
+                                          //         ),
+                                          //       ),
+                                          //       IconButton(
+                                          //         icon: Icon(
+                                          //           notificationEnabled[entry
+                                          //                       .key] ==
+                                          //                   true
+                                          //               ? Icons
+                                          //                   .notifications_active
+                                          //               : Icons
+                                          //                   .notifications_off,
+                                          //           color:
+                                          //               notificationEnabled[entry
+                                          //                           .key] ==
+                                          //                       true
+                                          //                   ? Colors.green
+                                          //                   : Colors.grey,
+                                          //           size: 20,
+                                          //         ),
+                                          //         onPressed: () {
+                                          //           setState(() {
+                                          //             notificationEnabled[entry
+                                          //                     .key] =
+                                          //                 !(notificationEnabled[entry
+                                          //                         .key] ??
+                                          //                     true);
+                                          //             allNotificationsEnabled =
+                                          //                 !notificationEnabled
+                                          //                     .values
+                                          //                     .contains(false);
+                                          //           });
+
+                                          //           if (prayerTimes != null) {
+                                          //             SholatNotificationService()
+                                          //                 .schedulePrayerNotifications(
+                                          //                   prayerTimes!.map((
+                                          //                     key,
+                                          //                     value,
+                                          //                   ) {
+                                          //                     if (notificationEnabled[key] ==
+                                          //                         true) {
+                                          //                       return MapEntry(
+                                          //                         key,
+                                          //                         value,
+                                          //                       );
+                                          //                     } else {
+                                          //                       return MapEntry(
+                                          //                         key,
+                                          //                         '',
+                                          //                       );
+                                          //                     }
+                                          //                   })..removeWhere(
+                                          //                     (key, value) =>
+                                          //                         value == '',
+                                          //                   ),
+                                          //                 );
+                                          //           }
+                                          //         },
+                                          //       ),
+                                          //     ],
+                                          //   ),
+                                          // ),
                                         );
                                       }),
+
                                       const SizedBox(height: 16),
+                                      
+                                      NotificationToggleCheckbox(
+                                        allEnabled: allNotificationsEnabled,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            allNotificationsEnabled =
+                                                value ?? false;
+                                            notificationEnabled.updateAll(
+                                              (key, _) =>
+                                                  allNotificationsEnabled,
+                                            );
+                                          });
+
+                                          if (prayerTimes != null) {
+                                            SholatNotificationService()
+                                                .schedulePrayerNotifications(
+                                                  prayerTimes!.map((
+                                                    key,
+                                                    value,
+                                                  ) {
+                                                    if (allNotificationsEnabled) {
+                                                      return MapEntry(
+                                                        key,
+                                                        value,
+                                                      );
+                                                    } else {
+                                                      return MapEntry(key, '');
+                                                    }
+                                                  })..removeWhere(
+                                                    (key, value) => value == '',
+                                                  ),
+                                                );
+                                          }
+                                        },
+                                      ),
+
                                       const Text(
                                         'Jadwal di atas berdasarkan lokasi Anda saat ini.',
                                         textAlign: TextAlign.center,
@@ -609,6 +738,7 @@ class _SholatPageState extends State<SholatPage> {
                                           color: Colors.grey,
                                         ),
                                       ),
+                                      
                                     ],
                                   ),
                                 ),
