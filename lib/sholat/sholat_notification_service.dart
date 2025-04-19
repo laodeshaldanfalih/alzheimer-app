@@ -83,6 +83,7 @@
 // }
 
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -114,7 +115,9 @@ class SholatNotificationService {
   }
 
   Future<void> testScheduleNotification() async {
-    final scheduleTime = DateTime.now().add(Duration(seconds: 10));
+    final scheduleTime = DateTime.now().add(Duration(seconds: 5));
+
+
 
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
@@ -156,12 +159,14 @@ class SholatNotificationService {
         scheduledTime = scheduledTime.add(Duration(days: 1));
       }
 
+      final prayerTime = DateFormat('HH:mm').format(scheduledTime);
+
       await AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: id++,
           channelKey: 'sholat_channel',
-          title: 'Waktu Sholat ${entry.key}',
-          body: 'Sudah masuk waktu ${entry.key}.',
+          title: 'Waktu ${entry.key}',
+          body: ' [$prayerTime] Sudah masuk waktu ${entry.key}.',
         ),
         schedule: NotificationCalendar(
           year: scheduledTime.year,

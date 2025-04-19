@@ -9,7 +9,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   AwesomeNotifications().initialize(
-    null, // icon default
+    'resource://drawable/sholat_icon',
     [
       NotificationChannel(
         channelKey: 'sholat_channel',

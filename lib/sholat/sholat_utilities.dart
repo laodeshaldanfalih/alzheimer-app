@@ -13,6 +13,7 @@ class AppBarMoreOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<int>(
+      color: Colors.white,
       icon: const Icon(Icons.more_vert, color: Colors.white),
       onSelected: (value) {
         if (value == 1) {
@@ -21,16 +22,25 @@ class AppBarMoreOptions extends StatelessWidget {
           onTestNotification!();
         }
       },
-      itemBuilder: (context) => [
-        const PopupMenuItem<int>(
-          value: 1,
-          child: Text('Refresh Halaman'),
-        ),
-        const PopupMenuItem<int>(
-          value: 2,
-          child: Text('Tes Notifikasi 10 detik'),
-        ),
-      ],
+      itemBuilder:
+          (context) => [
+            const PopupMenuItem<int>(
+              value: 1,
+
+              child: Text(
+                'Refresh Halaman',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF212427),
+                ),
+              ),
+            ),
+            const PopupMenuItem<int>(
+              value: 2,
+              child: Text('Tes Notifikasi 10 detik'),
+            ),
+          ],
     );
   }
 }
@@ -49,7 +59,7 @@ class NotificationToggleCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Checkbox(value: allEnabled, onChanged: onChanged),
+        Checkbox(activeColor: Color(0xFF325374),value: allEnabled, onChanged: onChanged),
         const Text(
           'Aktifkan semua notifikasi',
           style: TextStyle(fontSize: 14, color: Colors.grey),

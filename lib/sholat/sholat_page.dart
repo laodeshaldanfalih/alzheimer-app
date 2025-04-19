@@ -9,7 +9,6 @@ import 'package:project/sholat/Sholat_service.dart';
 import 'package:project/sholat/sholat_time_tile.dart';
 import 'package:project/sholat/sholat_utilities.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/timezone.dart' as tz;
 import 'sholat_notification_service.dart';
 
 class SholatPage extends StatefulWidget {
@@ -230,15 +229,15 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
         animType: AnimType.scale, // Animasi muncul (scale, slide, dll)
         title: 'Izinkan Notifikasi',
         desc:
-            'Agar tidak ketinggalan waktu sholat, izinkan aplikasi untuk mengirimkan notifikasi pengingat.',
+            'Izinkan aplikasi untuk mengirimkan notifikasi pengingat waktu sholat.',
         titleTextStyle: TextStyle(
           fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+          fontWeight: FontWeight.w500,
+          color: Color(0xFF212427),
         ),
         descTextStyle: TextStyle(
           fontSize: 14,
-          color: Theme.of(context).textTheme.bodyMedium?.color,
+          color: Color(0xFF212427),
         ),
         btnCancelOnPress: () {}, // Tombol "Nanti Saja"
         btnOkOnPress: () {
@@ -246,11 +245,11 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
         },
         btnOkText: 'Izinkan',
         btnCancelText: 'Nanti Saja',
-        btnOkColor: Colors.green.shade200, // Warna tombol Izinkan
+        btnOkColor: Colors.green.shade500, // Warna tombol Izinkan
         buttonsBorderRadius: BorderRadius.circular(8), // Bentuk sudut tombol
         headerAnimationLoop:
             false, // Nonaktifkan animasi header (jika tidak perlu)
-        dismissOnTouchOutside: false, // Tidak bisa tutup dengan klik luar
+        dialogBackgroundColor: Colors.white
       ).show();
     }
   }
@@ -265,6 +264,7 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
           valueListenable: showCollapsedAppBar,
           builder: (context, collapsed, _) {
             return AppBar(
+            
               title: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 100),
                 child:
@@ -291,6 +291,7 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
               foregroundColor: collapsed ? Colors.white : Colors.white,
               actions: [
                 AppBarMoreOptions(
+                  
                   onRefresh: () => loadAllData(),
                   onTestNotification: () {
                     SholatNotificationService().testScheduleNotification();
