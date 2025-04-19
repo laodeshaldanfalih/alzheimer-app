@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:project/sholat/Sholat_service.dart';
 import 'package:project/sholat/sholat_time_tile.dart';
 import 'package:project/sholat/sholat_utilities.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:timezone/timezone.dart' as tz;
 import 'sholat_notification_service.dart';
 
 class SholatPage extends StatefulWidget {
@@ -17,10 +19,11 @@ class SholatPage extends StatefulWidget {
   State<SholatPage> createState() => _SholatPageState();
 }
 
-class _SholatPageState extends State<SholatPage> {
+class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
   Map<String, String>? prayerTimes;
   String? locationName;
   late String todayDate;
+  DateTime now = DateTime.now();
   bool isLoading = true;
   String? errorMessage;
   String? nextPrayerName;
@@ -32,14 +35,14 @@ class _SholatPageState extends State<SholatPage> {
   late String currentTime;
   Timer? _timer;
   ValueNotifier<bool> showCollapsedAppBar = ValueNotifier(false);
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
   Map<String, bool> notificationEnabled = {};
   bool allNotificationsEnabled = true;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     _initializeDateFormatting();
     loadAllData();
     SholatNotificationService().initialize();
@@ -63,6 +66,8 @@ class _SholatPageState extends State<SholatPage> {
         currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
       });
     });
+
+    _checkNotificationPermission();
   }
 
   Future<void> _initializeDateFormatting() async {
@@ -193,10 +198,61 @@ class _SholatPageState extends State<SholatPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _debounce?.cancel();
     _scrollController.dispose();
     _timer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && prayerTimes != null) {
+      SholatNotificationService().schedulePrayerNotifications(
+        prayerTimes!.map((key, value) {
+          if (notificationEnabled[key] == true) {
+            return MapEntry(key, value);
+          } else {
+            return MapEntry(key, '');
+          }
+        })..removeWhere((key, value) => value == ''),
+      );
+    }
+  }
+
+  void _checkNotificationPermission() async {
+    final isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    if (!isAllowed && mounted) {
+      AwesomeDialog(
+        context: context,
+        dialogType:
+            DialogType.noHeader, // Tipe dialog (bisa warning, success, dll)
+        animType: AnimType.scale, // Animasi muncul (scale, slide, dll)
+        title: 'Izinkan Notifikasi',
+        desc:
+            'Agar tidak ketinggalan waktu sholat, izinkan aplikasi untuk mengirimkan notifikasi pengingat.',
+        titleTextStyle: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        descTextStyle: TextStyle(
+          fontSize: 14,
+          color: Theme.of(context).textTheme.bodyMedium?.color,
+        ),
+        btnCancelOnPress: () {}, // Tombol "Nanti Saja"
+        btnOkOnPress: () {
+          AwesomeNotifications().requestPermissionToSendNotifications();
+        },
+        btnOkText: 'Izinkan',
+        btnCancelText: 'Nanti Saja',
+        btnOkColor: Colors.green.shade200, // Warna tombol Izinkan
+        buttonsBorderRadius: BorderRadius.circular(8), // Bentuk sudut tombol
+        headerAnimationLoop:
+            false, // Nonaktifkan animasi header (jika tidak perlu)
+        dismissOnTouchOutside: false, // Tidak bisa tutup dengan klik luar
+      ).show();
+    }
   }
 
   @override
@@ -223,7 +279,10 @@ class _SholatPageState extends State<SholatPage> {
                         : const Text(
                           "Waktu Sholat",
                           key: ValueKey('expanded'),
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 20,
+                          ),
                         ),
               ),
               elevation: 0,
@@ -233,6 +292,9 @@ class _SholatPageState extends State<SholatPage> {
               actions: [
                 AppBarMoreOptions(
                   onRefresh: () => loadAllData(),
+                  onTestNotification: () {
+                    SholatNotificationService().testScheduleNotification();
+                  },
                 ),
               ],
             );
@@ -292,26 +354,26 @@ class _SholatPageState extends State<SholatPage> {
                                 padding: const EdgeInsets.all(16.0),
                                 child: Column(
                                   children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 2,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.3),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        currentTime,
-                                        style: TextStyle(
-                                          fontSize: 36,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
+                                    // Container(
+                                    //   padding: const EdgeInsets.symmetric(
+                                    //     horizontal: 12,
+                                    //     vertical: 2,
+                                    //   ),
+                                    //   decoration: BoxDecoration(
+                                    //     color: Colors.white.withOpacity(0.3),
+                                    //     borderRadius: BorderRadius.circular(8),
+                                    //   ),
+                                    //   child: Text(
+                                    //     currentTime,
+                                    //     style: TextStyle(
+                                    //       fontSize: 36,
+                                    //       fontWeight: FontWeight.w500,
+                                    //       color: Colors.white,
+                                    //     ),
+                                    //   ),
+                                    // ),
 
-                                    SizedBox(height: 48),
+                                    // SizedBox(height: 24),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
@@ -432,6 +494,15 @@ class _SholatPageState extends State<SholatPage> {
                                                     ),
                                                     Text(
                                                       'Hari ini $todayDate',
+                                                      style: const TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      DateFormat(
+                                                        'HH:mm',
+                                                      ).format(DateTime.now()),
                                                       style: const TextStyle(
                                                         fontSize: 14,
                                                         color: Colors.grey,
@@ -694,7 +765,7 @@ class _SholatPageState extends State<SholatPage> {
                                       }),
 
                                       const SizedBox(height: 16),
-                                      
+
                                       NotificationToggleCheckbox(
                                         allEnabled: allNotificationsEnabled,
                                         onChanged: (value) {
@@ -738,7 +809,6 @@ class _SholatPageState extends State<SholatPage> {
                                           color: Colors.grey,
                                         ),
                                       ),
-                                      
                                     ],
                                   ),
                                 ),
