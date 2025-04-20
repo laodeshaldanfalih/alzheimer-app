@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:project/sholat/Sholat_service.dart';
 import 'package:project/sholat/sholat_time_tile.dart';
 import 'package:project/sholat/sholat_utilities.dart';
@@ -31,7 +33,7 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
   bool isScrolledPastHeader = false;
   Timer? _debounce;
-  late String currentTime;
+  // late String currentTime;
   Timer? _timer;
   ValueNotifier<bool> showCollapsedAppBar = ValueNotifier(false);
   Map<String, bool> notificationEnabled = {};
@@ -43,10 +45,16 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     _initializeDateFormatting();
-    loadAllData();
+
+    Future.microtask(() async {
+      await _handlePermissions(); // ⬅ ini yang baru
+      await _loadNotificationPreferences();
+      await loadAllData();
+    });
+
     SholatNotificationService().initialize();
     _scrollController.addListener(() {
-      final triggerOffset = 180; // Adjust as needed
+      final triggerOffset = 180;
       if (_scrollController.offset > triggerOffset && !isScrolledPastHeader) {
         setState(() {
           isScrolledPastHeader = true;
@@ -59,14 +67,16 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
       }
     });
 
-    currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
-      });
-    });
+    // currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
+    // _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    //   setState(() {
+    //     currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
+    //   });
+    // });
 
-    _checkNotificationPermission();
+    // _loadNotificationPreferences().then((_) {
+    //   loadAllData();
+    // });
   }
 
   Future<void> _initializeDateFormatting() async {
@@ -150,7 +160,11 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
         isLoading = false;
         errorMessage = null;
       });
-      notificationEnabled = {for (var key in timings.keys) key: true};
+      notificationEnabled.addEntries(
+        timings.keys.map(
+          (key) => MapEntry(key, notificationEnabled[key] ?? true),
+        ),
+      );
       await SholatNotificationService().schedulePrayerNotifications(
         timings.map((key, value) {
           if (notificationEnabled[key] == true) {
@@ -180,7 +194,11 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
           isLoading = false;
           errorMessage = null;
         });
-        notificationEnabled = {for (var key in decodedTimes.keys) key: true};
+        notificationEnabled.addEntries(
+          decodedTimes.keys.map(
+            (key) => MapEntry(key, notificationEnabled[key] ?? true),
+          ),
+        );
       } else {
         setState(() {
           isLoading = false;
@@ -192,6 +210,7 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
           context,
         ).showSnackBar(SnackBar(content: Text('Terjadi kesalahan: $e')));
       }
+      return;
     }
   }
 
@@ -219,38 +238,48 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
     }
   }
 
-  void _checkNotificationPermission() async {
-    final isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    if (!isAllowed && mounted) {
-      AwesomeDialog(
-        context: context,
-        dialogType:
-            DialogType.noHeader, // Tipe dialog (bisa warning, success, dll)
-        animType: AnimType.scale, // Animasi muncul (scale, slide, dll)
-        title: 'Izinkan Notifikasi',
-        desc:
-            'Izinkan aplikasi untuk mengirimkan notifikasi pengingat waktu sholat.',
-        titleTextStyle: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-          color: Color(0xFF212427),
-        ),
-        descTextStyle: TextStyle(
-          fontSize: 14,
-          color: Color(0xFF212427),
-        ),
-        btnCancelOnPress: () {}, // Tombol "Nanti Saja"
-        btnOkOnPress: () {
-          AwesomeNotifications().requestPermissionToSendNotifications();
-        },
-        btnOkText: 'Izinkan',
-        btnCancelText: 'Nanti Saja',
-        btnOkColor: Colors.green.shade500, // Warna tombol Izinkan
-        buttonsBorderRadius: BorderRadius.circular(8), // Bentuk sudut tombol
-        headerAnimationLoop:
-            false, // Nonaktifkan animasi header (jika tidak perlu)
-        dialogBackgroundColor: Colors.white
-      ).show();
+  Future<void> _loadNotificationPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      notificationEnabled = {
+        'Fajr': prefs.getBool('notification_Fajr') ?? true,
+        'Terbit': prefs.getBool('notification_Terbit') ?? true,
+        'Dhuhr': prefs.getBool('notification_Dhuhr') ?? true,
+        'Ashr': prefs.getBool('notification_Ashr') ?? true,
+        'Maghrib': prefs.getBool('notification_Maghrib') ?? true,
+        'Isya': prefs.getBool('notification_Isya') ?? true,
+      };
+      allNotificationsEnabled = !notificationEnabled.values.contains(false);
+    });
+  }
+
+  Future<void> _saveNotificationPreference(
+    String prayerName,
+    bool isEnabled,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notification_$prayerName', isEnabled);
+  }
+
+  Future<void> _saveAllNotificationPreferences(bool isEnabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    for (var key in notificationEnabled.keys) {
+      await prefs.setBool('notification_$key', isEnabled);
+    }
+  }
+
+  Future<void> _handlePermissions() async {
+    // 1. Notifikasi dulu
+    final notifAllowed = await AwesomeNotifications().isNotificationAllowed();
+    if (!notifAllowed) {
+      await AwesomeNotifications().requestPermissionToSendNotifications();
+      await Future.delayed(Duration(milliseconds: 500));
+    }
+
+    // 2. Lalu lokasi
+    final locStatus = await Permission.location.status;
+    if (!locStatus.isGranted) {
+      await Permission.location.request();
     }
   }
 
@@ -264,7 +293,6 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
           valueListenable: showCollapsedAppBar,
           builder: (context, collapsed, _) {
             return AppBar(
-            
               title: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 100),
                 child:
@@ -291,7 +319,6 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
               foregroundColor: collapsed ? Colors.white : Colors.white,
               actions: [
                 AppBarMoreOptions(
-                  
                   onRefresh: () => loadAllData(),
                   onTestNotification: () {
                     SholatNotificationService().testScheduleNotification();
@@ -326,10 +353,155 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
                 isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : errorMessage != null
-                    ? const Center(
-                      child: Text(
-                        'Waktu sholat tidak tersedia, coba aktifkan koneksi internet dan lokasi Anda..',
-                        textAlign: TextAlign.center,
+                    ? Center(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(24.0),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 400),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 4,
+                            color: Colors.white,
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.error_outline,
+                                    size: 48,
+                                    color: Colors.orangeAccent,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  const Text(
+                                    'Waktu sholat tidak tersedia,\ncoba aktifkan koneksi internet dan lokasi Anda.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Color(0xFF212427),
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+
+                                  // Tombol Aktifkan Izin Lokasi
+                                  ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xFF20B2AA),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      openAppSettings(); // from permission_handler
+                                    },
+                                    icon: const Icon(
+                                      Icons.app_settings_alt,
+                                      color: Colors.white,
+                                    ),
+                                    label: const Text(
+                                      'Aktifkan Izin Lokasi',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 12),
+
+                                  // Tombol Aktifkan GPS
+                                  OutlinedButton.icon(
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
+                                      side: const BorderSide(
+                                        color: Color(0xFF20B2AA),
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Geolocator.openLocationSettings(); // Buka pengaturan GPS perangkat
+                                    },
+                                    icon: const Icon(
+                                      Icons.gps_fixed,
+                                      color: Color(0xFF20B2AA),
+                                    ),
+                                    label: const Text(
+                                      'Aktifkan Lokasi (GPS)',
+                                      style: TextStyle(
+                                        color: Color(0xFF20B2AA),
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 12),
+
+                                  // Tombol Notifikasi
+                                  OutlinedButton.icon(
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
+                                      side: const BorderSide(
+                                        color: Color(0xFF20B2AA),
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      AwesomeNotifications()
+                                          .requestPermissionToSendNotifications();
+                                    },
+                                    icon: const Icon(
+                                      Icons.notifications_active,
+                                      color: Color(0xFF20B2AA),
+                                    ),
+                                    label: const Text(
+                                      'Aktifkan Notifikasi',
+                                      style: TextStyle(
+                                        color: Color(0xFF20B2AA),
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 12),
+                                  ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xFF325374),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      loadAllData(); // memanggil ulang fungsi utama
+                                    },
+                                    icon: const Icon(
+                                      Icons.refresh,
+                                      color: Colors.white,
+                                    ),
+                                    label: const Text(
+                                      'Coba Lagi',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     )
                     : NotificationListener<ScrollNotification>(
@@ -627,19 +799,26 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
                                                 notificationEnabled[entry
                                                     .key] ??
                                                 true,
-                                            onNotificationToggle: () {
+                                            onNotificationToggle: () async {
+                                              final newValue =
+                                                  !(notificationEnabled[entry
+                                                          .key] ??
+                                                      true);
                                               setState(() {
                                                 notificationEnabled[entry.key] =
-                                                    !(notificationEnabled[entry
-                                                            .key] ??
-                                                        true);
+                                                    newValue;
                                                 allNotificationsEnabled =
                                                     !notificationEnabled.values
                                                         .contains(false);
                                               });
 
+                                              await _saveNotificationPreference(
+                                                entry.key,
+                                                newValue,
+                                              ); // ⬅ SIMPAN PERUBAHAN
+
                                               if (prayerTimes != null) {
-                                                SholatNotificationService()
+                                                await SholatNotificationService()
                                                     .schedulePrayerNotifications(
                                                       prayerTimes!.map((
                                                         key,
@@ -769,7 +948,7 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
 
                                       NotificationToggleCheckbox(
                                         allEnabled: allNotificationsEnabled,
-                                        onChanged: (value) {
+                                        onChanged: (value) async {
                                           setState(() {
                                             allNotificationsEnabled =
                                                 value ?? false;
@@ -779,6 +958,9 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
                                             );
                                           });
 
+                                          await _saveAllNotificationPreferences(
+                                            allNotificationsEnabled,
+                                          );
                                           if (prayerTimes != null) {
                                             SholatNotificationService()
                                                 .schedulePrayerNotifications(
