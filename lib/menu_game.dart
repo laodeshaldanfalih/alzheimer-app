@@ -6,6 +6,7 @@ import 'package:project/game/color_game.dart';
 import 'package:project/feature/feature_menu_page.dart';
 
 import 'package:project/game/responsive_meal_planning_game.dart';
+import 'package:project/klasifikasi/image_upload_screen.dart';
 import 'package:project/sholat/sholat_page.dart';
 
 class MenuGame extends StatelessWidget {
@@ -65,9 +66,9 @@ class MenuGame extends StatelessWidget {
         'widget': const PrayerTimesPage(),
       },
       {
-        'title': 'Waktu Sholat (2)',
-        'desc': 'Jadwal sholat dan fitur tambahan lainnya.',
-        'widget': const PrayerTimePage(),
+        'title': 'Image Classification',
+        'desc': 'Test image prediction dengan API',
+        'widget': ImageUploadScreen(),
       },
       {
         'title': 'Waktu Sholat (3)',
