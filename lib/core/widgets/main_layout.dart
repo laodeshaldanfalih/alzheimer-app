@@ -1,30 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:project/core/widgets/custom_bottom_navbar.dart';
 import 'package:project/features/home/presentation/pages/home_page.dart';
 import 'package:project/features/menu/presentation/pages/feature_menu_page.dart';
+import 'package:project/features/buletin/presentation/pages/buletin_page.dart';
+import 'package:project/features/profile/presentation/pages/profile_page.dart';
+import 'package:project/core/widgets/custom_bottom_navbar.dart';
 
-class MainLayout extends ConsumerWidget {
+class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selectedIndex = ref.watch(selectedIndexProvider);
+  State<MainLayout> createState() => _MainLayoutState();
+}
 
-    // List of all pages
-    final List<Widget> pages = [
-      HomePage(),
-      FeatureMenuPage(),
-      Center(child: Text('Buletin Page')), // Replace with your actual pages
-      Center(child: Text('Profile Page')), // Replace with your actual pages
-    ];
+class _MainLayoutState extends State<MainLayout> {
+  int _selectedIndex = 0;
 
+  final List<Widget> _pages = [
+    HomePage(),
+    FeatureMenuPage(),
+    BuletinPage(),
+    ProfilePage(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: pages[selectedIndex],
+      body: _pages[_selectedIndex],
       bottomNavigationBar: CustomBottomNavBar(
-        onTap: (index) {
-          // Handle any additional logic when switching pages if needed
-        },
+        selectedIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }

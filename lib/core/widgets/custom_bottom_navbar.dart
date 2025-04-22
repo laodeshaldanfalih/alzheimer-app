@@ -1,37 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final selectedIndexProvider = StateProvider<int>((ref) => 0);
-
-class CustomBottomNavBar extends ConsumerWidget {
+class CustomBottomNavBar extends StatelessWidget {
+  final int selectedIndex;
   final Function(int) onTap;
 
-  const CustomBottomNavBar({super.key, required this.onTap});
+  const CustomBottomNavBar({
+    super.key,
+    required this.selectedIndex,
+    required this.onTap,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selectedIndex = ref.watch(selectedIndexProvider);
-
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 5,
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
             blurRadius: 10,
+            offset: const Offset(0, -1),
           ),
         ],
       ),
       child: BottomNavigationBar(
         currentIndex: selectedIndex,
-        onTap: (index) {
-          ref.read(selectedIndexProvider.notifier).state = index;
-          onTap(index);
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: Color(0xff7583CA),
+        onTap: onTap,
+        selectedItemColor: const Color(0xff4C53B4),
         unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
           BottomNavigationBarItem(icon: Icon(Icons.apps), label: 'Fitur Menu'),

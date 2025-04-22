@@ -13,7 +13,7 @@ class GameMenuPage extends StatelessWidget {
         title: 'Menyocokkan Warna',
         description:
             'Permainan menyocokkan warna untuk melatih memori dan konsentrasi',
-        imagePath: 'assets/images/google_icons.png',
+        emoji: '🎨',
         onTap: () {
           Navigator.of(
             context,
@@ -24,7 +24,7 @@ class GameMenuPage extends StatelessWidget {
         title: 'Menyusun Makanan',
         description:
             'Permainan menyusun makanan untuk melatih daya ingat dan pengambilan keputusan',
-        imagePath: 'assets/images/google_icons.png',
+        emoji: '🍽️',
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => MenyusunMakananPage()),
@@ -92,9 +92,11 @@ class GameMenuPage extends StatelessWidget {
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(game.imagePath, fit: BoxFit.cover),
+                  child: Center(
+                    child: Text(
+                      game.emoji,
+                      style: const TextStyle(fontSize: 40),
+                    ),
                   ),
                 ),
               ),

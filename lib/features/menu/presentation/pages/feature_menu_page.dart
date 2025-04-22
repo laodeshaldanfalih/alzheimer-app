@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:project/features/game/presentation/pages/game_menu_page.dart';
 import 'package:project/features/menu/domain/models/feature_menu_item.dart';
+import 'package:project/features/reminder/presentation/reminder_menu_page.dart';
+import 'package:project/features/alzheimer_scan/presentation/pages/alzheimer_scan_page.dart';
 
 class FeatureMenuPage extends StatelessWidget {
-  FeatureMenuPage({super.key});
-
-  late final List<FeatureMenuItem> features;
+  const FeatureMenuPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    features = [
+    final List<FeatureMenuItem> features = [
       FeatureMenuItem(
         title: 'Pengingat Obat',
         description: 'Lorem ipsum is a dummy or placeholder text commonly',
-        imagePath: 'assets/images/google_icons.png',
+        emoji: '💊',
         onTap: () {
           // TODO: Navigate to Medicine Reminder page
         },
@@ -21,15 +21,17 @@ class FeatureMenuPage extends StatelessWidget {
       FeatureMenuItem(
         title: 'Pengingat Kegiatan',
         description: 'Lorem ipsum is a dummy or placeholder text commonly',
-        imagePath: 'assets/images/google_icons.png',
+        emoji: '📅',
         onTap: () {
-          // TODO: Navigate to Activity Reminder page
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => ReminderMenuPage()));
         },
       ),
       FeatureMenuItem(
         title: 'Game',
         description: 'Lorem ipsum is a dummy or placeholder text commonly',
-        imagePath: 'assets/images/google_icons.png',
+        emoji: '🎮',
         onTap: () {
           Navigator.of(
             context,
@@ -39,7 +41,7 @@ class FeatureMenuPage extends StatelessWidget {
       FeatureMenuItem(
         title: 'Musik',
         description: 'Lorem ipsum is a dummy or placeholder text commonly',
-        imagePath: 'assets/images/google_icons.png',
+        emoji: '🎵',
         onTap: () {
           // TODO: Navigate to Music page
         },
@@ -47,15 +49,17 @@ class FeatureMenuPage extends StatelessWidget {
       FeatureMenuItem(
         title: 'Alzheimer Scan',
         description: 'Lorem ipsum is a dummy or placeholder text commonly',
-        imagePath: 'assets/images/google_icons.png',
+        emoji: '🧠',
         onTap: () {
-          // TODO: Navigate to Alzheimer Scan page
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const AlzheimerScanPage()),
+          );
         },
       ),
       FeatureMenuItem(
         title: 'Artikel Kesehatan',
         description: 'Lorem ipsum is a dummy or placeholder text commonly',
-        imagePath: 'assets/images/google_icons.png',
+        emoji: '📰',
         onTap: () {
           // TODO: Navigate to Health Article page
         },
@@ -63,7 +67,7 @@ class FeatureMenuPage extends StatelessWidget {
       FeatureMenuItem(
         title: 'Chatbot',
         description: 'Lorem ipsum is a dummy or placeholder text commonly',
-        imagePath: 'assets/images/google_icons.png',
+        emoji: '🤖',
         onTap: () {
           // TODO: Navigate to Chatbot page
         },
@@ -125,9 +129,11 @@ class FeatureMenuPage extends StatelessWidget {
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(feature.imagePath, fit: BoxFit.cover),
+                  child: Center(
+                    child: Text(
+                      feature.emoji,
+                      style: const TextStyle(fontSize: 40),
+                    ),
                   ),
                 ),
               ),
