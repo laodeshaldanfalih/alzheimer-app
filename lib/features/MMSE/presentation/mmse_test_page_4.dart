@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:project/features/MMSE/presentation/mmse_test_page_5.dart';
+import 'package:provider/provider.dart';
+import 'package:project/features/MMSE/data/mmse_test_state.dart';
 
 class MMSETestPage4 extends StatefulWidget {
   const MMSETestPage4({super.key});
@@ -14,6 +16,22 @@ class _MMSETestPage4State extends State<MMSETestPage4> {
   String? recallAnswer;
   final List<String> options = ["0", "1", "2", "3", "4", "5"];
   final List<String> recallOptions = ["0", "1", "2", "3"];
+
+  void _updateScores() {
+    final state = Provider.of<MMSETestState>(context, listen: false);
+
+    // Convert answers to scores
+    if (attentionAnswer != null) {
+      state.attentionScore = int.parse(attentionAnswer!);
+    }
+    if (recallAnswer != null) {
+      state.recallScore = int.parse(recallAnswer!);
+    }
+  }
+
+  bool _isPageComplete() {
+    return attentionAnswer != null && recallAnswer != null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -237,19 +255,26 @@ class _MMSETestPage4State extends State<MMSETestPage4> {
                 height: 48,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
+                    backgroundColor:
+                        _isPageComplete()
+                            ? const Color(0xFF2563EB)
+                            : Colors.grey,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MMSETestPage5(),
-                      ),
-                    );
-                  },
+                  onPressed:
+                      _isPageComplete()
+                          ? () {
+                            _updateScores();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const MMSETestPage5(),
+                              ),
+                            );
+                          }
+                          : null,
                   child: const Text(
                     "Selanjutnya",
                     style: TextStyle(

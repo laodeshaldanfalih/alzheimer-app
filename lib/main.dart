@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/splash/presentation/pages/splash_page.dart';
 import 'package:project/firebase_options.dart';
+import 'package:provider/provider.dart' as provider;
+import 'package:project/features/MMSE/data/mmse_test_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +17,12 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(ProviderScope(child: MyApp()));
+  runApp(
+    provider.ChangeNotifierProvider(
+      create: (context) => MMSETestState(),
+      child: const ProviderScope(child: MyApp()),
+    ),
+  );
 }
 
 class MyApp extends ConsumerWidget {

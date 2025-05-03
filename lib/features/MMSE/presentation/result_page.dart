@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class MMSEResultPage extends StatelessWidget {
   final int score;
@@ -10,6 +9,26 @@ class MMSEResultPage extends StatelessWidget {
     required this.score,
     required this.description,
   });
+
+  String _getResultImage() {
+    if (score >= 24) {
+      return 'assets/images/good_result.png';
+    } else if (score >= 18) {
+      return 'assets/images/mid_result.png';
+    } else {
+      return 'assets/images/bad_result.png';
+    }
+  }
+
+  Color _getResultColor() {
+    if (score >= 24) {
+      return const Color(0xFFAFE073);
+    } else if (score >= 18) {
+      return const Color(0xFFFFD54F);
+    } else {
+      return const Color(0xFFFF8A65);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,14 +75,15 @@ class MMSEResultPage extends StatelessWidget {
                     width: 110,
                     height: 110,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFAFE073),
+                      color: _getResultColor(),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
-                      child: SvgPicture.asset(
-                        'assets/svgs/mid_result.svg',
-                        height: 34,
-                        width: 34,
+                      child: Image.asset(
+                        _getResultImage(),
+                        height: 60,
+                        width: 60,
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ),

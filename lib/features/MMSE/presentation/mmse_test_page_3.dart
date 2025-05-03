@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project/features/MMSE/presentation/mmse_test_page_4.dart';
+import 'package:provider/provider.dart';
+import 'package:project/features/MMSE/data/mmse_test_state.dart';
 
 class MMSETestPage3 extends StatefulWidget {
   const MMSETestPage3({super.key});
@@ -12,6 +14,19 @@ class _MMSETestPage3State extends State<MMSETestPage3> {
   final TextEditingController _correctAnswersController =
       TextEditingController();
   final TextEditingController _repetitionsController = TextEditingController();
+
+  void _updateScores() {
+    final state = Provider.of<MMSETestState>(context, listen: false);
+
+    // Convert input to scores
+    if (_correctAnswersController.text.isNotEmpty) {
+      state.registrationScore = int.parse(_correctAnswersController.text);
+    }
+  }
+
+  bool _isPageComplete() {
+    return _correctAnswersController.text.isNotEmpty;
+  }
 
   @override
   void dispose() {
@@ -114,19 +129,26 @@ class _MMSETestPage3State extends State<MMSETestPage3> {
                   height: 48,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2563EB),
+                      backgroundColor:
+                          _isPageComplete()
+                              ? const Color(0xFF2563EB)
+                              : Colors.grey,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MMSETestPage4(),
-                        ),
-                      );
-                    },
+                    onPressed:
+                        _isPageComplete()
+                            ? () {
+                              _updateScores();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MMSETestPage4(),
+                                ),
+                              );
+                            }
+                            : null,
                     child: const Text(
                       "Selanjutnya",
                       style: TextStyle(

@@ -95,12 +95,12 @@ flutter:
     - assets/svgs/icon_mmse.svg
     - assets/svgs/icon_gds.svg
     - assets/svgs/icon_skilas.svg
+    - assets/images/mid_result.png
+    - assets/images/good_result.png
+    - assets/images/bad_result.png
     - assets/images/pensil.png
     - assets/images/arloji.png
     - assets/images/tiru_gambar.png
-    - assets/svgs/good_result.svg
-    - assets/svgs/mid_result.svg
-    - assets/svgs/bad_result.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

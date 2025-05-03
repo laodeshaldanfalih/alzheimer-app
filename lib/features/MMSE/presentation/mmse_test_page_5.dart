@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:project/features/MMSE/models/mmse_history_entry.dart';
 import 'package:project/features/MMSE/presentation/result_page.dart';
+import 'package:provider/provider.dart';
+import 'package:project/features/MMSE/data/mmse_test_state.dart';
+import 'package:project/features/MMSE/presentation/mmse_history_page.dart';
 
 class MMSETestPage5 extends StatefulWidget {
   const MMSETestPage5({super.key});
@@ -20,6 +24,38 @@ class _MMSETestPage5State extends State<MMSETestPage5> {
   final List<String> benarSalahOptions = ["Benar", "Salah"];
   final List<String> jumlahBenarOptions = ["0", "1", "2"];
   final List<String> jumlahBenarOptions3 = ["0", "1", "2", "3"];
+
+  void _updateScores() {
+    final state = Provider.of<MMSETestState>(context, listen: false);
+
+    // Convert answers to scores
+    state.bendaScore = bendaAnswer != null ? int.parse(bendaAnswer!) : null;
+    state.kataScore =
+        kataAnswer == "Benar" ? 1 : (kataAnswer == "Salah" ? 0 : null);
+    state.instruksiScore =
+        instruksiAnswer != null ? int.parse(instruksiAnswer!) : null;
+    state.angkatTanganScore =
+        angkatTanganAnswer == "Benar"
+            ? 1
+            : (angkatTanganAnswer == "Salah" ? 0 : null);
+    state.tulisKalimatScore =
+        tulisKalimatAnswer == "Benar"
+            ? 1
+            : (tulisKalimatAnswer == "Salah" ? 0 : null);
+    state.tiruGambarScore =
+        tiruGambarAnswer == "Benar"
+            ? 1
+            : (tiruGambarAnswer == "Salah" ? 0 : null);
+  }
+
+  bool _isPageComplete() {
+    return bendaAnswer != null &&
+        kataAnswer != null &&
+        instruksiAnswer != null &&
+        angkatTanganAnswer != null &&
+        tulisKalimatAnswer != null &&
+        tiruGambarAnswer != null;
+  }
 
   void _showImageDialog1() {
     showDialog(
@@ -711,24 +747,45 @@ class _MMSETestPage5State extends State<MMSETestPage5> {
                 height: 48,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
+                    backgroundColor:
+                        _isPageComplete()
+                            ? const Color(0xFF2563EB)
+                            : Colors.grey,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => MMSEResultPage(
-                              score: 10,
-                              description:
-                                  'Hasil tes menunjukkan bahwa fungsi kognitif Anda berada dalam kisaran normal. Tidak ada indikasi gangguan kognitif pada tingkat ini. Terus pertahankan gaya hidup sehat untuk mendukung kesehatan otak.',
-                            ),
-                      ),
-                    );
-                  },
+                  onPressed:
+                      _isPageComplete()
+                          ? () async {
+                            _updateScores();
+                            final state = Provider.of<MMSETestState>(
+                              context,
+                              listen: false,
+                            );
+                            // Inject: Save to history
+                            final historyProvider = MMSEHistoryProvider();
+                            await historyProvider.loadHistory();
+                            await historyProvider.addEntry(
+                              MMSEHistoryEntry(
+                                score: state.totalScore,
+                                date: DateTime.now(),
+                              ),
+                            );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => MMSEResultPage(
+                                      score: state.totalScore,
+                                      description: _getResultDescription(
+                                        state.totalScore,
+                                      ),
+                                    ),
+                              ),
+                            );
+                          }
+                          : null,
                   child: const Text(
                     "Selanjutnya",
                     style: TextStyle(
@@ -744,5 +801,15 @@ class _MMSETestPage5State extends State<MMSETestPage5> {
         ),
       ),
     );
+  }
+
+  String _getResultDescription(int score) {
+    if (score >= 24) {
+      return 'Hasil tes menunjukkan bahwa fungsi kognitif Anda berada dalam kisaran normal. Tidak ada indikasi gangguan kognitif pada tingkat ini. Terus pertahankan gaya hidup sehat untuk mendukung kesehatan otak.';
+    } else if (score >= 17) {
+      return 'Hasil tes menunjukkan kemungkinan adanya gangguan kognitif ringan. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
+    } else {
+      return 'Hasil tes menunjukkan adanya gangguan kognitif yang signifikan. Penting untuk segera berkonsultasi dengan profesional medis untuk mendapatkan penanganan lebih lanjut dan rencana perawatan yang sesuai.';
+    }
   }
 }

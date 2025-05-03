@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:project/core/providers/auth_provider.dart';
 import 'package:project/core/providers/user_profile_provider.dart';
+import 'package:project/features/MMSE/presentation/mmse_history_page.dart';
 import 'package:project/features/MMSE/presentation/mmse_test_page_1.dart';
 import 'package:project/features/auth/presentation/pages/signin_page.dart';
 import 'package:project/features/buletin/presentation/pages/buletin_page.dart';
@@ -289,7 +290,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const MMSETestPage1(),
+                              builder: (context) => const MMSEHistoryPage(),
                             ),
                           ),
                     ),
