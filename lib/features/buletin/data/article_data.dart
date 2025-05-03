@@ -33,7 +33,7 @@ Menjaga kesehatan mental lansia merupakan aspek penting dalam merawat orang tua 
    - Berikan pujian dan apresiasi
    - Dengarkan keluhan dengan sabar
 """,
-    imageUrl:
+    imagePath:
         "https://images.unsplash.com/photo-1516307365426-bea591f05011?q=80&w=1000",
   ),
   ArticleItem(
@@ -68,7 +68,7 @@ Musik memiliki kekuatan luar biasa dalam membantu penderita Alzheimer. Berikut a
    - Gunakan musik sebagai bagian dari rutinitas harian
    - Kombinasikan dengan aktivitas fisik ringan
 """,
-    imageUrl:
+    imagePath:
         "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?q=80&w=1000",
   ),
   ArticleItem(
@@ -108,7 +108,7 @@ Aktivitas fisik merupakan kunci untuk menjaga kesehatan dan kemandirian lansia. 
    - Catat kemajuan
    - Rayakan pencapaian
 """,
-    imageUrl:
+    imagePath:
         "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1000",
   ),
   ArticleItem(
@@ -150,7 +150,7 @@ Nutrisi yang tepat adalah fondasi kesehatan yang baik bagi lansia. Berikut pandu
    - Sesuaikan tekstur makanan
    - Konsultasi dengan ahli gizi
 """,
-    imageUrl:
+    imagePath:
         "https://images.unsplash.com/photo-1498837167922-ddd27525d352?q=80&w=1000",
   ),
   ArticleItem(
@@ -189,7 +189,7 @@ Merawat lansia dengan demensia membutuhkan pendekatan khusus. Berikut panduan le
    - Mencari bantuan profesional
    - Menjaga kesehatan mental
 """,
-    imageUrl:
+    imagePath:
         "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1000",
   ),
   ArticleItem(
@@ -230,7 +230,7 @@ Pemeriksaan kesehatan rutin merupakan kunci untuk menjaga kesehatan lansia. Beri
    - Lakukan perubahan gaya hidup
    - Catat perkembangan kesehatan
 """,
-    imageUrl:
+    imagePath:
         "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=1000",
   ),
   ArticleItem(
@@ -270,7 +270,7 @@ Kualitas tidur yang baik sangat penting untuk kesehatan lansia. Berikut panduan 
    - Makan malam lebih awal
    - Batasi cairan sebelum tidur
 """,
-    imageUrl:
+    imagePath:
         "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1000",
   ),
   ArticleItem(
@@ -310,7 +310,7 @@ Interaksi sosial merupakan aspek penting dalam kehidupan lansia. Berikut panduan
    - Mengatur jadwal pertemuan
    - Mencari dukungan profesional
 """,
-    imageUrl:
+    imagePath:
         "https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=1000",
   ),
 ];

@@ -53,6 +53,7 @@ dependencies:
   permission_handler: ^12.0.0+1
   url_launcher: ^6.2.4
   image_picker: ^1.1.2
+  dropdown_button2: ^2.3.9
 
 dev_dependencies:
   flutter_test:
@@ -86,6 +87,16 @@ flutter:
     - assets/sounds/win.mp3
     - assets/sounds/fail.mp3
     - assets/sounds/drop.mp3
+    - assets/svgs/icon_buletin.svg
+    - assets/svgs/icon_game.svg
+    - assets/svgs/icon_pengingat.svg
+    - assets/svgs/icon_waktu_sholat.svg
+    - assets/svgs/icon_screening_otak.svg
+    - assets/svgs/icon_mmse.svg
+    - assets/svgs/icon_gds.svg
+    - assets/svgs/icon_skilas.svg
+    - assets/images/pensil.png
+    - assets/images/arloji.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

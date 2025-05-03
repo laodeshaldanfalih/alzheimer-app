@@ -2,15 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:project/features/buletin/data/article_data.dart';
 import 'package:project/features/home/presentation/pages/article_detail_page.dart';
 
-class BuletinPage extends StatelessWidget {
+class BuletinPage extends StatefulWidget {
   const BuletinPage({super.key});
+
+  @override
+  State<BuletinPage> createState() => _BuletinPageState();
+}
+
+class _BuletinPageState extends State<BuletinPage> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  List get _filteredArticles {
+    if (_searchQuery.isEmpty) return articles;
+    return articles
+        .where(
+          (article) =>
+              article.title.toLowerCase().contains(_searchQuery.toLowerCase()),
+        )
+        .toList();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'Buletin',
+          'Artikel Panduan Kesehatan',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
         backgroundColor: Colors.white,
@@ -22,12 +47,53 @@ class BuletinPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Artikel Terbaru',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              // Search Bar
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                    });
+                  },
+                  style: const TextStyle(fontSize: 16),
+                  decoration: InputDecoration(
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 8),
+                      child: Icon(
+                        Icons.search,
+                        color: Color(0xFF2D3142),
+                        size: 28,
+                      ),
+                    ),
+                    hintText: 'Cari Judul Artikel',
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF6D6D6D),
+                      fontSize: 16,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                    border: InputBorder.none,
+                    enabledBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color(0xFFB5BED4),
+                        width: 1.2,
+                      ),
+                    ),
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color(0xFFB5BED4),
+                        width: 1.2,
+                      ),
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
-              ...articles
+              ..._filteredArticles
                   .map((article) => _buildArticleItem(context, article))
                   .toList(),
             ],
@@ -64,16 +130,10 @@ class BuletinPage extends StatelessWidget {
                 color: Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child:
-                  article.imageUrl != null
-                      ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          article.imageUrl!,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                      : null,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(article.imagePath, fit: BoxFit.cover),
+              ),
             ),
             const SizedBox(width: 20),
             Expanded(

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 class QuickFeatureItem {
   final String title;
   final Color color;
-  final VoidCallback onTap;
+  final void Function(BuildContext context) onTap;
 
-  QuickFeatureItem({
+  const QuickFeatureItem({
     required this.title,
     required this.color,
     required this.onTap,

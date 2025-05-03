@@ -25,15 +25,19 @@ class CustomBottomNavBar extends StatelessWidget {
         ],
       ),
       child: BottomNavigationBar(
+        backgroundColor: Colors.white,
         currentIndex: selectedIndex,
         onTap: onTap,
         selectedItemColor: const Color(0xff4C53B4),
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
+        elevation: 8,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.apps), label: 'Fitur Menu'),
-          BottomNavigationBarItem(icon: Icon(Icons.article), label: 'Buletin'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.document_scanner),
+            label: 'Scan',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
       ),
