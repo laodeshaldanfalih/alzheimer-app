@@ -6,6 +6,7 @@ import 'package:project/features/splash/presentation/pages/splash_page.dart';
 import 'package:project/firebase_options.dart';
 import 'package:provider/provider.dart' as provider;
 import 'package:project/features/MMSE/data/mmse_test_state.dart';
+import 'features/SKILAS/data/skilas_test_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,8 +19,11 @@ void main() async {
   ]);
 
   runApp(
-    provider.ChangeNotifierProvider(
-      create: (context) => MMSETestState(),
+    provider.MultiProvider(
+      providers: [
+        provider.ChangeNotifierProvider(create: (_) => SKILASTestState()),
+        provider.ChangeNotifierProvider(create: (context) => MMSETestState()),
+      ],
       child: const ProviderScope(child: MyApp()),
     ),
   );

@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:project/core/providers/auth_provider.dart';
 import 'package:project/core/providers/user_profile_provider.dart';
 import 'package:project/features/MMSE/presentation/mmse_history_page.dart';
-import 'package:project/features/MMSE/presentation/mmse_test_page_1.dart';
+import 'package:project/features/SKILAS/presentation/skilas_history_page.dart';
 import 'package:project/features/auth/presentation/pages/signin_page.dart';
 import 'package:project/features/buletin/presentation/pages/buletin_page.dart';
 import 'package:project/features/buletin/data/article_data.dart';
@@ -316,7 +316,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                       title: 'SKILAS',
                       subtitle: 'Skrining Lansia Sederhana',
                       color: Colors.green[100]!,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SKILASHistoryPage(),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],

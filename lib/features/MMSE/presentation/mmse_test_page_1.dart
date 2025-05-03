@@ -44,10 +44,6 @@ class _MMSETestPage1State extends State<MMSETestPage1> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         title: const Text(
           "Mini-Mental State Exam (MMSE)",
           style: TextStyle(

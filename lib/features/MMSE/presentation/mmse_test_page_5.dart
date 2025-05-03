@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:project/features/MMSE/models/mmse_history_entry.dart';
-import 'package:project/features/MMSE/presentation/result_page.dart';
+import 'package:project/features/MMSE/presentation/mmse_result_page.dart';
 import 'package:provider/provider.dart';
 import 'package:project/features/MMSE/data/mmse_test_state.dart';
 import 'package:project/features/MMSE/presentation/mmse_history_page.dart';
