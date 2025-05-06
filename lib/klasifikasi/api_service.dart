@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 
 class ApiService {
   static const String functionUrl =
       'https://predict-image-jgy4jzef3a-uc.a.run.app';
+      
 
   static Future<String> uploadImage(File imageFile) async {
     try {

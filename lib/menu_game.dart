@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:project/dump/prayer/prayer_times_page.dart';
-import 'package:project/dump/prayer_time_page.dart';
+
 import 'package:project/dump/vertex_ai_page.dart';
 import 'package:project/game/color_game.dart';
 import 'package:project/feature/feature_menu_page.dart';
-
 import 'package:project/game/responsive_meal_planning_game.dart';
-import 'package:project/klasifikasi/image_upload_screen.dart';
+import 'package:project/home/presentation/pages/home_page.dart';
+import 'package:project/klasifikasi/alzheimer_scan_page.dart';
+import 'package:project/reminder/reminder_page.dart';
 import 'package:project/sholat/sholat_page.dart';
+import 'package:project/widgets/main_layout.dart';
 
 class MenuGame extends StatelessWidget {
   const MenuGame({super.key});
@@ -61,19 +62,19 @@ class MenuGame extends StatelessWidget {
         'widget': const ResponsiveMealPlanningGame(),
       },
       {
-        'title': 'Waktu Sholat (1)',
-        'desc': 'Lihat waktu sholat harianmu di sini.',
-        'widget': const PrayerTimesPage(),
-      },
-      {
         'title': 'Image Classification',
         'desc': 'Test image prediction dengan API',
-        'widget': ImageUploadScreen(),
+        'widget': AlzheimerScanPage(),
       },
       {
-        'title': 'Waktu Sholat (3)',
+        'title': 'Waktu Sholat',
         'desc': 'Versi lengkap waktu sholat dengan notifikasi.',
         'widget': const SholatPage(),
+      },
+      {
+        'title': 'Notifikasi',
+        'desc': 'Versi lengkap waktu sholat dengan notifikasi.',
+        'widget': const ReminderPage(),
       },
 
       {
@@ -86,6 +87,8 @@ class MenuGame extends StatelessWidget {
         'desc': 'Versi lengkap waktu sholat dengan notifikasi.',
         'widget': const VertexAIPage(),
       },
+      {'title': 'Homepage', 'desc': 'Ini homepage.', 'widget': HomePage()},
+      {'title': 'Homepage', 'desc': 'Ini homepage.', 'widget': MainLayout()},
     ];
 
     return games
@@ -154,8 +157,6 @@ class MenuGame extends StatelessWidget {
     );
   }
 
-  
-
   Widget _buildBottomNavigationBar(bool isSmallScreen) {
     return Container(
       decoration: BoxDecoration(
@@ -211,5 +212,3 @@ class MenuGame extends StatelessWidget {
     );
   }
 }
-
-

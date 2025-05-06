@@ -45,7 +45,7 @@ class SholatService {
     final prayerTimes = PrayerTimes.today(coordinates, params);
 
     return {
-      'Fajr': DateFormat.Hm().format(prayerTimes.fajr),
+      'Shubuh': DateFormat.Hm().format(prayerTimes.fajr),
       'Terbit': DateFormat.Hm().format(prayerTimes.sunrise),
       'Dhuhr': DateFormat.Hm().format(prayerTimes.dhuhr),
       'Ashr': DateFormat.Hm().format(prayerTimes.asr),

@@ -242,7 +242,7 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       notificationEnabled = {
-        'Fajr': prefs.getBool('notification_Fajr') ?? true,
+        'Shubuh': prefs.getBool('notification_Shubuh') ?? true,
         'Terbit': prefs.getBool('notification_Terbit') ?? true,
         'Dhuhr': prefs.getBool('notification_Dhuhr') ?? true,
         'Ashr': prefs.getBool('notification_Ashr') ?? true,
@@ -844,103 +844,6 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
                                               }
                                             },
                                           ),
-                                          // child: ListTile(
-                                          //   contentPadding: EdgeInsets.zero,
-                                          //   title: Text(
-                                          //     entry.key,
-                                          //     style: TextStyle(
-                                          //       fontWeight:
-                                          //           isCurrent || isNext
-                                          //               ? FontWeight.bold
-                                          //               : FontWeight.normal,
-                                          //       fontSize: 16,
-                                          //       color:
-                                          //           isCurrent
-                                          //               ? Colors.blue[700]
-                                          //               : isNext
-                                          //               ? Colors.green[700]
-                                          //               : Colors.black,
-                                          //     ),
-                                          //   ),
-                                          //   trailing: Row(
-                                          //     mainAxisSize: MainAxisSize.min,
-                                          //     children: [
-                                          //       Text(
-                                          //         entry.value,
-                                          //         style: TextStyle(
-                                          //           fontSize: 16,
-                                          //           fontWeight:
-                                          //               isCurrent || isNext
-                                          //                   ? FontWeight.bold
-                                          //                   : FontWeight.normal,
-                                          //           color:
-                                          //               isCurrent
-                                          //                   ? Colors.blue[700]
-                                          //                   : isNext
-                                          //                   ? Colors.green[700]
-                                          //                   : Colors.grey[600],
-                                          //         ),
-                                          //       ),
-                                          //       IconButton(
-                                          //         icon: Icon(
-                                          //           notificationEnabled[entry
-                                          //                       .key] ==
-                                          //                   true
-                                          //               ? Icons
-                                          //                   .notifications_active
-                                          //               : Icons
-                                          //                   .notifications_off,
-                                          //           color:
-                                          //               notificationEnabled[entry
-                                          //                           .key] ==
-                                          //                       true
-                                          //                   ? Colors.green
-                                          //                   : Colors.grey,
-                                          //           size: 20,
-                                          //         ),
-                                          //         onPressed: () {
-                                          //           setState(() {
-                                          //             notificationEnabled[entry
-                                          //                     .key] =
-                                          //                 !(notificationEnabled[entry
-                                          //                         .key] ??
-                                          //                     true);
-                                          //             allNotificationsEnabled =
-                                          //                 !notificationEnabled
-                                          //                     .values
-                                          //                     .contains(false);
-                                          //           });
-
-                                          //           if (prayerTimes != null) {
-                                          //             SholatNotificationService()
-                                          //                 .schedulePrayerNotifications(
-                                          //                   prayerTimes!.map((
-                                          //                     key,
-                                          //                     value,
-                                          //                   ) {
-                                          //                     if (notificationEnabled[key] ==
-                                          //                         true) {
-                                          //                       return MapEntry(
-                                          //                         key,
-                                          //                         value,
-                                          //                       );
-                                          //                     } else {
-                                          //                       return MapEntry(
-                                          //                         key,
-                                          //                         '',
-                                          //                       );
-                                          //                     }
-                                          //                   })..removeWhere(
-                                          //                     (key, value) =>
-                                          //                         value == '',
-                                          //                   ),
-                                          //                 );
-                                          //           }
-                                          //         },
-                                          //       ),
-                                          //     ],
-                                          //   ),
-                                          // ),
                                         );
                                       }),
 
