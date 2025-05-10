@@ -89,12 +89,15 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   bool _isProfileComplete(UserProfile? profile) {
     if (profile == null) return false;
-    return profile.name != null &&
-        profile.name!.isNotEmpty &&
-        profile.age != null &&
-        profile.gender != null &&
-        profile.gender!.isNotEmpty &&
-        profile.birthdate != null;
+
+    // Check if essential fields are filled
+    final hasName = profile.name != null && profile.name!.isNotEmpty;
+    final hasAge = profile.age != null;
+    final hasGender = profile.gender != null && profile.gender!.isNotEmpty;
+    final hasBirthdate = profile.birthdate != null;
+
+    // Profile is complete if all essential fields are filled
+    return hasName && hasAge && hasGender && hasBirthdate;
   }
 
   void _showProfileIncompleteDialog(BuildContext context) {

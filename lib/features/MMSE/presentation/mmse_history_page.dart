@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'mmse_test_page_1.dart';
 import 'package:project/features/MMSE/models/mmse_history_entry.dart';
+import 'mmse_history_detail_page.dart';
 
 class MMSEHistoryProvider extends ChangeNotifier {
   List<MMSEHistoryEntry> _history = [];
@@ -160,116 +161,129 @@ class _MMSEHistoryPageState extends State<MMSEHistoryPage> {
                                 (_, __) => const SizedBox(height: 16),
                             itemBuilder: (context, index) {
                               final entry = prov.history[index];
-                              return Card(
-                                elevation: 2,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        Colors.white,
-                                        Colors.blue.shade50,
-                                      ],
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => MMSEHistoryDetailPage(
+                                            entry: entry,
+                                          ),
                                     ),
+                                  );
+                                },
+                                child: Card(
+                                  elevation: 2,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: const Color(
-                                                0xFF2563EB,
-                                              ).withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: const Icon(
-                                              Icons.psychology,
-                                              color: Color(0xFF2563EB),
-                                              size: 24,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 16),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Skor: ${entry.score}',
-                                                style: const TextStyle(
-                                                  color: Color(0xFF2D3142),
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                DateFormat(
-                                                  'dd MMMM yyyy',
-                                                ).format(entry.date),
-                                                style: TextStyle(
-                                                  color: Colors.grey.shade600,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Colors.white,
+                                          Colors.blue.shade50,
                                         ],
                                       ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 6,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                color: const Color(
+                                                  0xFF2563EB,
+                                                ).withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: const Icon(
+                                                Icons.psychology,
+                                                color: Color(0xFF2563EB),
+                                                size: 24,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 16),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Skor: ${entry.score}',
+                                                  style: const TextStyle(
+                                                    color: Color(0xFF2D3142),
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  DateFormat(
+                                                    'dd MMMM yyyy',
+                                                  ).format(entry.date),
+                                                  style: TextStyle(
+                                                    color: Colors.grey.shade600,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              entry.score >= 24
-                                                  ? const Color(
-                                                    0xFFAFE073,
-                                                  ).withOpacity(0.1)
-                                                  : entry.score >= 18
-                                                  ? const Color(
-                                                    0xFFFFD54F,
-                                                  ).withOpacity(0.1)
-                                                  : const Color(
-                                                    0xFFFF8A65,
-                                                  ).withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(
-                                            20,
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 6,
                                           ),
-                                        ),
-                                        child: Text(
-                                          entry.score >= 24
-                                              ? 'Normal'
-                                              : entry.score >= 18
-                                              ? 'Ringan'
-                                              : entry.score >= 10
-                                              ? 'Berat'
-                                              : 'Berat',
-                                          style: TextStyle(
+                                          decoration: BoxDecoration(
                                             color:
                                                 entry.score >= 24
-                                                    ? const Color(0xFFAFE073)
+                                                    ? const Color(
+                                                      0xFFAFE073,
+                                                    ).withOpacity(0.1)
                                                     : entry.score >= 18
-                                                    ? const Color(0xFFFFD54F)
-                                                    : entry.score >= 10
-                                                    ? const Color(0xFFFF8A65)
-                                                    : const Color(0xFFE53935),
-                                            fontWeight: FontWeight.w500,
+                                                    ? const Color(
+                                                      0xFFFFD54F,
+                                                    ).withOpacity(0.1)
+                                                    : const Color(
+                                                      0xFFFF8A65,
+                                                    ).withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            entry.score >= 24
+                                                ? 'Normal'
+                                                : entry.score >= 18
+                                                ? 'Ringan'
+                                                : entry.score >= 10
+                                                ? 'Berat'
+                                                : 'Berat',
+                                            style: TextStyle(
+                                              color:
+                                                  entry.score >= 24
+                                                      ? const Color(0xFFAFE073)
+                                                      : entry.score >= 18
+                                                      ? const Color(0xFFFFD54F)
+                                                      : entry.score >= 10
+                                                      ? const Color(0xFFFF8A65)
+                                                      : const Color(0xFFE53935),
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );

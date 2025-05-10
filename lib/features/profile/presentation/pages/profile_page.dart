@@ -5,6 +5,9 @@ import 'package:project/core/providers/user_profile_provider.dart';
 import 'package:project/features/auth/presentation/pages/signin_page.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:permission_handler/permission_handler.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -17,6 +20,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
   bool _isEditing = false;
+  File? _profileImage;
+  final _picker = ImagePicker();
 
   // Controllers for editing fields
   late TextEditingController nameController;
@@ -29,6 +34,90 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   String _displayAge = '';
   String _displayGender = '';
   String _displayBirthdate = '';
+
+  Future<bool> _ensureCameraPermission() async {
+    final status = await Permission.camera.request();
+    if (status.isPermanentlyDenied) {
+      await openAppSettings();
+      return false;
+    }
+    return status.isGranted;
+  }
+
+  Future<void> _pickImage(ImageSource src) async {
+    if (src == ImageSource.camera && !await _ensureCameraPermission()) {
+      return _showSnack('Izin kamera ditolak');
+    }
+    try {
+      final picked = await _picker.pickImage(
+        source: src,
+        maxWidth: 1800,
+        maxHeight: 1800,
+      );
+      if (picked != null) {
+        setState(() {
+          _profileImage = File(picked.path);
+        });
+        // Save the image path to SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('profile_image_path', picked.path);
+      }
+    } catch (e) {
+      _showSnack('Gagal memilih gambar: $e');
+    }
+  }
+
+  Future<void> _removeProfilePicture() async {
+    setState(() {
+      _profileImage = null;
+    });
+    // Remove the saved image path from SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('profile_image_path');
+  }
+
+  void _showProfilePictureOptions() => showModalBottomSheet(
+    context: context,
+    builder:
+        (_) => SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Ambil Foto'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Pilih dari Galeri'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+              if (_profileImage != null)
+                ListTile(
+                  leading: const Icon(Icons.delete, color: Colors.red),
+                  title: const Text(
+                    'Hapus Foto',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _removeProfilePicture();
+                  },
+                ),
+            ],
+          ),
+        ),
+  );
+
+  void _showSnack(String msg) => ScaffoldMessenger.of(
+    context,
+  ).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red));
 
   @override
   void initState() {
@@ -46,6 +135,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       }
 
       await _loadProfileData();
+      // Load saved profile image
+      final prefs = await SharedPreferences.getInstance();
+      final savedImagePath = prefs.getString('profile_image_path');
+      if (savedImagePath != null) {
+        setState(() {
+          _profileImage = File(savedImagePath);
+        });
+      }
     });
   }
 
@@ -66,6 +163,20 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     await prefs.setString('profile_gender', genderValue);
     if (birthdate != null) {
       await prefs.setString('profile_birthdate', birthdate!.toIso8601String());
+    }
+
+    // Update the UserProfile provider
+    final user = ref.read(authProvider);
+    if (user != null && user.email != null) {
+      ref
+          .read(userProfileProvider.notifier)
+          .updateProfile(
+            user.email!,
+            name: nameController.text,
+            age: int.tryParse(ageController.text),
+            gender: genderValue,
+            birthdate: birthdate,
+          );
     }
 
     // Update display values
@@ -196,10 +307,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           ),
                         ],
                       ),
-                      child: CircleAvatar(
-                        radius: 70,
-                        backgroundImage: AssetImage(
-                          'assets/images/default_profile.png',
+                      child: GestureDetector(
+                        onTap: _isEditing ? _showProfilePictureOptions : null,
+                        child: CircleAvatar(
+                          radius: 70,
+                          backgroundImage:
+                              _profileImage != null
+                                  ? FileImage(_profileImage!)
+                                  : const AssetImage(
+                                        'assets/images/default_profile_picture.png',
+                                      )
+                                      as ImageProvider,
                         ),
                       ),
                     ),
@@ -207,10 +325,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       Positioned(
                         bottom: 8,
                         right: 8,
-                        child: CircleAvatar(
-                          radius: 20,
-                          backgroundColor: Colors.blue,
-                          child: Icon(Icons.edit, color: Colors.white),
+                        child: GestureDetector(
+                          onTap: _showProfilePictureOptions,
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundColor: Colors.blue,
+                            child: Icon(Icons.edit, color: Colors.white),
+                          ),
                         ),
                       ),
                   ],
@@ -512,25 +633,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                 ? () async {
                                   if (_formKey.currentState!.validate()) {
                                     // Save all changes
-                                    ref
-                                        .read(userProfileProvider.notifier)
-                                        .updateName(nameController.text);
-                                    if (int.tryParse(ageController.text) !=
-                                        null) {
-                                      ref
-                                          .read(userProfileProvider.notifier)
-                                          .updateAge(
-                                            int.parse(ageController.text),
-                                          );
-                                    }
-                                    ref
-                                        .read(userProfileProvider.notifier)
-                                        .updateGender(genderValue);
-                                    if (birthdate != null) {
-                                      ref
-                                          .read(userProfileProvider.notifier)
-                                          .updateBirthdate(birthdate!);
-                                    }
                                     await _saveProfileData();
                                     if (mounted) {
                                       ScaffoldMessenger.of(

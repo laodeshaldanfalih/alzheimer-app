@@ -30,22 +30,12 @@ class _MMSETestPage5State extends State<MMSETestPage5> {
 
     // Convert answers to scores
     state.bendaScore = bendaAnswer != null ? int.parse(bendaAnswer!) : null;
-    state.kataScore =
-        kataAnswer == "Benar" ? 1 : (kataAnswer == "Salah" ? 0 : null);
+    state.kataAnswer = kataAnswer;
     state.instruksiScore =
         instruksiAnswer != null ? int.parse(instruksiAnswer!) : null;
-    state.angkatTanganScore =
-        angkatTanganAnswer == "Benar"
-            ? 1
-            : (angkatTanganAnswer == "Salah" ? 0 : null);
-    state.tulisKalimatScore =
-        tulisKalimatAnswer == "Benar"
-            ? 1
-            : (tulisKalimatAnswer == "Salah" ? 0 : null);
-    state.tiruGambarScore =
-        tiruGambarAnswer == "Benar"
-            ? 1
-            : (tiruGambarAnswer == "Salah" ? 0 : null);
+    state.angkatTanganAnswer = angkatTanganAnswer;
+    state.tulisKalimatAnswer = tulisKalimatAnswer;
+    state.tiruGambarAnswer = tiruGambarAnswer;
   }
 
   bool _isPageComplete() {
@@ -770,6 +760,21 @@ class _MMSETestPage5State extends State<MMSETestPage5> {
                               MMSEHistoryEntry(
                                 score: state.totalScore,
                                 date: DateTime.now(),
+                                orientationTimeAnswers:
+                                    state.orientationTimeAnswers,
+                                orientationPlaceAnswers:
+                                    state.orientationPlaceAnswers,
+                                registrationScore: state.registrationScore,
+                                registrationRepetitions:
+                                    state.registrationRepetitions,
+                                attentionScore: state.attentionScore,
+                                recallScore: state.recallScore,
+                                bendaScore: state.bendaScore,
+                                kataAnswer: state.kataAnswer,
+                                instruksiScore: state.instruksiScore,
+                                angkatTanganAnswer: state.angkatTanganAnswer,
+                                tulisKalimatAnswer: state.tulisKalimatAnswer,
+                                tiruGambarAnswer: state.tiruGambarAnswer,
                               ),
                             );
                             Navigator.push(

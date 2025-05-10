@@ -26,6 +26,9 @@ class _MMSETestPage2State extends State<MMSETestPage2> {
   void _updateScores() {
     final state = Provider.of<MMSETestState>(context, listen: false);
 
+    // Save answers to state
+    state.orientationPlaceAnswers = List.from(answers);
+
     // Calculate score for orientation place (max 5 points)
     int score = 0;
     for (String? answer in answers) {

@@ -20,7 +20,7 @@ class _MMSETestPage4State extends State<MMSETestPage4> {
   void _updateScores() {
     final state = Provider.of<MMSETestState>(context, listen: false);
 
-    // Convert answers to scores
+    // Convert answers to scores and save to state
     if (attentionAnswer != null) {
       state.attentionScore = int.parse(attentionAnswer!);
     }

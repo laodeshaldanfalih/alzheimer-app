@@ -18,9 +18,12 @@ class _MMSETestPage3State extends State<MMSETestPage3> {
   void _updateScores() {
     final state = Provider.of<MMSETestState>(context, listen: false);
 
-    // Convert input to scores
+    // Convert input to scores and save to state
     if (_correctAnswersController.text.isNotEmpty) {
       state.registrationScore = int.parse(_correctAnswersController.text);
+    }
+    if (_repetitionsController.text.isNotEmpty) {
+      state.registrationRepetitions = int.parse(_repetitionsController.text);
     }
   }
 

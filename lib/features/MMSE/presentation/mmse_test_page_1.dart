@@ -26,6 +26,9 @@ class _MMSETestPage1State extends State<MMSETestPage1> {
   void _updateScores() {
     final state = Provider.of<MMSETestState>(context, listen: false);
 
+    // Save answers to state
+    state.orientationTimeAnswers = List.from(answers);
+
     // Calculate score for orientation time (max 5 points)
     int score = 0;
     for (String? answer in answers) {

@@ -9,9 +9,16 @@ class SKILASResultPage extends StatelessWidget {
 
   Future<void> _saveHistory(BuildContext context, bool isBad) async {
     final historyProvider = SKILASHistoryProvider();
+    final skilasState = Provider.of<SKILASTestState>(context, listen: false);
     await historyProvider.loadHistory();
     await historyProvider.addEntry(
-      SKILASHistoryEntry(score: isBad ? 0 : 1, date: DateTime.now()),
+      SKILASHistoryEntry(
+        score: isBad ? 0 : 1,
+        date: DateTime.now(),
+        page1Answers: skilasState.page1Answers,
+        page2Answers: skilasState.page2Answers,
+        page3Answers: skilasState.page3Answers,
+      ),
     );
   }
 

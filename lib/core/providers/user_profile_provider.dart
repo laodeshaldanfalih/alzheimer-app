@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProfile {
   final String? name;
@@ -33,7 +34,33 @@ class UserProfile {
 }
 
 class UserProfileNotifier extends StateNotifier<UserProfile?> {
-  UserProfileNotifier() : super(null);
+  UserProfileNotifier() : super(null) {
+    _loadProfileFromPrefs();
+  }
+
+  Future<void> _loadProfileFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hasProfile = prefs.getBool('has_profile') ?? false;
+
+    if (hasProfile) {
+      final name = prefs.getString('profile_name');
+      final ageStr = prefs.getString('profile_age');
+      final gender = prefs.getString('profile_gender');
+      final birthdateStr = prefs.getString('profile_birthdate');
+
+      // Get email from auth provider or use a default
+      final email =
+          'user@example.com'; // This should be replaced with actual email from auth provider
+
+      state = UserProfile(
+        name: name,
+        email: email,
+        age: ageStr != null ? int.tryParse(ageStr) : null,
+        gender: gender,
+        birthdate: birthdateStr != null ? DateTime.parse(birthdateStr) : null,
+      );
+    }
+  }
 
   void updateProfile(
     String email, {

@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 
 class MMSETestState extends ChangeNotifier {
-  // Page 1 scores
+  // Page 1 - Orientation Time
+  List<String?> orientationTimeAnswers = List.filled(5, null);
   int? orientationTimeScore;
-  int? orientationPlaceScore;
-  int? registrationScore;
 
-  // Page 2 scores
+  // Page 2 - Orientation Place
+  List<String?> orientationPlaceAnswers = List.filled(5, null);
+  int? orientationPlaceScore;
+
+  // Page 3 - Registration
+  int? registrationScore;
+  int? registrationRepetitions;
+
+  // Page 4 - Attention and Recall
   int? attentionScore;
   int? recallScore;
 
-  // Page 3 scores
-  int? namingScore;
-  int? repetitionScore;
-  int? readingScore;
-  int? writingScore;
-  int? drawingScore;
-
-  // Page 4 scores
+  // Page 5 - Language
   int? bendaScore;
-  int? kataScore;
+  String? kataAnswer;
   int? instruksiScore;
-  int? angkatTanganScore;
-  int? tulisKalimatScore;
-  int? tiruGambarScore;
+  String? angkatTanganAnswer;
+  String? tulisKalimatAnswer;
+  String? tiruGambarAnswer;
 
   // Calculate total score
   int get totalScore {
@@ -38,70 +38,59 @@ class MMSETestState extends ChangeNotifier {
     score += attentionScore ?? 0;
     score += recallScore ?? 0;
 
-    // Page 3 scores
-    score += namingScore ?? 0;
-    score += repetitionScore ?? 0;
-    score += readingScore ?? 0;
-    score += writingScore ?? 0;
-    score += drawingScore ?? 0;
-
-    // Page 4 scores
+    // Page 5 scores
     score += bendaScore ?? 0;
-    score += kataScore ?? 0;
+    score += (kataAnswer == "Benar" ? 1 : 0);
     score += instruksiScore ?? 0;
-    score += angkatTanganScore ?? 0;
-    score += tulisKalimatScore ?? 0;
-    score += tiruGambarScore ?? 0;
+    score += (angkatTanganAnswer == "Benar" ? 1 : 0);
+    score += (tulisKalimatAnswer == "Benar" ? 1 : 0);
+    score += (tiruGambarAnswer == "Benar" ? 1 : 0);
 
     return score;
   }
 
   // Check if all questions in a page are answered
   bool isPage1Complete() {
-    return orientationTimeScore != null &&
-        orientationPlaceScore != null &&
-        registrationScore != null;
+    return !orientationTimeAnswers.contains(null);
   }
 
   bool isPage2Complete() {
-    return attentionScore != null && recallScore != null;
+    return !orientationPlaceAnswers.contains(null);
   }
 
   bool isPage3Complete() {
-    return namingScore != null &&
-        repetitionScore != null &&
-        readingScore != null &&
-        writingScore != null &&
-        drawingScore != null;
+    return registrationScore != null;
   }
 
   bool isPage4Complete() {
+    return attentionScore != null && recallScore != null;
+  }
+
+  bool isPage5Complete() {
     return bendaScore != null &&
-        kataScore != null &&
+        kataAnswer != null &&
         instruksiScore != null &&
-        angkatTanganScore != null &&
-        tulisKalimatScore != null &&
-        tiruGambarScore != null;
+        angkatTanganAnswer != null &&
+        tulisKalimatAnswer != null &&
+        tiruGambarAnswer != null;
   }
 
   // Reset all scores
   void reset() {
+    orientationTimeAnswers = List.filled(5, null);
     orientationTimeScore = null;
+    orientationPlaceAnswers = List.filled(5, null);
     orientationPlaceScore = null;
     registrationScore = null;
+    registrationRepetitions = null;
     attentionScore = null;
     recallScore = null;
-    namingScore = null;
-    repetitionScore = null;
-    readingScore = null;
-    writingScore = null;
-    drawingScore = null;
     bendaScore = null;
-    kataScore = null;
+    kataAnswer = null;
     instruksiScore = null;
-    angkatTanganScore = null;
-    tulisKalimatScore = null;
-    tiruGambarScore = null;
+    angkatTanganAnswer = null;
+    tulisKalimatAnswer = null;
+    tiruGambarAnswer = null;
     notifyListeners();
   }
 }
