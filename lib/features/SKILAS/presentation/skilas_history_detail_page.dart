@@ -6,16 +6,33 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SKILASHistoryDetailPage extends StatelessWidget {
   final SKILASHistoryEntry entry;
 
   const SKILASHistoryDetailPage({super.key, required this.entry});
 
+  Future<Map<String, String>> _getProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    return {
+      'name': prefs.getString('profile_name') ?? '-',
+      'age': prefs.getString('profile_age') ?? '-',
+      'gender': prefs.getString('profile_gender') ?? '-',
+      'birthdate': prefs.getString('profile_birthdate') ?? '-',
+      'imagePath': prefs.getString('profile_image_path') ?? '',
+    };
+  }
+
   Future<void> _generateAndSharePDF() async {
     final pdf = pw.Document();
+    final profileData = await _getProfileData();
+    File? profileImage;
+    if (profileData['imagePath']!.isNotEmpty) {
+      profileImage = File(profileData['imagePath']!);
+    }
 
-    // Add content to PDF
+    // First page with profile info and score
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
@@ -31,6 +48,56 @@ class SKILASHistoryDetailPage extends StatelessWidget {
                     fontSize: 24,
                     fontWeight: pw.FontWeight.bold,
                   ),
+                ),
+              ),
+              pw.SizedBox(height: 20),
+
+              // Profile Information
+              pw.Container(
+                padding: const pw.EdgeInsets.all(20),
+                decoration: pw.BoxDecoration(
+                  border: pw.Border.all(),
+                  borderRadius: const pw.BorderRadius.all(
+                    pw.Radius.circular(10),
+                  ),
+                ),
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text(
+                      'Informasi Pasien',
+                      style: pw.TextStyle(
+                        fontSize: 18,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
+                    pw.SizedBox(height: 10),
+                    if (profileImage != null && profileImage.existsSync())
+                      pw.Center(
+                        child: pw.Image(
+                          pw.MemoryImage(profileImage.readAsBytesSync()),
+                          width: 100,
+                          height: 100,
+                        ),
+                      ),
+                    pw.SizedBox(height: 10),
+                    _buildProfileInfoRow('Nama', profileData['name']!),
+                    _buildProfileInfoRow('Umur', profileData['age']!),
+                    _buildProfileInfoRow(
+                      'Gender',
+                      profileData['gender'] == 'Male'
+                          ? 'Laki-laki'
+                          : 'Perempuan',
+                    ),
+                    _buildProfileInfoRow(
+                      'Tanggal Lahir',
+                      profileData['birthdate'] != '-'
+                          ? DateFormat(
+                            'dd MMMM yyyy',
+                          ).format(DateTime.parse(profileData['birthdate']!))
+                          : '-',
+                    ),
+                  ],
                 ),
               ),
               pw.SizedBox(height: 20),
@@ -57,6 +124,27 @@ class SKILASHistoryDetailPage extends StatelessWidget {
                       style: const pw.TextStyle(fontSize: 16),
                     ),
                   ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    // Second page with test results
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                'Detail Hasil Test',
+                style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
                 ),
               ),
               pw.SizedBox(height: 20),
@@ -161,6 +249,30 @@ class SKILASHistoryDetailPage extends StatelessWidget {
             flex: 1,
             child: pw.Text(
               answer ?? "-",
+              style: const pw.TextStyle(fontSize: 12),
+              textAlign: pw.TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildProfileInfoRow(String label, String value) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 8),
+      child: pw.Row(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Expanded(
+            flex: 2,
+            child: pw.Text(label, style: const pw.TextStyle(fontSize: 12)),
+          ),
+          pw.SizedBox(width: 10),
+          pw.Expanded(
+            flex: 1,
+            child: pw.Text(
+              value,
               style: const pw.TextStyle(fontSize: 12),
               textAlign: pw.TextAlign.center,
             ),

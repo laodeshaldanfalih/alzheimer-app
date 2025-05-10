@@ -6,16 +6,33 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MMSEHistoryDetailPage extends StatelessWidget {
   final MMSEHistoryEntry entry;
 
   const MMSEHistoryDetailPage({super.key, required this.entry});
 
+  Future<Map<String, String>> _getProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    return {
+      'name': prefs.getString('profile_name') ?? '-',
+      'age': prefs.getString('profile_age') ?? '-',
+      'gender': prefs.getString('profile_gender') ?? '-',
+      'birthdate': prefs.getString('profile_birthdate') ?? '-',
+      'imagePath': prefs.getString('profile_image_path') ?? '',
+    };
+  }
+
   Future<void> _generateAndSharePDF() async {
     final pdf = pw.Document();
+    final profileData = await _getProfileData();
+    File? profileImage;
+    if (profileData['imagePath']!.isNotEmpty) {
+      profileImage = File(profileData['imagePath']!);
+    }
 
-    // Add content to PDF
+    // First page with profile info and score
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
@@ -31,6 +48,56 @@ class MMSEHistoryDetailPage extends StatelessWidget {
                     fontSize: 24,
                     fontWeight: pw.FontWeight.bold,
                   ),
+                ),
+              ),
+              pw.SizedBox(height: 20),
+
+              // Profile Information
+              pw.Container(
+                padding: const pw.EdgeInsets.all(20),
+                decoration: pw.BoxDecoration(
+                  border: pw.Border.all(),
+                  borderRadius: const pw.BorderRadius.all(
+                    pw.Radius.circular(10),
+                  ),
+                ),
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text(
+                      'Informasi Pasien',
+                      style: pw.TextStyle(
+                        fontSize: 18,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
+                    pw.SizedBox(height: 10),
+                    if (profileImage != null && profileImage.existsSync())
+                      pw.Center(
+                        child: pw.Image(
+                          pw.MemoryImage(profileImage.readAsBytesSync()),
+                          width: 100,
+                          height: 100,
+                        ),
+                      ),
+                    pw.SizedBox(height: 10),
+                    _buildProfileInfoRow('Nama', profileData['name']!),
+                    _buildProfileInfoRow('Umur', profileData['age']!),
+                    _buildProfileInfoRow(
+                      'Gender',
+                      profileData['gender'] == 'Male'
+                          ? 'Laki-laki'
+                          : 'Perempuan',
+                    ),
+                    _buildProfileInfoRow(
+                      'Tanggal Lahir',
+                      profileData['birthdate'] != '-'
+                          ? DateFormat(
+                            'dd MMMM yyyy',
+                          ).format(DateTime.parse(profileData['birthdate']!))
+                          : '-',
+                    ),
+                  ],
                 ),
               ),
               pw.SizedBox(height: 20),
@@ -68,9 +135,30 @@ class MMSEHistoryDetailPage extends StatelessWidget {
                   ],
                 ),
               ),
+            ],
+          );
+        },
+      ),
+    );
+
+    // Second page with first part of test results
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                'Detail Hasil Test (1/2)',
+                style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
               pw.SizedBox(height: 20),
 
-              // Test Results
+              // Test Results - Part 1
               _buildSectionPDF('Orientasi Waktu', [
                 _buildQuestionAnswerPDF(
                   "Sekarang tahun apa?",
@@ -141,8 +229,30 @@ class MMSEHistoryDetailPage extends StatelessWidget {
                   "${entry.recallScore}",
                 ),
               ]),
+            ],
+          );
+        },
+      ),
+    );
+
+    // Third page with final part of test results
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                'Detail Hasil Test (2/2)',
+                style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
               pw.SizedBox(height: 20),
 
+              // Test Results - Part 2
               _buildSectionPDF('Bahasa', [
                 _buildQuestionAnswerPDF(
                   "Sebutkan nama benda yang muncul",
@@ -515,6 +625,30 @@ class MMSEHistoryDetailPage extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildProfileInfoRow(String label, String value) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 8),
+      child: pw.Row(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Expanded(
+            flex: 2,
+            child: pw.Text(label, style: const pw.TextStyle(fontSize: 12)),
+          ),
+          pw.SizedBox(width: 10),
+          pw.Expanded(
+            flex: 1,
+            child: pw.Text(
+              value,
+              style: const pw.TextStyle(fontSize: 12),
+              textAlign: pw.TextAlign.center,
             ),
           ),
         ],

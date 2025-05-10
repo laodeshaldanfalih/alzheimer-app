@@ -57,6 +57,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       if (picked != null) {
         setState(() {
           _profileImage = File(picked.path);
+          _validateForm();
         });
         // Save the image path to SharedPreferences
         final prefs = await SharedPreferences.getInstance();
@@ -70,6 +71,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   Future<void> _removeProfilePicture() async {
     setState(() {
       _profileImage = null;
+      _validateForm();
     });
     // Remove the saved image path from SharedPreferences
     final prefs = await SharedPreferences.getInstance();
@@ -154,6 +156,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   Future<void> _saveProfileData() async {
+    if (_profileImage == null) {
+      _showSnack('Foto profil harus diisi');
+      return;
+    }
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('has_profile', true);
 
@@ -235,7 +242,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           nameController.text.isNotEmpty &&
           ageController.text.isNotEmpty &&
           genderValue.isNotEmpty &&
-          birthdate != null;
+          birthdate != null &&
+          _profileImage != null;
     });
   }
 
@@ -298,7 +306,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.black12, width: 2),
+                        border: Border.all(
+                          color:
+                              _isEditing && _profileImage == null
+                                  ? Colors.red
+                                  : Colors.black12,
+                          width: 2,
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black12,
@@ -311,13 +325,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         onTap: _isEditing ? _showProfilePictureOptions : null,
                         child: CircleAvatar(
                           radius: 70,
+                          backgroundColor: Colors.grey[200],
                           backgroundImage:
                               _profileImage != null
                                   ? FileImage(_profileImage!)
-                                  : const AssetImage(
-                                        'assets/images/default_profile_picture.png',
-                                      )
-                                      as ImageProvider,
+                                  : null,
+                          child:
+                              _profileImage == null
+                                  ? Icon(
+                                    Icons.person,
+                                    size: 70,
+                                    color: Colors.grey[400],
+                                  )
+                                  : null,
                         ),
                       ),
                     ),
@@ -336,6 +356,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       ),
                   ],
                 ),
+                if (_isEditing && _profileImage == null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'Foto profil harus diisi',
+                      style: TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ),
                 const SizedBox(height: 8),
                 Text(
                   _displayName.isEmpty ? '-' : _displayName,
@@ -632,6 +660,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             _isFormValid
                                 ? () async {
                                   if (_formKey.currentState!.validate()) {
+                                    if (_profileImage == null) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Foto profil harus diisi',
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                      return;
+                                    }
                                     // Save all changes
                                     await _saveProfileData();
                                     if (mounted) {
