@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:project/core/providers/auth_provider.dart';
 import 'package:project/core/providers/user_profile_provider.dart';
+import 'package:project/features/GDS/presentation/gds_history_page.dart';
 import 'package:project/features/MMSE/presentation/mmse_history_page.dart';
 import 'package:project/features/SKILAS/presentation/skilas_history_page.dart';
 import 'package:project/features/auth/presentation/pages/signin_page.dart';
@@ -14,7 +15,7 @@ import 'package:project/features/reminder/presentation/reminder_menu_page.dart';
 import 'package:project/features/alzheimer_scan/presentation/pages/alzheimer_scan_page.dart';
 import 'package:project/features/game/presentation/pages/game_menu_page.dart';
 import 'dart:async';
-
+import 'package:project/core/widgets/main_layout.dart';
 import 'package:project/features/reminder/sholat_reminder/presentation/sholat_reminder_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -84,6 +85,63 @@ class _HomePageState extends ConsumerState<HomePage> {
     ];
 
     return '${days[dateTime.weekday - 1]}, ${dateTime.day} ${months[dateTime.month - 1]} ${dateTime.year}';
+  }
+
+  bool _isProfileComplete(UserProfile? profile) {
+    if (profile == null) return false;
+    return profile.name != null &&
+        profile.name!.isNotEmpty &&
+        profile.age != null &&
+        profile.gender != null &&
+        profile.gender!.isNotEmpty &&
+        profile.birthdate != null;
+  }
+
+  void _showProfileIncompleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Profil Belum Lengkap'),
+          content: const Text(
+            'Silakan lengkapi profil Anda terlebih dahulu sebelum mengakses fitur tes.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Navigate to profile tab using a custom route
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MainLayout(initialIndex: 2),
+                  ),
+                );
+              },
+              child: const Text('Lengkapi Profil'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _handleAssessmentTap(BuildContext context, Widget targetPage) {
+    final userProfile = ref.read(userProfileProvider);
+    if (!_isProfileComplete(userProfile)) {
+      _showProfileIncompleteDialog(context);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => targetPage),
+      );
+    }
   }
 
   @override
@@ -287,11 +345,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                       subtitle: 'Mini Mental State Exam',
                       color: Colors.pink[100]!,
                       onTap:
-                          () => Navigator.push(
+                          () => _handleAssessmentTap(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => const MMSEHistoryPage(),
-                            ),
+                            const MMSEHistoryPage(),
                           ),
                     ),
                   ),
@@ -302,7 +358,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                       title: 'GDS',
                       subtitle: 'The Geriatric Depression Scale',
                       color: Colors.purple[100]!,
-                      onTap: () {},
+                      onTap:
+                          () => _handleAssessmentTap(
+                            context,
+                            const GDSHistoryPage(),
+                          ),
                     ),
                   ),
                 ],
@@ -316,14 +376,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                       title: 'SKILAS',
                       subtitle: 'Skrining Lansia Sederhana',
                       color: Colors.green[100]!,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SKILASHistoryPage(),
+                      onTap:
+                          () => _handleAssessmentTap(
+                            context,
+                            const SKILASHistoryPage(),
                           ),
-                        );
-                      },
                     ),
                   ),
                 ],

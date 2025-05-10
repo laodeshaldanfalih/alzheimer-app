@@ -157,32 +157,121 @@ class _MMSEHistoryPageState extends State<MMSEHistoryPage> {
                             ),
                             itemCount: prov.history.length,
                             separatorBuilder:
-                                (_, __) => const Divider(
-                                  height: 32,
-                                  color: Color(0xFFB0B8C1),
-                                ),
+                                (_, __) => const SizedBox(height: 16),
                             itemBuilder: (context, index) {
                               final entry = prov.history[index];
-                              return Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Skor: ${entry.score}',
-                                    style: const TextStyle(
-                                      color: Color(0xFF2D3142),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
+                              return Card(
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.white,
+                                        Colors.blue.shade50,
+                                      ],
                                     ),
                                   ),
-                                  Text(
-                                    DateFormat('dd/MM/yyyy').format(entry.date),
-                                    style: const TextStyle(
-                                      color: Color(0xFF6B7280),
-                                      fontSize: 15,
-                                    ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(12),
+                                            decoration: BoxDecoration(
+                                              color: const Color(
+                                                0xFF2563EB,
+                                              ).withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Icon(
+                                              Icons.psychology,
+                                              color: Color(0xFF2563EB),
+                                              size: 24,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 16),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Skor: ${entry.score}',
+                                                style: const TextStyle(
+                                                  color: Color(0xFF2D3142),
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                DateFormat(
+                                                  'dd MMMM yyyy',
+                                                ).format(entry.date),
+                                                style: TextStyle(
+                                                  color: Colors.grey.shade600,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              entry.score >= 24
+                                                  ? const Color(
+                                                    0xFFAFE073,
+                                                  ).withOpacity(0.1)
+                                                  : entry.score >= 18
+                                                  ? const Color(
+                                                    0xFFFFD54F,
+                                                  ).withOpacity(0.1)
+                                                  : const Color(
+                                                    0xFFFF8A65,
+                                                  ).withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          entry.score >= 24
+                                              ? 'Normal'
+                                              : entry.score >= 18
+                                              ? 'Ringan'
+                                              : entry.score >= 10
+                                              ? 'Berat'
+                                              : 'Berat',
+                                          style: TextStyle(
+                                            color:
+                                                entry.score >= 24
+                                                    ? const Color(0xFFAFE073)
+                                                    : entry.score >= 18
+                                                    ? const Color(0xFFFFD54F)
+                                                    : entry.score >= 10
+                                                    ? const Color(0xFFFF8A65)
+                                                    : const Color(0xFFE53935),
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               );
                             },
                           ),
