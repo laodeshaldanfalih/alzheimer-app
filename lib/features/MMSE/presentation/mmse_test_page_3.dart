@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/MMSE/providers/mmse_test_provider.dart';
 import 'package:project/core/widgets/test_question_text.dart';
 import 'package:project/core/widgets/test_next_button.dart';
+import 'package:project/core/widgets/custom_app_bar.dart';
 
 class MMSETestPage3 extends ConsumerStatefulWidget {
   const MMSETestPage3({super.key});
@@ -13,155 +14,143 @@ class MMSETestPage3 extends ConsumerStatefulWidget {
 }
 
 class _MMSETestPage3State extends ConsumerState<MMSETestPage3> {
-  int? score;
-  int repetitions = 0;
-  final List<String> words = ["Kursi", "Pintu", "Jendela"];
-  final List<bool> rememberedWords = List.filled(3, false);
+  final TextEditingController _correctAnswersController =
+      TextEditingController();
+  final TextEditingController _repetitionsController = TextEditingController();
 
-  bool _isPageComplete() {
-    return score != null;
+  void _updateScores() {
+    if (_correctAnswersController.text.isNotEmpty) {
+      ref
+          .read(mmseTestProvider.notifier)
+          .setRegistrationScore(
+            int.parse(_correctAnswersController.text),
+            int.parse(_repetitionsController.text),
+          );
+    }
   }
 
-  void _checkAnswers() {
-    int correctCount = rememberedWords.where((word) => word).length;
-    score = correctCount;
+  bool _isPageComplete() {
+    return _correctAnswersController.text.isNotEmpty;
+  }
+
+  @override
+  void dispose() {
+    _correctAnswersController.dispose();
+    _repetitionsController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Mini-Mental State Exam (MMSE)",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
-        ),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(), // Close keyboard
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: const CustomAppBar(title: "Mini-Mental State Exam (MMSE)"),
         backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
-      backgroundColor: const Color(0xFFF8FAFB),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        body: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 8),
-              const Text(
-                "Registrasi (Nilai Max 3)",
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                  color: Color(0xFF222B45),
-                ),
-              ),
-              const SizedBox(height: 18),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TestQuestionText(
-                      text:
-                          "Saya akan menyebutkan 3 benda. Silakan Anda mengingatnya:",
-                    ),
-                    const SizedBox(height: 16),
-                    ...words.asMap().entries.map((entry) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Row(
-                          children: [
-                            Text(
-                              "${entry.key + 1}. ${entry.value}",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF222B45),
-                              ),
-                            ),
-                            const Spacer(),
-                            Checkbox(
-                              value: rememberedWords[entry.key],
-                              onChanged: (val) {
-                                setState(() {
-                                  rememberedWords[entry.key] = val ?? false;
-                                  _checkAnswers();
-                                });
-                              },
-                              activeColor: const Color(0xFF2563EB),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                          ],
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Registrasi (Nilai max 3)",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                          color: Color(0xFF2D3142),
                         ),
-                      );
-                    }).toList(),
-                    const SizedBox(height: 24),
-                    TestQuestionText(
-                      text:
-                          "Berapa kali pengucapan kata-kata tersebut diulang?",
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed:
-                              repetitions > 0
-                                  ? () {
-                                    setState(() {
-                                      repetitions--;
-                                    });
-                                  }
-                                  : null,
-                          icon: const Icon(Icons.remove_circle_outline),
-                          color: const Color(0xFF2563EB),
+                      ),
+                      const SizedBox(height: 24),
+                      const TestQuestionText(text: "Instruksi:"),
+                      const SizedBox(height: 16),
+                      _buildInstructionItem(
+                        "1. Sebutkan 3 buah nama benda (contoh: jeruk, uang, mawar), tiap benda disebutkan pelan selama jeda 1 detik.",
+                      ),
+                      const SizedBox(height: 12),
+                      _buildInstructionItem(
+                        "2. Pasien disuruh mengulangi ketiga nama benda tadi.",
+                      ),
+                      const SizedBox(height: 12),
+                      _buildInstructionItem(
+                        "3. Nilai 1 untuk tiap nama benda yang benar. Ulangi sampai pasien dapat menyebutkan dengan benar dan catat jumlah pengulangan.",
+                      ),
+                      const SizedBox(height: 12),
+                      _buildInstructionItem(
+                        "4. Pertanyaan ini akan ditanyakan kembali setelah bagian Atensi dan Kalkulasi.",
+                      ),
+                      const SizedBox(height: 32),
+                      TextField(
+                        controller: _correctAnswersController,
+                        keyboardType: TextInputType.number,
+                        decoration: _buildInputDecoration(
+                          "Banyak nama benda yang benar?",
                         ),
-                        Text(
-                          "$repetitions",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF222B45),
-                          ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _repetitionsController,
+                        keyboardType: TextInputType.number,
+                        decoration: _buildInputDecoration(
+                          "Banyak jumlah pengulangan?",
                         ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              repetitions++;
-                            });
-                          },
-                          icon: const Icon(Icons.add_circle_outline),
-                          color: const Color(0xFF2563EB),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 12),
-              TestNextButton(
-                isComplete: _isPageComplete(),
-                onPressed: () {
-                  ref
-                      .read(mmseTestProvider.notifier)
-                      .setRegistrationScore(score!, repetitions);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MMSETestPage4(),
-                    ),
-                  );
-                },
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: TestNextButton(
+                  isComplete: _isPageComplete(),
+                  onPressed: () {
+                    _updateScores();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MMSETestPage4(),
+                      ),
+                    );
+                  },
+                ),
               ),
-              const SizedBox(height: 8),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildInstructionItem(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 14,
+        color: Color(0xFF2D3142),
+        height: 1.5,
+      ),
+    );
+  }
+
+  InputDecoration _buildInputDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: Color(0xFF9C9DB9), fontSize: 14),
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFFE4E4E4)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.4),
       ),
     );
   }

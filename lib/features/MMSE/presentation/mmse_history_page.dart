@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:project/features/MMSE/presentation/mmse_test_page_1.dart';
 import 'package:project/core/widgets/start_test_button.dart';
 import 'package:project/core/widgets/result_card.dart';
+import 'package:project/core/widgets/custom_app_bar.dart';
 
 class MMSEHistoryPage extends ConsumerStatefulWidget {
   const MMSEHistoryPage({super.key});
@@ -29,19 +30,10 @@ class _MMSEHistoryPageState extends ConsumerState<MMSEHistoryPage> {
     final sortedHistory = historyState.sortedHistory;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Mini-Mental State Exam (MMSE)",
-          style: TextStyle(
-            color: Color(0xFF2D3142),
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        iconTheme: const IconThemeData(color: Color(0xFF2D3142)),
+      appBar: CustomAppBar(
+        title: "Mini-Mental State Exam (MMSE)",
+        showCloseButton: true,
+        onClose: () => Navigator.of(context).popUntil((route) => route.isFirst),
       ),
       backgroundColor: const Color(0xFFF8FAFB),
       body: SafeArea(

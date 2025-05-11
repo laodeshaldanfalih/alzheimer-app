@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/core/widgets/custom_app_bar.dart';
 import 'package:project/features/MMSE/presentation/mmse_test_page_3.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/MMSE/providers/mmse_test_provider.dart';
@@ -32,20 +33,7 @@ class _MMSETestPage2State extends ConsumerState<MMSETestPage2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Mini-Mental State Exam (MMSE)",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
+      appBar: const CustomAppBar(title: "Mini-Mental State Exam (MMSE)"),
       backgroundColor: const Color(0xFFF8FAFB),
       body: SafeArea(
         child: Padding(

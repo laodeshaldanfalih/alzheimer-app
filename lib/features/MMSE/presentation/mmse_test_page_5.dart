@@ -3,8 +3,9 @@ import 'package:project/features/MMSE/presentation/mmse_result_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/MMSE/providers/mmse_test_provider.dart';
 import 'package:project/core/widgets/test_question_text.dart';
-import 'package:project/core/widgets/test_next_button.dart';
 import 'package:project/core/widgets/test_dropdown.dart';
+import 'package:project/core/widgets/test_next_button.dart';
+import 'package:project/core/widgets/custom_app_bar.dart';
 
 class MMSETestPage5 extends ConsumerStatefulWidget {
   const MMSETestPage5({super.key});
@@ -14,193 +15,304 @@ class MMSETestPage5 extends ConsumerStatefulWidget {
 }
 
 class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
-  int? bendaScore;
+  String? bendaAnswer;
   String? kataAnswer;
-  int? instruksiScore;
+  String? instruksiAnswer;
   String? angkatTanganAnswer;
   String? tulisKalimatAnswer;
   String? tiruGambarAnswer;
 
-  final List<String> options = ["Benar", "Salah"];
+  final List<String> benarSalahOptions = ["Benar", "Salah"];
+  final List<String> jumlahBenarOptions = ["0", "1", "2"];
+  final List<String> jumlahBenarOptions3 = ["0", "1", "2", "3"];
+
+  void _updateScores() {
+    ref
+        .read(mmseTestProvider.notifier)
+        .setLanguageScores(
+          bendaAnswer != null ? int.parse(bendaAnswer!) : null,
+          kataAnswer,
+          instruksiAnswer != null ? int.parse(instruksiAnswer!) : null,
+          angkatTanganAnswer,
+          tulisKalimatAnswer,
+          tiruGambarAnswer,
+        );
+  }
 
   bool _isPageComplete() {
-    return bendaScore != null &&
+    return bendaAnswer != null &&
         kataAnswer != null &&
-        instruksiScore != null &&
+        instruksiAnswer != null &&
         angkatTanganAnswer != null &&
         tulisKalimatAnswer != null &&
         tiruGambarAnswer != null;
   }
 
+  void _showImageDialog1() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 60,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 10),
+                _buildImageBlock("Gambar 1", 'assets/images/pensil.png'),
+                const SizedBox(height: 20),
+                _buildImageBlock("Gambar 2", 'assets/images/arloji.png'),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showImageDialog2() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 60,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 10),
+                _buildImageBlock(null, 'assets/images/tiru_gambar.png'),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildImageBlock(String? title, String assetPath) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (title != null) ...[
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              color: Color(0xFF2D3142),
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: SizedBox(
+            height: screenHeight * 0.30,
+            width: double.infinity,
+            child: Image.asset(assetPath, fit: BoxFit.cover),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _getResultDescription(int score) {
+    if (score >= 24) {
+      return 'Hasil tes menunjukkan bahwa fungsi kognitif Anda berada dalam kisaran normal. Tidak ada indikasi gangguan kognitif pada tingkat ini. Terus pertahankan gaya hidup sehat untuk mendukung kesehatan otak.';
+    } else if (score >= 17) {
+      return 'Hasil tes menunjukkan kemungkinan adanya gangguan kognitif ringan. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
+    } else {
+      return 'Hasil tes menunjukkan adanya gangguan kognitif yang signifikan. Penting untuk segera berkonsultasi dengan profesional medis untuk mendapatkan penanganan lebih lanjut dan rencana perawatan yang sesuai.';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Mini-Mental State Exam (MMSE)",
-          style: TextStyle(
-            color: Color(0xFF2D3142),
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        iconTheme: const IconThemeData(color: Color(0xFF2D3142)),
-      ),
-      backgroundColor: const Color(0xFFF8FAFB),
+      appBar: const CustomAppBar(title: "Mini-Mental State Exam (MMSE)"),
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              const Text(
-                "Bahasa (Nilai Max 9)",
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                  color: Color(0xFF222B45),
-                ),
-              ),
-              const SizedBox(height: 18),
-              Expanded(
-                child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TestQuestionText(text: "Menamai benda (Nilai Max 2):"),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                hintText: "Jawaban (0-2)",
-                                filled: true,
-                                fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFFE4E4E4),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFF2563EB),
-                                    width: 1.4,
-                                  ),
-                                ),
-                              ),
-                              onChanged: (value) {
-                                if (value.isNotEmpty) {
-                                  setState(() {
-                                    bendaScore = int.parse(value);
-                                  });
-                                }
-                              },
-                            ),
-                          ),
-                        ],
+                      const Text(
+                        "Bahasa",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 22,
+                          color: Color(0xFF2D3142),
+                        ),
                       ),
                       const SizedBox(height: 24),
-                      TestQuestionText(text: "Mengulang kata (Nilai Max 1):"),
-                      const SizedBox(height: 8),
+                      // 1. Sebutkan nama benda yang muncul
+                      const TestQuestionText(
+                        text: "1. Sebutkan nama benda yang muncul.",
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2563EB),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: _showImageDialog1,
+                          child: const Text(
+                            "Tampilkan gambar",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TestDropdown(
+                        value: bendaAnswer,
+                        options: jumlahBenarOptions,
+                        onChanged: (value) {
+                          setState(() {
+                            bendaAnswer = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                      // 2. Ulangi rangkaian kata
+                      const TestQuestionText(
+                        text:
+                            '2. Ulangi rangkaian kata (cont: "tanpa kalau dan atau tetapi")',
+                      ),
+                      const SizedBox(height: 12),
                       TestDropdown(
                         value: kataAnswer,
-                        options: options,
-                        onChanged: (val) {
+                        options: benarSalahOptions,
+                        onChanged: (value) {
                           setState(() {
-                            kataAnswer = val;
+                            kataAnswer = value;
                           });
                         },
                       ),
                       const SizedBox(height: 24),
-                      TestQuestionText(
-                        text: "Mengikuti perintah 3 tahap (Nilai Max 3):",
+                      // 3. Instruksikan pasien
+                      const TestQuestionText(
+                        text:
+                            '3. Instruksikan pasien "Ambil kertas ini dengan tangan kanan, lipatlah menjadi dua dan letakkan di lantai".',
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                hintText: "Jawaban (0-3)",
-                                filled: true,
-                                fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFFE4E4E4),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFF2563EB),
-                                    width: 1.4,
-                                  ),
-                                ),
-                              ),
-                              onChanged: (value) {
-                                if (value.isNotEmpty) {
-                                  setState(() {
-                                    instruksiScore = int.parse(value);
-                                  });
-                                }
-                              },
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 12),
+                      TestDropdown(
+                        value: instruksiAnswer,
+                        options: jumlahBenarOptions3,
+                        onChanged: (value) {
+                          setState(() {
+                            instruksiAnswer = value;
+                          });
+                        },
                       ),
                       const SizedBox(height: 24),
-                      TestQuestionText(
-                        text: "Membaca dan mengikuti perintah (Nilai Max 1):",
+                      // 4. Instruksikan pasien "Angkatlah tangan kiri anda".
+                      const TestQuestionText(
+                        text:
+                            '4. Instruksikan pasien "Angkatlah tangan kiri anda".',
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       TestDropdown(
                         value: angkatTanganAnswer,
-                        options: options,
-                        onChanged: (val) {
+                        options: benarSalahOptions,
+                        onChanged: (value) {
                           setState(() {
-                            angkatTanganAnswer = val;
+                            angkatTanganAnswer = value;
                           });
                         },
                       ),
                       const SizedBox(height: 24),
-                      TestQuestionText(text: "Menulis kalimat (Nilai Max 1):"),
-                      const SizedBox(height: 8),
+                      // 5. Instruksikan pasien untuk menulis sebuah kalimat
+                      const TestQuestionText(
+                        text:
+                            '5. Instruksikan pasien untuk menulis sebuah kalimat (minimal terdiri dari subject + predikat).',
+                      ),
+                      const SizedBox(height: 12),
                       TestDropdown(
                         value: tulisKalimatAnswer,
-                        options: options,
-                        onChanged: (val) {
+                        options: benarSalahOptions,
+                        onChanged: (value) {
                           setState(() {
-                            tulisKalimatAnswer = val;
+                            tulisKalimatAnswer = value;
                           });
                         },
                       ),
                       const SizedBox(height: 24),
-                      TestQuestionText(text: "Meniru gambar (Nilai Max 1):"),
-                      const SizedBox(height: 8),
+                      // 6. Instruksikan pasien untuk meniru gambar ini.
+                      const TestQuestionText(
+                        text: '6. Instruksikan pasien untuk meniru gambar ini.',
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2563EB),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: _showImageDialog2,
+                          child: const Text(
+                            "Tampilkan gambar",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       TestDropdown(
                         value: tiruGambarAnswer,
-                        options: options,
-                        onChanged: (val) {
+                        options: benarSalahOptions,
+                        onChanged: (value) {
                           setState(() {
-                            tiruGambarAnswer = val;
+                            tiruGambarAnswer = value;
                           });
                         },
                       ),
@@ -208,20 +320,13 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
-              TestNextButton(
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: TestNextButton(
                 isComplete: _isPageComplete(),
                 onPressed: () {
-                  ref
-                      .read(mmseTestProvider.notifier)
-                      .setLanguageAnswers(
-                        bendaScore: bendaScore,
-                        kataAnswer: kataAnswer,
-                        instruksiScore: instruksiScore,
-                        angkatTanganAnswer: angkatTanganAnswer,
-                        tulisKalimatAnswer: tulisKalimatAnswer,
-                        tiruGambarAnswer: tiruGambarAnswer,
-                      );
+                  _updateScores();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -230,9 +335,8 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
                   );
                 },
               ),
-              const SizedBox(height: 8),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

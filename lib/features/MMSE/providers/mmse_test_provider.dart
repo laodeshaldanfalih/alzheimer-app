@@ -180,14 +180,14 @@ class MMSETestNotifier extends StateNotifier<MMSETestState> {
     );
   }
 
-  void setLanguageAnswers({
+  void setLanguageScores(
     int? bendaScore,
     String? kataAnswer,
     int? instruksiScore,
     String? angkatTanganAnswer,
     String? tulisKalimatAnswer,
     String? tiruGambarAnswer,
-  }) {
+  ) {
     state = state.copyWith(
       bendaScore: bendaScore,
       kataAnswer: kataAnswer,
