@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/SKILAS/presentation/skilas_test_page_2.dart';
-import 'package:provider/provider.dart';
-import '../data/skilas_test_state.dart';
+import 'package:project/features/SKILAS/providers/skilas_test_provider.dart';
 import 'package:project/core/widgets/test_dropdown.dart';
 import 'package:project/core/widgets/test_question_text.dart';
 import 'package:project/core/widgets/test_next_button.dart';
 
-class SKILASPage1 extends StatefulWidget {
+class SKILASPage1 extends ConsumerStatefulWidget {
   const SKILASPage1({super.key});
 
   @override
-  State<SKILASPage1> createState() => _SKILASPage1State();
+  ConsumerState<SKILASPage1> createState() => _SKILASPage1State();
 }
 
-class _SKILASPage1State extends State<SKILASPage1> {
+class _SKILASPage1State extends ConsumerState<SKILASPage1> {
   final List<String> questions = [
     "Instruksikan pasien untuk mengingat tiga kata (cont: jeruk, uang, dan mawar).",
     "Sekarang tanggal berapa?",
@@ -95,10 +94,9 @@ class _SKILASPage1State extends State<SKILASPage1> {
               TestNextButton(
                 isComplete: _isPageComplete(),
                 onPressed: () {
-                  Provider.of<SKILASTestState>(
-                    context,
-                    listen: false,
-                  ).setPage1Answers(answers);
+                  ref
+                      .read(skilasTestProvider.notifier)
+                      .setPage1Answers(answers);
                   Navigator.push(
                     context,
                     MaterialPageRoute(

@@ -1,145 +1,172 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/features/MMSE/providers/mmse_test_provider.dart';
+import 'package:project/features/MMSE/providers/mmse_history_provider.dart';
+import 'package:project/features/MMSE/models/mmse_history_entry.dart';
+import 'package:project/features/MMSE/presentation/mmse_history_page.dart';
 
-class MMSEResultPage extends StatelessWidget {
-  final int score;
-  final String description;
+class MMSEResultPage extends ConsumerWidget {
+  const MMSEResultPage({super.key});
 
-  const MMSEResultPage({
-    super.key,
-    required this.score,
-    required this.description,
-  });
-
-  String _getResultImage() {
+  String _getResultDescription(int score) {
     if (score >= 24) {
-      return 'assets/images/good_result.png';
-    } else if (score >= 18) {
-      return 'assets/images/mid_result.png';
+      return 'Hasil tes menunjukkan bahwa fungsi kognitif Anda berada dalam kisaran normal. Tidak ada indikasi gangguan kognitif pada tingkat ini. Terus pertahankan gaya hidup sehat untuk mendukung kesehatan otak.';
+    } else if (score >= 17) {
+      return 'Hasil tes menunjukkan kemungkinan adanya gangguan kognitif ringan. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
     } else {
-      return 'assets/images/bad_result.png';
-    }
-  }
-
-  Color _getResultColor() {
-    if (score >= 24) {
-      return const Color(0xFFAFE073);
-    } else if (score >= 18) {
-      return const Color(0xFFFFD54F);
-    } else {
-      return const Color(0xFFFF8A65);
+      return 'Hasil tes menunjukkan adanya gangguan kognitif yang signifikan. Penting untuk segera berkonsultasi dengan profesional medis untuk mendapatkan penanganan lebih lanjut dan rencana perawatan yang sesuai.';
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final testState = ref.watch(mmseTestProvider);
+    final score = testState.totalScore;
+    final description = _getResultDescription(score);
+
+    // Save to history
+    ref
+        .read(mmseHistoryProvider.notifier)
+        .addEntry(
+          MMSEHistoryEntry(
+            score: score,
+            date: DateTime.now(),
+            orientationTimeAnswers: testState.orientationTimeAnswers,
+            orientationPlaceAnswers: testState.orientationPlaceAnswers,
+            registrationScore: testState.registrationScore,
+            registrationRepetitions: testState.registrationRepetitions,
+            attentionScore: testState.attentionScore,
+            recallScore: testState.recallScore,
+            bendaScore: testState.bendaScore,
+            kataAnswer: testState.kataAnswer,
+            instruksiScore: testState.instruksiScore,
+            angkatTanganAnswer: testState.angkatTanganAnswer,
+            tulisKalimatAnswer: testState.tulisKalimatAnswer,
+            tiruGambarAnswer: testState.tiruGambarAnswer,
+          ),
+        );
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF6FCFA),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        centerTitle: false,
         title: const Text(
-          'Mini–Mental State Exam (MMSE)',
+          "Hasil MMSE",
           style: TextStyle(
-            color: Color(0xFF222B45),
+            color: Color(0xFF2D3142),
             fontWeight: FontWeight.w500,
-            fontSize: 14,
+            fontSize: 16,
           ),
         ),
-        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: false,
+        iconTheme: const IconThemeData(color: Color(0xFF2D3142)),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
-            child: Container(
-              width: double.infinity,
-              constraints: const BoxConstraints(maxWidth: 400),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 12,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+      backgroundColor: const Color(0xFFF8FAFB),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 8),
+              const Text(
+                "Hasil Test",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                  color: Color(0xFF222B45),
+                ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Image
-                  Container(
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(
-                      color: _getResultColor(),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Image.asset(
-                        _getResultImage(),
-                        height: 60,
-                        width: 60,
-                        fit: BoxFit.contain,
+              const SizedBox(height: 18),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Total Skor",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF8A94A6),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "$score",
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF222B45),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            "Interpretasi",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF8A94A6),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            description,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF222B45),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  // Title
-                  Text(
-                    'Pasien mendapatkan skor $score!',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                      color: Color(0xFF222B45),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Description
-                  Text(
-                    description,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF6B7280),
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  // Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2563EB),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
-                        elevation: 0,
-                      ),
-                      onPressed: () {
-                        Navigator.of(
-                          context,
-                        ).popUntil((route) => route.isFirst);
-                      },
-                      child: const Text(
-                        'Kembali ke Halaman Utama',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const MMSEHistoryPage(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          "Lihat Riwayat",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),

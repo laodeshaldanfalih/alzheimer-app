@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:provider/provider.dart';
-import '../data/skilas_test_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/features/SKILAS/providers/skilas_test_provider.dart';
+import 'package:project/core/widgets/test_dropdown.dart';
+import 'package:project/core/widgets/test_question_text.dart';
+import 'package:project/core/widgets/test_next_button.dart';
 import 'skilas_result_page.dart';
 
-class SKILASPage3 extends StatefulWidget {
+class SKILASPage3 extends ConsumerStatefulWidget {
   const SKILASPage3({super.key});
 
   @override
-  State<SKILASPage3> createState() => _SKILASPage3State();
+  ConsumerState<SKILASPage3> createState() => _SKILASPage3State();
 }
 
-class _SKILASPage3State extends State<SKILASPage3> {
+class _SKILASPage3State extends ConsumerState<SKILASPage3> {
   final List<String> questions = [
     'Selama dua minggu terakhir, apakah Anda merasa terganggu oleh perasaan sedih, tertekan, atau putus asa?',
     'Selama dua minggu terakhir, apakah Anda merasa terganggu oleh sedikit minat atau kesenangan dalam melakukan sesuatu?',
@@ -54,7 +56,7 @@ class _SKILASPage3State extends State<SKILASPage3> {
             children: [
               const SizedBox(height: 8),
               const Text(
-                "Gejala Depresi",
+                "Depresi",
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 18,
@@ -70,93 +72,16 @@ class _SKILASPage3State extends State<SKILASPage3> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '${index + 1}. ${questions[index]}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15,
-                            color: Color(0xFF222B45),
-                          ),
-                        ),
+                        TestQuestionText(text: questions[index]),
                         const SizedBox(height: 8),
-                        DropdownButtonHideUnderline(
-                          child: DropdownButtonFormField2<String>(
-                            hint: const Text(
-                              'Benar / Salah',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            isExpanded: true,
-                            value: answers[index],
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintStyle: const TextStyle(
-                                color: Color(0xFFB0B8C1),
-                                fontSize: 14,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 14,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFE0E6ED),
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF2563EB),
-                                  width: 1.4,
-                                ),
-                              ),
-                            ),
-                            dropdownStyleData: DropdownStyleData(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: Colors.white,
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 8,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            iconStyleData: const IconStyleData(
-                              icon: Icon(
-                                Icons.keyboard_arrow_down_rounded,
-                                color: Color(0xFF8A94A6),
-                              ),
-                            ),
-                            items:
-                                options
-                                    .map(
-                                      (opt) => DropdownMenuItem<String>(
-                                        value: opt,
-                                        child: Text(
-                                          opt,
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Color(0xFF1F2937),
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                            onChanged: (val) {
-                              setState(() {
-                                answers[index] = val;
-                              });
-                            },
-                          ),
+                        TestDropdown(
+                          value: answers[index],
+                          options: options,
+                          onChanged: (val) {
+                            setState(() {
+                              answers[index] = val;
+                            });
+                          },
                         ),
                       ],
                     );
@@ -164,43 +89,19 @@ class _SKILASPage3State extends State<SKILASPage3> {
                 ),
               ),
               const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        _isPageComplete()
-                            ? const Color(0xFF2563EB)
-                            : Colors.grey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+              TestNextButton(
+                isComplete: _isPageComplete(),
+                onPressed: () {
+                  ref
+                      .read(skilasTestProvider.notifier)
+                      .setPage3Answers(answers);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SKILASResultPage(),
                     ),
-                  ),
-                  onPressed:
-                      _isPageComplete()
-                          ? () {
-                            Provider.of<SKILASTestState>(
-                              context,
-                              listen: false,
-                            ).setPage3Answers(answers);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SKILASResultPage(),
-                              ),
-                            );
-                          }
-                          : null,
-                  child: const Text(
-                    "Selanjutnya",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
+                  );
+                },
               ),
               const SizedBox(height: 8),
             ],

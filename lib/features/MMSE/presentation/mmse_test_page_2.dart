@@ -1,43 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:project/features/MMSE/presentation/mmse_test_page_3.dart';
-import 'package:provider/provider.dart';
-import 'package:project/features/MMSE/data/mmse_test_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/features/MMSE/providers/mmse_test_provider.dart';
+import 'package:project/core/widgets/test_dropdown.dart';
+import 'package:project/core/widgets/test_question_text.dart';
+import 'package:project/core/widgets/test_next_button.dart';
 
-class MMSETestPage2 extends StatefulWidget {
+class MMSETestPage2 extends ConsumerStatefulWidget {
   const MMSETestPage2({super.key});
 
   @override
-  State<MMSETestPage2> createState() => _MMSETestPage2State();
+  ConsumerState<MMSETestPage2> createState() => _MMSETestPage2State();
 }
 
-class _MMSETestPage2State extends State<MMSETestPage2> {
+class _MMSETestPage2State extends ConsumerState<MMSETestPage2> {
   final List<String> questions = [
-    "Kita ada di negara mana?",
-    "Kita ada di provinsi mana?",
-    "Kita ada di kota mana?",
-    "Kita ada di rumah sakit apa?",
-    "kita ada di kamar/lantai berapa?",
+    "Sekarang kita berada di mana?",
+    "Sekarang kita berada di kota apa?",
+    "Sekarang kita berada di provinsi apa?",
+    "Sekarang kita berada di negara apa?",
+    "Sekarang kita berada di lantai berapa?",
   ];
 
   final List<String?> answers = List.filled(5, null);
   final List<String> options = ["Benar", "Salah"];
-
-  void _updateScores() {
-    final state = Provider.of<MMSETestState>(context, listen: false);
-
-    // Save answers to state
-    state.orientationPlaceAnswers = List.from(answers);
-
-    // Calculate score for orientation place (max 5 points)
-    int score = 0;
-    for (String? answer in answers) {
-      if (answer == "Benar") {
-        score++;
-      }
-    }
-    state.orientationPlaceScore = score;
-  }
 
   bool _isPageComplete() {
     return !answers.contains(null);
@@ -85,96 +71,16 @@ class _MMSETestPage2State extends State<MMSETestPage2> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          questions[index],
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15,
-                            color: Color(0xFF222B45),
-                          ),
-                        ),
+                        TestQuestionText(text: questions[index]),
                         const SizedBox(height: 8),
-                        DropdownButtonHideUnderline(
-                          child: DropdownButtonFormField2<String>(
-                            hint: Expanded(
-                              child: Text(
-                                'Benar / Salah',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            isExpanded: true,
-                            value: answers[index],
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintStyle: TextStyle(
-                                color: Color(0xFFB0B8C1),
-                                fontSize: 14,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 14,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFE0E6ED),
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF2563EB),
-                                  width: 1.4,
-                                ),
-                              ),
-                            ),
-                            dropdownStyleData: DropdownStyleData(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: Colors.white,
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 8,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            iconStyleData: const IconStyleData(
-                              icon: Icon(
-                                Icons.keyboard_arrow_down_rounded,
-                                color: Color(0xFF8A94A6),
-                              ),
-                            ),
-                            items:
-                                options
-                                    .map(
-                                      (opt) => DropdownMenuItem<String>(
-                                        value: opt,
-
-                                        child: Text(
-                                          opt,
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Color(0xFF1F2937),
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                            onChanged: (val) {
-                              setState(() {
-                                answers[index] = val;
-                              });
-                            },
-                          ),
+                        TestDropdown(
+                          value: answers[index],
+                          options: options,
+                          onChanged: (val) {
+                            setState(() {
+                              answers[index] = val;
+                            });
+                          },
                         ),
                       ],
                     );
@@ -182,40 +88,19 @@ class _MMSETestPage2State extends State<MMSETestPage2> {
                 ),
               ),
               const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        _isPageComplete()
-                            ? const Color(0xFF2563EB)
-                            : Colors.grey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+              TestNextButton(
+                isComplete: _isPageComplete(),
+                onPressed: () {
+                  ref
+                      .read(mmseTestProvider.notifier)
+                      .setOrientationPlaceAnswers(answers);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MMSETestPage3(),
                     ),
-                  ),
-                  onPressed:
-                      _isPageComplete()
-                          ? () {
-                            _updateScores();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const MMSETestPage3(),
-                              ),
-                            );
-                          }
-                          : null,
-                  child: const Text(
-                    "Selanjutnya",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
+                  );
+                },
               ),
               const SizedBox(height: 8),
             ],

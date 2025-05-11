@@ -1,96 +1,94 @@
 import 'package:flutter/material.dart';
 
-class MMSETestState extends ChangeNotifier {
-  // Page 1 - Orientation Time
-  List<String?> orientationTimeAnswers = List.filled(5, null);
-  int? orientationTimeScore;
+class MMSETestState {
+  final List<String?> orientationTimeAnswers;
+  final List<String?> orientationPlaceAnswers;
+  final int registrationScore;
+  final int registrationRepetitions;
+  final int attentionScore;
+  final int recallScore;
+  final int? bendaScore;
+  final String? kataAnswer;
+  final int? instruksiScore;
+  final String? angkatTanganAnswer;
+  final String? tulisKalimatAnswer;
+  final String? tiruGambarAnswer;
 
-  // Page 2 - Orientation Place
-  List<String?> orientationPlaceAnswers = List.filled(5, null);
-  int? orientationPlaceScore;
+  MMSETestState({
+    this.orientationTimeAnswers = const [],
+    this.orientationPlaceAnswers = const [],
+    this.registrationScore = 0,
+    this.registrationRepetitions = 0,
+    this.attentionScore = 0,
+    this.recallScore = 0,
+    this.bendaScore,
+    this.kataAnswer,
+    this.instruksiScore,
+    this.angkatTanganAnswer,
+    this.tulisKalimatAnswer,
+    this.tiruGambarAnswer,
+  });
 
-  // Page 3 - Registration
-  int? registrationScore;
-  int? registrationRepetitions;
-
-  // Page 4 - Attention and Recall
-  int? attentionScore;
-  int? recallScore;
-
-  // Page 5 - Language
-  int? bendaScore;
-  String? kataAnswer;
-  int? instruksiScore;
-  String? angkatTanganAnswer;
-  String? tulisKalimatAnswer;
-  String? tiruGambarAnswer;
-
-  // Calculate total score
   int get totalScore {
     int score = 0;
 
-    // Page 1 scores
-    score += orientationTimeScore ?? 0;
-    score += orientationPlaceScore ?? 0;
-    score += registrationScore ?? 0;
+    // Orientation Time (5 points)
+    score += orientationTimeAnswers.where((answer) => answer == "Benar").length;
 
-    // Page 2 scores
-    score += attentionScore ?? 0;
-    score += recallScore ?? 0;
+    // Orientation Place (5 points)
+    score +=
+        orientationPlaceAnswers.where((answer) => answer == "Benar").length;
 
-    // Page 5 scores
+    // Registration (3 points)
+    score += registrationScore;
+
+    // Attention and Calculation (5 points)
+    score += attentionScore;
+
+    // Recall (3 points)
+    score += recallScore;
+
+    // Language (9 points)
     score += bendaScore ?? 0;
-    score += (kataAnswer == "Benar" ? 1 : 0);
+    score += kataAnswer == "Benar" ? 1 : 0;
     score += instruksiScore ?? 0;
-    score += (angkatTanganAnswer == "Benar" ? 1 : 0);
-    score += (tulisKalimatAnswer == "Benar" ? 1 : 0);
-    score += (tiruGambarAnswer == "Benar" ? 1 : 0);
+    score += angkatTanganAnswer == "Benar" ? 1 : 0;
+    score += tulisKalimatAnswer == "Benar" ? 1 : 0;
+    score += tiruGambarAnswer == "Benar" ? 1 : 0;
 
     return score;
   }
 
-  // Check if all questions in a page are answered
-  bool isPage1Complete() {
-    return !orientationTimeAnswers.contains(null);
-  }
-
-  bool isPage2Complete() {
-    return !orientationPlaceAnswers.contains(null);
-  }
-
-  bool isPage3Complete() {
-    return registrationScore != null;
-  }
-
-  bool isPage4Complete() {
-    return attentionScore != null && recallScore != null;
-  }
-
-  bool isPage5Complete() {
-    return bendaScore != null &&
-        kataAnswer != null &&
-        instruksiScore != null &&
-        angkatTanganAnswer != null &&
-        tulisKalimatAnswer != null &&
-        tiruGambarAnswer != null;
-  }
-
-  // Reset all scores
-  void reset() {
-    orientationTimeAnswers = List.filled(5, null);
-    orientationTimeScore = null;
-    orientationPlaceAnswers = List.filled(5, null);
-    orientationPlaceScore = null;
-    registrationScore = null;
-    registrationRepetitions = null;
-    attentionScore = null;
-    recallScore = null;
-    bendaScore = null;
-    kataAnswer = null;
-    instruksiScore = null;
-    angkatTanganAnswer = null;
-    tulisKalimatAnswer = null;
-    tiruGambarAnswer = null;
-    notifyListeners();
+  MMSETestState copyWith({
+    List<String?>? orientationTimeAnswers,
+    List<String?>? orientationPlaceAnswers,
+    int? registrationScore,
+    int? registrationRepetitions,
+    int? attentionScore,
+    int? recallScore,
+    int? bendaScore,
+    String? kataAnswer,
+    int? instruksiScore,
+    String? angkatTanganAnswer,
+    String? tulisKalimatAnswer,
+    String? tiruGambarAnswer,
+  }) {
+    return MMSETestState(
+      orientationTimeAnswers:
+          orientationTimeAnswers ?? this.orientationTimeAnswers,
+      orientationPlaceAnswers:
+          orientationPlaceAnswers ?? this.orientationPlaceAnswers,
+      registrationScore: registrationScore ?? this.registrationScore,
+      registrationRepetitions:
+          registrationRepetitions ?? this.registrationRepetitions,
+      attentionScore: attentionScore ?? this.attentionScore,
+      recallScore: recallScore ?? this.recallScore,
+      bendaScore: bendaScore ?? this.bendaScore,
+      kataAnswer: kataAnswer ?? this.kataAnswer,
+      instruksiScore: instruksiScore ?? this.instruksiScore,
+      angkatTanganAnswer: angkatTanganAnswer ?? this.angkatTanganAnswer,
+      tulisKalimatAnswer: tulisKalimatAnswer ?? this.tulisKalimatAnswer,
+      tiruGambarAnswer: tiruGambarAnswer ?? this.tiruGambarAnswer,
+    );
   }
 }

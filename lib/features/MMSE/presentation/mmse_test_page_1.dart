@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:project/features/MMSE/presentation/mmse_test_page_2.dart';
-import 'package:provider/provider.dart';
-import 'package:project/features/MMSE/data/mmse_test_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/features/MMSE/providers/mmse_test_provider.dart';
 import 'package:project/core/widgets/test_dropdown.dart';
 import 'package:project/core/widgets/test_question_text.dart';
 import 'package:project/core/widgets/test_next_button.dart';
 
-class MMSETestPage1 extends StatefulWidget {
+class MMSETestPage1 extends ConsumerStatefulWidget {
   const MMSETestPage1({super.key});
 
   @override
-  State<MMSETestPage1> createState() => _MMSETestPage1State();
+  ConsumerState<MMSETestPage1> createState() => _MMSETestPage1State();
 }
 
-class _MMSETestPage1State extends State<MMSETestPage1> {
+class _MMSETestPage1State extends ConsumerState<MMSETestPage1> {
   final List<String> questions = [
     "Sekarang tahun apa?",
     "Sekarang musim apa?",
@@ -24,22 +24,6 @@ class _MMSETestPage1State extends State<MMSETestPage1> {
 
   final List<String?> answers = List.filled(5, null);
   final List<String> options = ["Benar", "Salah"];
-
-  void _updateScores() {
-    final state = Provider.of<MMSETestState>(context, listen: false);
-
-    // Save answers to state
-    state.orientationTimeAnswers = List.from(answers);
-
-    // Calculate score for orientation time (max 5 points)
-    int score = 0;
-    for (String? answer in answers) {
-      if (answer == "Benar") {
-        score++;
-      }
-    }
-    state.orientationTimeScore = score;
-  }
 
   bool _isPageComplete() {
     return !answers.contains(null);
@@ -107,7 +91,9 @@ class _MMSETestPage1State extends State<MMSETestPage1> {
               TestNextButton(
                 isComplete: _isPageComplete(),
                 onPressed: () {
-                  _updateScores();
+                  ref
+                      .read(mmseTestProvider.notifier)
+                      .setOrientationTimeAnswers(answers);
                   Navigator.push(
                     context,
                     MaterialPageRoute(

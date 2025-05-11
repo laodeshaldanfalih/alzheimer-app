@@ -1,32 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/SKILAS/models/skilas_test_entry.dart';
-import 'package:provider/provider.dart';
-import '../data/skilas_test_state.dart';
+import 'package:project/features/SKILAS/providers/skilas_test_provider.dart';
+import 'package:project/features/SKILAS/providers/skilas_history_provider.dart';
 import 'skilas_history_page.dart';
 
-class SKILASResultPage extends StatelessWidget {
+class SKILASResultPage extends ConsumerStatefulWidget {
   const SKILASResultPage({super.key});
 
-  Future<void> _saveHistory(BuildContext context, bool isBad) async {
-    final historyProvider = SKILASHistoryProvider();
-    final skilasState = Provider.of<SKILASTestState>(context, listen: false);
-    await historyProvider.loadHistory();
-    await historyProvider.addEntry(
-      SKILASHistoryEntry(
-        score: isBad ? 0 : 1,
-        date: DateTime.now(),
-        page1Answers: skilasState.page1Answers,
-        page2Answers: skilasState.page2Answers,
-        page3Answers: skilasState.page3Answers,
-      ),
-    );
+  @override
+  ConsumerState<SKILASResultPage> createState() => _SKILASResultPageState();
+}
+
+class _SKILASResultPageState extends ConsumerState<SKILASResultPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Save history after the widget is built
+    Future.microtask(() {
+      final skilasState = ref.read(skilasTestProvider);
+      final isBad = skilasState.isAnyAnswerWrong;
+      ref
+          .read(skilasHistoryProvider.notifier)
+          .addEntry(
+            SKILASHistoryEntry(
+              score: isBad ? 0 : 1,
+              date: DateTime.now(),
+              page1Answers: skilasState.page1Answers,
+              page2Answers: skilasState.page2Answers,
+              page3Answers: skilasState.page3Answers,
+            ),
+          );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final skilasState = Provider.of<SKILASTestState>(context, listen: false);
+    final skilasState = ref.watch(skilasTestProvider);
     final isBad = skilasState.isAnyAnswerWrong;
-    _saveHistory(context, isBad); // Save history on build
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFB),
       appBar: AppBar(
@@ -46,100 +58,75 @@ class SKILASResultPage extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
-          child: Container(
-            width: double.infinity,
-            constraints: const BoxConstraints(maxWidth: 400),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
-                  blurRadius: 12,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Image
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color:
-                        isBad
-                            ? const Color(0xFFFFE0E0)
-                            : const Color(0xFFE0F7D9),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Image.asset(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  color:
                       isBad
-                          ? 'assets/images/skilas_bad.png'
-                          : 'assets/images/skilas_good.png',
-                      height: 90,
-                      width: 90,
-                      fit: BoxFit.contain,
+                          ? const Color(0xFFFF8A65).withOpacity(0.1)
+                          : const Color(0xFFAFE073).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  isBad ? Icons.warning_rounded : Icons.check_circle_rounded,
+                  size: 60,
+                  color:
+                      isBad ? const Color(0xFFFF8A65) : const Color(0xFFAFE073),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                isBad ? 'Perlu ke Rumah Sakit' : 'Sehat',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  color:
+                      isBad ? const Color(0xFFFF8A65) : const Color(0xFFAFE073),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                isBad
+                    ? 'Pasien menunjukkan tanda-tanda gangguan kognitif'
+                    : 'Pasien tidak menunjukkan tanda-tanda gangguan kognitif',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16, color: Color(0xFF1F2937)),
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2563EB),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                // Title
-                Text(
-                  isBad
-                      ? 'Pasien perlu ke rumah sakit'
-                      : 'Pasien dalam kondisi normal!',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 20,
-                    color: Color(0xFF222B45),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                // Description
-                Text(
-                  isBad
-                      ? 'Hasil tes menunjukkan adanya gangguan kognitif yang signifikan. Penting untuk segera berkonsultasi dengan profesional medis untuk mendapatkan penanganan lebih lanjut dan rencana perawatan yang sesuai.'
-                      : 'Berdasarkan hasil pemeriksaan, pasien tidak memerlukan rujukan ke Puskesmas saat ini. Anda dapat melanjutkan perawatan sesuai dengan rekomendasi yang diberikan.',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF6B7280),
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 28),
-                // Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 44,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2563EB),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SKILASHistoryPage(),
                       ),
-                      elevation: 0,
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                    },
-                    child: const Text(
-                      'Kembali ke Halaman Utama',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
+                      (route) => route.isFirst,
+                    );
+                  },
+                  child: const Text(
+                    "Lihat Riwayat",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

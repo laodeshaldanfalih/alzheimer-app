@@ -4,10 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/splash/presentation/pages/splash_page.dart';
 import 'package:project/firebase_options.dart';
-import 'package:provider/provider.dart' as provider;
-import 'package:project/features/MMSE/data/mmse_test_state.dart';
-import 'features/SKILAS/data/skilas_test_state.dart';
-import 'package:project/features/GDS/data/gds_test_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,16 +15,7 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(
-    provider.MultiProvider(
-      providers: [
-        provider.ChangeNotifierProvider(create: (_) => SKILASTestState()),
-        provider.ChangeNotifierProvider(create: (context) => MMSETestState()),
-        provider.ChangeNotifierProvider(create: (_) => GDSTestState()),
-      ],
-      child: const ProviderScope(child: MyApp()),
-    ),
-  );
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
