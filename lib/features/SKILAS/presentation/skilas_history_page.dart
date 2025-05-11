@@ -6,6 +6,9 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'skilas_test_page_1.dart';
 import 'skilas_history_detail_page.dart';
+import 'package:project/core/widgets/custom_app_bar.dart';
+import 'package:project/core/widgets/result_card.dart';
+import 'package:project/core/widgets/start_test_button.dart';
 
 class SKILASHistoryProvider extends ChangeNotifier {
   List<SKILASHistoryEntry> _history = [];
@@ -67,22 +70,9 @@ class _SKILASHistoryPageState extends State<SKILASHistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Color(0xFF2D3142)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
-          "Skrining Lansia Sederhana (SKILAS)",
-          style: TextStyle(
-            color: Color(0xFF2D3142),
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
+      appBar: CustomAppBar(
+        title: "Skrining Lansia Sederhana (SKILAS)",
+        showCloseButton: true,
       ),
       backgroundColor: const Color(0xFFF8FAFB),
       body: ChangeNotifierProvider<SKILASHistoryProvider>(
@@ -161,7 +151,20 @@ class _SKILASHistoryPageState extends State<SKILASHistoryPage> {
                                 (_, __) => const SizedBox(height: 16),
                             itemBuilder: (context, index) {
                               final entry = prov.history[index];
-                              return GestureDetector(
+                              return ResultCard(
+                                date: entry.date,
+                                title: 'Skor: ${entry.score}',
+                                subtitle:
+                                    entry.score == 1
+                                        ? 'Pasien tidak menunjukkan tanda-tanda gangguan kognitif'
+                                        : 'Pasien menunjukkan tanda-tanda gangguan kognitif',
+                                backgroundColor:
+                                    entry.score == 1
+                                        ? const Color(0xFF4CAF50)
+                                        : const Color(0xFFD32F2F),
+                                stage:
+                                    entry.score == 1 ? 'Sehat' : 'Perlu ke RS',
+                                showStageBadge: true,
                                 onTap: () {
                                   Navigator.push(
                                     context,
@@ -173,171 +176,21 @@ class _SKILASHistoryPageState extends State<SKILASHistoryPage> {
                                     ),
                                   );
                                 },
-                                child: Card(
-                                  elevation: 2,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Colors.white,
-                                          entry.score == 1
-                                              ? const Color(
-                                                0xFFE0F7D9,
-                                              ).withOpacity(0.3)
-                                              : const Color(
-                                                0xFFFFE0E0,
-                                              ).withOpacity(0.3),
-                                        ],
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              padding: const EdgeInsets.all(12),
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    entry.score == 1
-                                                        ? const Color(
-                                                          0xFF4CAF50,
-                                                        ).withOpacity(0.1)
-                                                        : const Color(
-                                                          0xFFD32F2F,
-                                                        ).withOpacity(0.1),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              child: Icon(
-                                                entry.score == 1
-                                                    ? Icons.check_circle
-                                                    : Icons.warning,
-                                                color:
-                                                    entry.score == 1
-                                                        ? const Color(
-                                                          0xFF4CAF50,
-                                                        )
-                                                        : const Color(
-                                                          0xFFD32F2F,
-                                                        ),
-                                                size: 24,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 16),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  entry.score == 1
-                                                      ? 'Normal'
-                                                      : 'Perlu ke RS',
-                                                  style: TextStyle(
-                                                    color:
-                                                        entry.score == 1
-                                                            ? const Color(
-                                                              0xFF4CAF50,
-                                                            )
-                                                            : const Color(
-                                                              0xFFD32F2F,
-                                                            ),
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  DateFormat(
-                                                    'dd MMMM yyyy',
-                                                  ).format(entry.date),
-                                                  style: TextStyle(
-                                                    color: Colors.grey.shade600,
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                entry.score == 1
-                                                    ? const Color(
-                                                      0xFF4CAF50,
-                                                    ).withOpacity(0.1)
-                                                    : const Color(
-                                                      0xFFD32F2F,
-                                                    ).withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(
-                                              20,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            entry.score == 1
-                                                ? 'Sehat'
-                                                : 'Rujukan',
-                                            style: TextStyle(
-                                              color:
-                                                  entry.score == 1
-                                                      ? const Color(0xFF4CAF50)
-                                                      : const Color(0xFFD32F2F),
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
                               );
                             },
                           ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                StartTestButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SKILASPage1(),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SKILASPage1(),
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        "Mulai Test",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
+                const SizedBox(height: 20),
               ],
             );
           },

@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:project/features/GDS/models/gds_test_entry.dart';
+import 'package:project/core/widgets/custom_app_bar.dart';
+import 'package:project/core/widgets/result_card.dart';
 
 class GDSHistoryPage extends StatefulWidget {
   const GDSHistoryPage({super.key});
@@ -50,20 +52,7 @@ class _GDSHistoryPageState extends State<GDSHistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Riwayat GDS",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
+      appBar: CustomAppBar(title: "Riwayat GDS", showCloseButton: true),
       backgroundColor: const Color(0xFFF8FAFB),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -127,71 +116,18 @@ class _GDSHistoryPageState extends State<GDSHistoryPage> {
                         itemCount: _history.length,
                         itemBuilder: (context, index) {
                           final result = _history[index];
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        DateFormat(
-                                          'dd MMMM yyyy',
-                                        ).format(result.date),
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Color(0xFF8A94A6),
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              result.isDepressed
-                                                  ? const Color(0xFFFFEBEE)
-                                                  : const Color(0xFFE6F4EA),
-                                          borderRadius: BorderRadius.circular(
-                                            20,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          result.isDepressed
-                                              ? "Depresi"
-                                              : "Tidak Depresi",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color:
-                                                result.isDepressed
-                                                    ? const Color(0xFFC62828)
-                                                    : const Color(0xFF1E7E34),
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    "Skor: ${result.score}",
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF222B45),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          return ResultCard(
+                            date: result.date,
+                            title: "Skor: ${result.score}",
+                            subtitle:
+                                result.isDepressed
+                                    ? "Pasien menunjukkan tanda-tanda depresi"
+                                    : "Pasien tidak menunjukkan tanda-tanda depresi",
+                            backgroundColor:
+                                result.isDepressed
+                                    ? const Color(0xFFD32F2F)
+                                    : const Color(0xFF4CAF50),
+                            onTap: null,
                           );
                         },
                       ),
@@ -225,7 +161,7 @@ class _GDSHistoryPageState extends State<GDSHistoryPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 20),
           ],
         ),
       ),

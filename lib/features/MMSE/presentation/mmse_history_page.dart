@@ -6,6 +6,9 @@ import 'package:intl/intl.dart';
 import 'mmse_test_page_1.dart';
 import 'package:project/features/MMSE/models/mmse_history_entry.dart';
 import 'mmse_history_detail_page.dart';
+import 'package:project/core/widgets/custom_app_bar.dart';
+import 'package:project/core/widgets/result_card.dart';
+import 'package:project/core/widgets/start_test_button.dart';
 
 class MMSEHistoryProvider extends ChangeNotifier {
   List<MMSEHistoryEntry> _history = [];
@@ -67,22 +70,9 @@ class _MMSEHistoryPageState extends State<MMSEHistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Color(0xFF2D3142)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
-          "Mini–Mental State Exam (MMSE)",
-          style: TextStyle(
-            color: Color(0xFF2D3142),
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
+      appBar: CustomAppBar(
+        title: "Mini–Mental State Exam (MMSE)",
+        showCloseButton: true,
       ),
       backgroundColor: const Color(0xFFF8FAFB),
       body: ChangeNotifierProvider<MMSEHistoryProvider>(
@@ -161,7 +151,34 @@ class _MMSEHistoryPageState extends State<MMSEHistoryPage> {
                                 (_, __) => const SizedBox(height: 16),
                             itemBuilder: (context, index) {
                               final entry = prov.history[index];
-                              return GestureDetector(
+                              String stage;
+                              Color stageColor;
+                              String subtitle;
+
+                              if (entry.score >= 24) {
+                                stage = 'Normal';
+                                stageColor = const Color(0xFF4CAF50);
+                                subtitle =
+                                    'Pasien tidak menunjukkan tanda-tanda gangguan kognitif';
+                              } else if (entry.score >= 18) {
+                                stage = 'Ringan';
+                                stageColor = const Color(0xFFFFD54F);
+                                subtitle =
+                                    'Pasien menunjukkan tanda-tanda gangguan kognitif ringan';
+                              } else {
+                                stage = 'Berat';
+                                stageColor = const Color(0xFFD32F2F);
+                                subtitle =
+                                    'Pasien menunjukkan tanda-tanda gangguan kognitif berat';
+                              }
+
+                              return ResultCard(
+                                date: entry.date,
+                                title: 'Skor: ${entry.score}',
+                                subtitle: subtitle,
+                                backgroundColor: stageColor,
+                                stage: stage,
+                                showStageBadge: true,
                                 onTap: () {
                                   Navigator.push(
                                     context,
@@ -173,155 +190,21 @@ class _MMSEHistoryPageState extends State<MMSEHistoryPage> {
                                     ),
                                   );
                                 },
-                                child: Card(
-                                  elevation: 2,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Colors.white,
-                                          Colors.blue.shade50,
-                                        ],
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              padding: const EdgeInsets.all(12),
-                                              decoration: BoxDecoration(
-                                                color: const Color(
-                                                  0xFF2563EB,
-                                                ).withOpacity(0.1),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              child: const Icon(
-                                                Icons.psychology,
-                                                color: Color(0xFF2563EB),
-                                                size: 24,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 16),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'Skor: ${entry.score}',
-                                                  style: const TextStyle(
-                                                    color: Color(0xFF2D3142),
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  DateFormat(
-                                                    'dd MMMM yyyy',
-                                                  ).format(entry.date),
-                                                  style: TextStyle(
-                                                    color: Colors.grey.shade600,
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                entry.score >= 24
-                                                    ? const Color(
-                                                      0xFFAFE073,
-                                                    ).withOpacity(0.1)
-                                                    : entry.score >= 18
-                                                    ? const Color(
-                                                      0xFFFFD54F,
-                                                    ).withOpacity(0.1)
-                                                    : const Color(
-                                                      0xFFFF8A65,
-                                                    ).withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(
-                                              20,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            entry.score >= 24
-                                                ? 'Normal'
-                                                : entry.score >= 18
-                                                ? 'Ringan'
-                                                : entry.score >= 10
-                                                ? 'Berat'
-                                                : 'Berat',
-                                            style: TextStyle(
-                                              color:
-                                                  entry.score >= 24
-                                                      ? const Color(0xFFAFE073)
-                                                      : entry.score >= 18
-                                                      ? const Color(0xFFFFD54F)
-                                                      : entry.score >= 10
-                                                      ? const Color(0xFFFF8A65)
-                                                      : const Color(0xFFE53935),
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
                               );
                             },
                           ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                StartTestButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MMSETestPage1(),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const MMSETestPage1(),
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        "Mulai Test",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 20),
               ],
             );
           },
