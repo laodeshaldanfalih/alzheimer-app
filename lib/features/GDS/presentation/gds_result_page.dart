@@ -1,159 +1,192 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:project/features/GDS/data/gds_test_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/features/GDS/providers/gds_test_provider.dart';
+import 'package:project/features/GDS/providers/gds_history_provider.dart';
+import 'package:project/features/GDS/models/gds_history_entry.dart';
 import 'package:project/features/GDS/presentation/gds_history_page.dart';
 
-class GDSResultPage extends StatelessWidget {
+class GDSResultPage extends ConsumerStatefulWidget {
   const GDSResultPage({super.key});
 
   @override
+  ConsumerState<GDSResultPage> createState() => _GDSResultPageState();
+}
+
+class _GDSResultPageState extends ConsumerState<GDSResultPage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      final state = ref.read(gdsTestProvider);
+      final score = state.totalScore ?? 0;
+      final isDepressed = score >= 5;
+      final answers = state.answers.map((e) => e ?? '-').toList();
+      ref
+          .read(gdsHistoryProvider.notifier)
+          .addEntry(
+            GDSHistoryEntry(
+              date: DateTime.now(),
+              score: score,
+              isDepressed: isDepressed,
+              answers: answers,
+            ),
+          );
+    });
+  }
+
+  String _getResultTitle(int score) {
+    if (score < 5) {
+      return 'Pasien mendapatkan skor <5!';
+    } else {
+      return 'Pasien mendapatkan skor >5!';
+    }
+  }
+
+  String _getResultDescription(int score) {
+    if (score < 5) {
+      return 'Hasil tes menunjukkan bahwa kesehatan mental depresi Anda berada dalam kisaran normal. Tidak ada indikasi gangguan depresi yang signifikan pada tingkat ini. Terus pertahankan gaya hidup sehat untuk mendukung kesehatan.';
+    } else {
+      return 'Hasil tes menunjukkan kemungkinan adanya gejala depresi. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
+    }
+  }
+
+  String _getResultImage(int score) {
+    if (score < 5) {
+      return 'assets/images/gds_happy.png';
+    } else {
+      return 'assets/images/gds_sad.png';
+    }
+  }
+
+  Color _getResultColor(int score) {
+    if (score < 5) {
+      return const Color(0xFFB2E59E); // green
+    } else {
+      return const Color(0xFFFFE082); // yellow
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final state = Provider.of<GDSTestState>(context);
-    final score = state.currentScore;
-    final isDepressed = score >= 5;
+    final state = ref.watch(gdsTestProvider);
+    final score = state.totalScore ?? 0;
+    final title = _getResultTitle(score);
+    final description = _getResultDescription(score);
+    final image = _getResultImage(score);
+    final color = _getResultColor(score);
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFB),
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0.5,
+        centerTitle: false,
         title: const Text(
-          "Hasil Tes GDS",
+          'Geriatric Depression Scale (GDS)',
           style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
+            color: Color(0xFF222B45),
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
           ),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        iconTheme: const IconThemeData(color: Colors.black),
+        automaticallyImplyLeading: false,
       ),
-      backgroundColor: const Color(0xFFF8FAFB),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              const Text(
-                "Hasil Tes",
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                  color: Color(0xFF222B45),
-                ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
+            child: Container(
+              width: double.infinity,
+              constraints: const BoxConstraints(maxWidth: 400),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 8,
-                      offset: Offset(0, 4),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Image
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
                     ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Status",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFF8A94A6),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                isDepressed
-                                    ? const Color(0xFFFFEBEE)
-                                    : const Color(0xFFE6F4EA),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            isDepressed ? "Depresi" : "Tidak Depresi",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color:
-                                  isDepressed
-                                      ? const Color(0xFFC62828)
-                                      : const Color(0xFF1E7E34),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      "Skor",
-                      style: TextStyle(fontSize: 16, color: Color(0xFF8A94A6)),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      score.toString(),
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF222B45),
+                    child: Center(
+                      child: Image.asset(
+                        image,
+                        height: 80,
+                        width: 80,
+                        fit: BoxFit.contain,
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      isDepressed
-                          ? "Skor ≥ 5 mengindikasikan gejala depresi"
-                          : "Skor < 5 mengindikasikan tidak ada gejala depresi",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF8A94A6),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const GDSHistoryPage(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    "Lihat Riwayat",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                  const SizedBox(height: 24),
+                  // Title
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                      color: Color(0xFF222B45),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  // Description
+                  Text(
+                    description,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF6B7280),
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  // Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2563EB),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
+                      ),
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const GDSHistoryPage(),
+                          ),
+                          (route) => route.isFirst,
+                        );
+                      },
+                      child: const Text(
+                        'Kembali ke Halaman Utama',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-            ],
+            ),
           ),
         ),
       ),
