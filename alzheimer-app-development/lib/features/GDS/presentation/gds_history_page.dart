@@ -1,76 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/features/GDS/providers/gds_history_provider.dart';
 import 'package:project/features/GDS/presentation/gds_test_page.dart';
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-import 'package:project/features/GDS/models/gds_test_entry.dart';
-import 'package:project/core/widgets/custom_app_bar.dart';
+import 'package:project/core/widgets/start_test_button.dart';
 import 'package:project/core/widgets/result_card.dart';
+import 'package:project/core/widgets/custom_app_bar.dart';
+import 'package:project/features/GDS/presentation/gds_history_detail_page.dart';
 
-class GDSHistoryPage extends StatefulWidget {
+class GDSHistoryPage extends ConsumerStatefulWidget {
   const GDSHistoryPage({super.key});
 
   @override
-  State<GDSHistoryPage> createState() => _GDSHistoryPageState();
+  ConsumerState<GDSHistoryPage> createState() => _GDSHistoryPageState();
 }
 
-class _GDSHistoryPageState extends State<GDSHistoryPage> {
-  List<GDSHistoryEntry> _history = [];
-  bool _sortByScore = false;
-
+class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
   @override
   void initState() {
     super.initState();
-    _loadHistory();
-  }
-
-  Future<void> _loadHistory() async {
-    final prefs = await SharedPreferences.getInstance();
-    final data = prefs.getStringList('gds_history') ?? [];
-    setState(() {
-      _history =
-          data.map((e) => GDSHistoryEntry.fromJson(json.decode(e))).toList();
-      _sortHistory();
-    });
-  }
-
-  void _sortHistory() {
-    if (_sortByScore) {
-      _history.sort((a, b) => b.score.compareTo(a.score));
-    } else {
-      _history.sort((a, b) => b.date.compareTo(a.date));
-    }
-  }
-
-  void _toggleSort() {
-    setState(() {
-      _sortByScore = !_sortByScore;
-      _sortHistory();
+    Future.microtask(() {
+      ref.read(gdsHistoryProvider.notifier).loadHistory();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final historyState = ref.watch(gdsHistoryProvider);
+    final sortedHistory = historyState.sortedHistory;
+
     return Scaffold(
-      appBar: CustomAppBar(title: "Riwayat GDS", showCloseButton: true),
+      appBar: CustomAppBar(
+        title: "Geriatric Depression Scale (GDS)",
+        showCloseButton: true,
+        onClose: () => Navigator.of(context).popUntil((route) => route.isFirst),
+      ),
       backgroundColor: const Color(0xFFF8FAFB),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 8),
-            const Text(
-              "Riwayat Tes GDS",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 18,
-                color: Color(0xFF222B45),
+            const Padding(
+              padding: EdgeInsets.only(left: 24, top: 24, bottom: 8),
+              child: Text(
+                "Riwayat Test",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 20,
+                  color: Color(0xFF222B45),
+                ),
               ),
             ),
-            const SizedBox(height: 18),
             Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               child: SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
@@ -87,7 +68,7 @@ class _GDSHistoryPageState extends State<GDSHistoryPage> {
                   ),
                   icon: const Icon(Icons.sort, color: Color(0xFF2D3142)),
                   label: Text(
-                    _sortByScore
+                    historyState.sortByScore
                         ? 'Sort berdasarkan Skor'
                         : 'Sort berdasarkan Tanggal',
                     style: const TextStyle(
@@ -96,70 +77,77 @@ class _GDSHistoryPageState extends State<GDSHistoryPage> {
                       fontSize: 15,
                     ),
                   ),
-                  onPressed: _toggleSort,
+                  onPressed: () {
+                    ref.read(gdsHistoryProvider.notifier).toggleSort();
+                  },
                 ),
               ),
             ),
             Expanded(
               child:
-                  _history.isEmpty
+                  sortedHistory.isEmpty
                       ? const Center(
                         child: Text(
-                          "Belum ada riwayat tes",
+                          'Belum ada riwayat test.',
                           style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF8A94A6),
+                            color: Color(0xFF9C9DB9),
+                            fontSize: 16,
                           ),
                         ),
                       )
-                      : ListView.builder(
-                        itemCount: _history.length,
+                      : ListView.separated(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 8,
+                        ),
+                        itemCount: sortedHistory.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 16),
                         itemBuilder: (context, index) {
-                          final result = _history[index];
+                          final entry = sortedHistory[index];
+                          String stage;
+                          Color stageColor;
+                          String subtitle;
+
+                          if (entry.isDepressed) {
+                            stage = 'Depresi';
+                            stageColor = const Color(0xFFD32F2F);
+                            subtitle =
+                                'Skor ≥ 5 mengindikasikan gejala depresi';
+                          } else {
+                            stage = 'Normal';
+                            stageColor = const Color(0xFF4CAF50);
+                            subtitle =
+                                'Skor < 5 mengindikasikan tidak ada gejala depresi';
+                          }
+
                           return ResultCard(
-                            date: result.date,
-                            title: "Skor: ${result.score}",
-                            subtitle:
-                                result.isDepressed
-                                    ? "Pasien menunjukkan tanda-tanda depresi"
-                                    : "Pasien tidak menunjukkan tanda-tanda depresi",
-                            backgroundColor:
-                                result.isDepressed
-                                    ? const Color(0xFFD32F2F)
-                                    : const Color(0xFF4CAF50),
-                            onTap: null,
+                            date: entry.date,
+                            title: 'Skor: ${entry.score}',
+                            subtitle: subtitle,
+                            backgroundColor: stageColor,
+                            stage: stage,
+                            showStageBadge: true,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          GDSHistoryDetailPage(entry: entry),
+                                ),
+                              );
+                            },
                           );
                         },
                       ),
             ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2563EB),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const GDSTestPage(),
-                    ),
-                  );
-                },
-                child: const Text(
-                  "Mulai Tes Baru",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
+            StartTestButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const GDSTestPage()),
+                );
+              },
             ),
             const SizedBox(height: 20),
           ],
