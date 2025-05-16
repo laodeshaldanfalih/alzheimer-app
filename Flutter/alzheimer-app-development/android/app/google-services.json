@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "281214992798",
+    "firebase_url": "https://alzheimer-app-c23db-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "alzheimer-app-c23db",
+    "storage_bucket": "alzheimer-app-c23db.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281214992798:android:d6e6c536ab69e58d28568f",
+        "android_client_info": {
+          "package_name": "com.example.alzheimerApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "281214992798-07a46cva02l5p0a506q2c188qvduftlo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.alzheimerApp",
+            "certificate_hash": "cc4bf30ccf681417232da7e4b06cae809444c90b"
+          }
+        },
+        {
+          "client_id": "281214992798-alvbls9f25klaug9p0fg4d5oaab004oi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.alzheimerApp",
+            "certificate_hash": "af77e0f6a94125ddf1df6e370b96e732783c2b8f"
+          }
+        },
+        {
+          "client_id": "281214992798-din63264drqq22lsskd2tajer9tjgcn7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHxzCO-IERNGsq2P2zBRGlaZcrBZ6a8nk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "281214992798-din63264drqq22lsskd2tajer9tjgcn7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "281214992798-3hu14ajvjs67b32hhf8aqiff60dan53j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.alzheimerApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
