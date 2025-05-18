@@ -11,12 +11,12 @@ import 'package:project/features/buletin/presentation/pages/buletin_page.dart';
 import 'package:project/features/buletin/data/article_data.dart';
 import 'package:project/features/buletin/models/article_item.dart';
 import 'package:project/features/home/presentation/pages/article_detail_page.dart';
-import 'package:project/features/reminder/presentation/reminder_menu_page.dart';
 import 'package:project/features/alzheimer_scan/presentation/pages/alzheimer_scan_page.dart';
 import 'package:project/features/game/presentation/pages/game_menu_page.dart';
 import 'dart:async';
 import 'package:project/core/widgets/main_layout.dart';
-import 'package:project/features/reminder/sholat_reminder/presentation/sholat_reminder_page.dart';
+import 'package:project/features/reminder/presentation/reminder_page.dart';
+import 'package:project/features/sholat/presentation/sholat_reminder_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -263,7 +263,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const ReminderMenuPage(),
+                              builder: (context) => const ReminderPage(),
                             ),
                           ),
                     ),

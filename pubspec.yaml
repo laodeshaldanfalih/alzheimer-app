@@ -57,6 +57,8 @@ dependencies:
   pdf: ^3.11.3
   path_provider: ^2.1.5
   share_plus: ^11.0.0
+  awesome_notifications: ^0.10.0
+  timezone: ^0.10.1
 
 dev_dependencies:
   flutter_test:

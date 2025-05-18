@@ -59,8 +59,19 @@
     <key>NSLocationAlwaysUsageDescription</key>
     <string>This app needs access to location when in the background to calculate prayer times.</string>
     <key>NSCameraUsageDescription</key>
-    <string>Aplikasi membutuhkan akses kamera untuk mengambil foto</string>
+    <string>This app needs camera access to scan QR codes</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Aplikasi membutuhkan akses galeri untuk memilih foto</string>
+    <string>This app needs photos access to get QR code from photo library</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>This app needs microphone access to record audio</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>This app needs calendar access to schedule reminders</string>
+    <key>NSRemindersUsageDescription</key>
+    <string>This app needs reminders access to schedule notifications</string>
+    <key>UIBackgroundModes</key>
+    <array>
+      <string>fetch</string>
+      <string>remote-notification</string>
+    </array>
   </dict>
 </plist>
