@@ -61,7 +61,10 @@ dependencies:
   timezone: ^0.10.1
   awesome_notifications: ^0.10.0
   awesome_dialog: ^3.2.1
-
+  firebase_storage: ^12.4.5
+  cloud_firestore: ^5.6.7
+  firebase_app_check: ^0.3.2+5
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -112,6 +115,8 @@ flutter:
     - assets/images/skilas_bad.png
     - assets/images/default_profile_picture.png
     - assets/images/mosque.png
+    - assets/images/menyusun_kata.png
+    - assets/images/menyusunKata.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

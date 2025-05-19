@@ -35,7 +35,7 @@ class CustomBottomNavBar extends StatelessWidget {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.document_scanner),
+            icon: Icon(Icons.qr_code_scanner),
             label: 'Scan',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),

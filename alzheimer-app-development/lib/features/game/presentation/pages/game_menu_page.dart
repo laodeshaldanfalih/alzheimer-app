@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:project/features/game/domain/models/game_menu_item.dart';
+import 'package:project/features/game/presentation/pages/landingpage_menyusun_kata.dart';
 import 'package:project/features/game/presentation/pages/menyocokkan_warna_page.dart';
+import 'package:project/features/game/presentation/pages/menyusun_kata.dart';
 import 'package:project/features/game/presentation/pages/menyusun_makanan_page.dart';
 
 class GameMenuPage extends StatelessWidget {
@@ -28,6 +30,16 @@ class GameMenuPage extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => MenyusunMakananPage()),
+          );
+        },
+      ),      GameMenuItem(
+        title: 'Menyusun Makanan',
+        description:
+            'Permainan menyusun makanan untuk melatih daya ingat dan pengambilan keputusan',
+        emoji: '🍽️',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => LandingpageMenyusunKata()),
           );
         },
       ),

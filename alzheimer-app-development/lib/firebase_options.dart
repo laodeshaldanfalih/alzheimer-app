@@ -54,6 +54,7 @@ class DefaultFirebaseOptions {
     appId: '1:281214992798:android:d6e6c536ab69e58d28568f',
     messagingSenderId: '281214992798',
     projectId: 'alzheimer-app-c23db',
+    databaseURL: 'https://alzheimer-app-c23db-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'alzheimer-app-c23db.firebasestorage.app',
   );
 
@@ -62,9 +63,11 @@ class DefaultFirebaseOptions {
     appId: '1:281214992798:ios:b139373a2e6c7c9628568f',
     messagingSenderId: '281214992798',
     projectId: 'alzheimer-app-c23db',
+    databaseURL: 'https://alzheimer-app-c23db-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'alzheimer-app-c23db.firebasestorage.app',
-    androidClientId: '281214992798-alvbls9f25klaug9p0fg4d5oaab004oi.apps.googleusercontent.com',
+    androidClientId: '281214992798-07a46cva02l5p0a506q2c188qvduftlo.apps.googleusercontent.com',
     iosClientId: '281214992798-3hu14ajvjs67b32hhf8aqiff60dan53j.apps.googleusercontent.com',
     iosBundleId: 'com.example.alzheimerApp',
   );
+
 }
