@@ -18,6 +18,7 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
   final _picker = ImagePicker();
   String _className = '';
   double _confidence = 0.0;
+  bool _isChecking = false; // State untuk loading
 
   Future<bool> _ensureCameraPermission() async {
     final status = await Permission.camera.request();
@@ -83,6 +84,13 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
 
   Future<void> _checkImage() async {
     if (_image == null) return;
+
+    setState(() {
+      _isChecking = true;
+      _className = '';
+      _confidence = 0.0;
+    });
+
     try {
       final raw = await ApiService.uploadImage(_image!);
       final data = jsonDecode(raw) as Map<String, dynamic>;
@@ -92,6 +100,10 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
       });
     } catch (e) {
       _showSnack('Error saat upload: $e');
+    } finally {
+      setState(() {
+        _isChecking = false;
+      });
     }
   }
 
@@ -100,8 +112,8 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         title: const Text('Pemeriksaan Alzheimer'),
+        backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -112,7 +124,6 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
               aspectRatio: 1,
               child: Stack(
                 children: [
-                  // Border dashed yang mengisi penuh
                   Positioned.fill(
                     child: DottedBorder(
                       borderType: BorderType.RRect,
@@ -147,8 +158,27 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
                                         ),
                                         const SizedBox(height: 16),
                                         ElevatedButton(
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                WidgetStateProperty.all<Color>(
+                                                  const Color(0xFFA1A4B2),
+                                                ),
+                                            shape: WidgetStateProperty.all<
+                                              RoundedRectangleBorder
+                                            >(
+                                              RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                              ),
+                                            ),
+                                          ),
                                           onPressed: _showPickerOptions,
-                                          child: const Text('Pilih Gambar'),
+                                          child: const Text(
+                                            'Pilih Gambar',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -244,18 +274,33 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _checkImage,
+                  onPressed: _isChecking ? null : _checkImage,
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFA1A4B2),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    elevation: 4,
+                    elevation: 2,
                   ),
-                  child: const Text(
-                    'Periksa',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                  child:
+                      _isChecking
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                          : const Text(
+                            'Periksa',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                 ),
               ),
             ],
@@ -264,6 +309,7 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
 
             // ── Card Hasil Pemeriksaan ──
             Card(
+              color: Colors.white, // Background card putih
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -304,6 +350,21 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
                     const SizedBox(height: 8),
                     Center(
                       child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(
+                            0xFFA1A4B2,
+                          ), // Warna button A1A4B2
+                          foregroundColor: Colors.white, // Warna text putih
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              6,
+                            ), // Radius border 6
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ), // Padding button
+                        ),
                         onPressed: () {
                           // TODO: simpan hasil
                         },
