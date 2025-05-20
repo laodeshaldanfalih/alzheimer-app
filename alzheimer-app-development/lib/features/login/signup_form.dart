@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:project/features/login/auth_provider.dart'; // Sesuaikan path jika perlu
+import 'package:project/features/login/auth_provider.dart';
+import 'package:project/features/login/phone_signup_page.dart'; // Sesuaikan path jika perlu
 
 class SignUpForm extends ConsumerStatefulWidget {
   const SignUpForm({super.key});
@@ -90,7 +91,6 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
           //   },
           // ),
           // SizedBox(height: 20), // Sesuaikan jarak jika perlu
-
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
@@ -211,7 +211,8 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Flexible( // Tambahkan Flexible untuk teks panjang
+              Flexible(
+                // Tambahkan Flexible untuk teks panjang
                 child: RichText(
                   text: TextSpan(
                     text: "I have read the ",
@@ -245,10 +246,33 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             ],
           ),
           SizedBox(height: 30),
+
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PhoneSignUpPage(),
+                ),
+              );
+            },
+            child: Text(
+              "Daftar menggunakan nomor telepon",
+              style: TextStyle(
+                color: Color(0xff7583CA), // Samakan dengan warna link lain
+                fontSize: 14, // Sesuaikan ukuran font
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          SizedBox(height: 30),
+
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               minimumSize: Size(double.infinity, double.minPositive),
-              backgroundColor: Color(0xffD9D9D9), // Pertimbangkan warna yang lebih menarik untuk tombol aktif
+              backgroundColor: Color(
+                0xffD9D9D9,
+              ), // Pertimbangkan warna yang lebih menarik untuk tombol aktif
             ),
             onPressed: () async {
               if (_formKey.currentState!.validate() && isChecked) {
@@ -260,7 +284,8 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                     // HAPUS: _usernameController.text.trim(),
                   );
                 } catch (e) {
-                  if (mounted) { // Pastikan widget masih mounted sebelum menampilkan SnackBar
+                  if (mounted) {
+                    // Pastikan widget masih mounted sebelum menampilkan SnackBar
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('Registration failed: ${e.toString()}'),
@@ -269,11 +294,11 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                   }
                 }
               } else if (!isChecked) {
-                 if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Please accept the Privacy Policy')),
-                    );
-                 }
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Please accept the Privacy Policy')),
+                  );
+                }
               }
             },
             child: Padding(

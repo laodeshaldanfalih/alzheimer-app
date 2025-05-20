@@ -374,35 +374,6 @@ class _SignInFormState extends ConsumerState<SignInForm> {
               ),
             ),
           ),
-           SizedBox(height: 20), // Added spacing
-          Text(
-            "Atau login dengan nomor telepon",
-            style: TextStyle(color: Color(0XFFA1A4B2), fontSize: 12),
-          ),
-          SizedBox(height: 20), // Added spacing
-           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              minimumSize: Size(double.infinity, double.minPositive),
-              backgroundColor: Color(0xffD9D9D9),
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => PhoneSignInPage()),
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              child: Text(
-                'LOG IN WITH PHONE NUMBER',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );

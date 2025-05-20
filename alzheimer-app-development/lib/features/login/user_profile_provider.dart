@@ -4,13 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Pastikan import path benar untuk auth_provider
 import 'package:project/features/login/auth_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fb_auth; // Menggunakan alias fb_auth
+import 'package:firebase_auth/firebase_auth.dart'
+    as fb_auth; // Menggunakan alias fb_auth
 
 // ... (Definisi class UserProfile Anda) ...
 class UserProfile {
   final String? name;
   final String email;
   final String? phone;
+  final String? patientPhone;
   final DateTime? birthDate;
   final String? gender;
   final String? photoUrl;
@@ -19,16 +21,18 @@ class UserProfile {
     this.name,
     required this.email,
     this.phone,
+    this.patientPhone,
     this.birthDate,
     this.gender,
     this.photoUrl,
   });
 
-// copyWith method jika diperlukan
+  // copyWith method jika diperlukan
   UserProfile copyWith({
     String? name,
     String? email,
     String? phone,
+    String? patientPhone,
     DateTime? birthDate,
     String? gender,
     String? photoUrl,
@@ -37,6 +41,7 @@ class UserProfile {
       name: name ?? this.name,
       email: email ?? this.email,
       phone: phone ?? this.phone,
+      patientPhone: patientPhone ?? this.patientPhone,
       birthDate: birthDate ?? this.birthDate,
       gender: gender ?? this.gender,
       photoUrl: photoUrl ?? this.photoUrl,
@@ -44,36 +49,45 @@ class UserProfile {
   }
 }
 
-
 class UserProfileNotifier extends StateNotifier<UserProfile?> {
+  final AuthNotifier _authNotifier;
   final FirebaseFirestore _firestore;
   final fb_auth.FirebaseAuth _auth; // Menggunakan alias fb_auth
 
-  UserProfileNotifier(this._firestore, this._auth) : super(null) {
+  UserProfileNotifier(this._firestore, this._auth, this._authNotifier)
+    : super(null) {
     // Anda masih bisa memanggilnya di konstruktor jika ingin data dimuat saat provider pertama kali dibuat
     loadProfile();
   }
 
   // Ubah menjadi publik atau buat wrapper publik
-  Future<void> loadProfile() async { // Hapus garis bawah
+  Future<void> loadProfile() async {
+    // Hapus garis bawah
     final user = _auth.currentUser;
     if (user != null) {
       try {
-        final doc = await _firestore.collection('user_profiles').doc(user.uid).get();
+        final doc =
+            await _firestore.collection('user_profiles').doc(user.uid).get();
         if (doc.exists) {
           final data = doc.data();
           state = UserProfile(
             name: data?['name'],
             email: data?['email'] ?? user.email!,
             phone: data?['phone'],
-            birthDate: data?['birthDate'] != null ? (data!['birthDate'] as Timestamp).toDate() : null,
+            patientPhone: data?['patientPhone'],
+            birthDate:
+                data?['birthDate'] != null
+                    ? (data!['birthDate'] as Timestamp).toDate()
+                    : null,
             gender: data?['gender'],
             photoUrl: data?['photoUrl'],
           );
         } else {
           // Jika profil tidak ada di Firestore, set state dengan email user
           // atau state null jika ingin ProfilePage menangani ini sebagai profil baru
-          state = UserProfile(email: user.email!); // Atau state = null; tergantung logika Anda
+          state = UserProfile(
+            email: user.email!,
+          ); // Atau state = null; tergantung logika Anda
         }
       } catch (e) {
         print("Error loading profile from UserProfileNotifier: $e");
@@ -90,6 +104,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     required String email,
     String? name,
     String? phone,
+    String? patientPhone,
     DateTime? birthDate,
     String? gender,
     String? photoUrl,
@@ -98,44 +113,84 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
     if (user != null) {
       try {
         Map<String, dynamic> profileData = {
-          'email': email,
+          'email': email.isNotEmpty ? email : null,
           'updatedAt': FieldValue.serverTimestamp(),
         };
-        // Tambahkan field hanya jika tidak null untuk menghindari penimpaan dengan null secara tidak sengaja
-        // jika SetOptions(merge: true) digunakan dan field dikirim sebagai null.
-        // Atau, jika Anda ingin secara eksplisit mengizinkan null, maka sertakan saja.
         if (name != null) profileData['name'] = name;
+        if (patientPhone != null) profileData['patientPhone'] = patientPhone;
+
         if (phone != null) profileData['phone'] = phone;
-        if (birthDate != null) profileData['birthDate'] = Timestamp.fromDate(birthDate);
+        if (birthDate != null)
+          profileData['birthDate'] = Timestamp.fromDate(birthDate);
         if (gender != null) profileData['gender'] = gender;
 
-        // Penanganan photoUrl: jika null, kita ingin menghapusnya atau set ke null di DB
         if (photoUrl == null) {
-          profileData['photoUrl'] = null; // Atau FieldValue.delete() jika ingin fieldnya hilang
+          profileData['photoUrl'] = null;
         } else {
           profileData['photoUrl'] = photoUrl;
         }
 
-        final docSnapshot = await _firestore.collection('user_profiles').doc(user.uid).get();
+        // bool isEmailProviderLinked = user.providerData.any(
+        //   (p) => p.providerId == fb_auth.EmailAuthProvider.PROVIDER_ID,
+        // );
+
+        // if (email.isNotEmpty && user.email != email) {
+        //   // Jika user tidak punya email di Auth (login via phone) ATAU
+        //   // jika user punya email provider dan email di form beda
+        //   if (user.email == null ||
+        //       (user.email != null && isEmailProviderLinked)) {
+        //     try {
+        //       await _authNotifier.updateAuthUserEmail(
+        //         email,
+        //       ); // Panggil method AuthNotifier
+        //     } catch (e) {
+        //       // Tangani error spesifik dari updateAuthUserEmail (misal email-already-in-use)
+        //       // dan lempar ulang agar bisa ditangkap di UI
+        //       print(
+        //         "Error during updateAuthUserEmail from UserProfileNotifier: $e",
+        //       );
+        //       rethrow;
+        //     }
+        //   } else if (user.email != null &&
+        //       !isEmailProviderLinked &&
+        //       user.providerData.any(
+        //         (p) => p.providerId == fb_auth.GoogleAuthProvider.PROVIDER_ID,
+        //       )) {
+        //     // User login dengan Google, dan mencoba mengubah email di form.
+        //     // Ini seharusnya tidak diizinkan atau memerlukan perlakuan khusus karena email Google adalah identifier utama.
+        //     // Untuk saat ini, kita tidak akan mencoba mengubah email Auth jika itu dari Google.
+        //     // Email di Firestore akan tetap diupdate sesuai input form.
+        //     print(
+        //       "User logged in with Google. Firebase Auth email will not be changed via this form.",
+        //     );
+        //     // Anda mungkin ingin menampilkan pesan ke pengguna di sini.
+        //   }
+        // }
+
+        final docSnapshot =
+            await _firestore.collection('user_profiles').doc(user.uid).get();
         if (!docSnapshot.exists) {
           profileData['createdAt'] = FieldValue.serverTimestamp();
         }
+        await _firestore
+            .collection('user_profiles')
+            .doc(user.uid)
+            .set(profileData, SetOptions(merge: true));
 
-        await _firestore.collection('user_profiles').doc(user.uid).set(
-              profileData,
-              SetOptions(merge: true), // Pastikan merge true
-            );
+        await _firestore
+            .collection('user_profiles')
+            .doc(user.uid)
+            .set(profileData, SetOptions(merge: true));
 
-        // Update state lokal setelah berhasil.
-        // Ambil state saat ini untuk mempertahankan field yang tidak diubah.
         final currentState = state;
         state = UserProfile(
           name: name ?? currentState?.name,
-          email: email, // email biasanya tidak berubah dari auth, tapi disertakan untuk kelengkapan
+          email: email.isNotEmpty ? email : (state?.email ?? ''),
           phone: phone ?? currentState?.phone,
+          patientPhone: patientPhone ?? currentState?.patientPhone,
           birthDate: birthDate ?? currentState?.birthDate,
           gender: gender ?? currentState?.gender,
-          photoUrl: photoUrl, // Ini akan jadi null jika photoUrl yang dikirim null
+          photoUrl: photoUrl,
         );
 
         if (name != null && user.displayName != name) {
@@ -151,8 +206,12 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
 
 final userProfileProvider =
     StateNotifierProvider<UserProfileNotifier, UserProfile?>((ref) {
-  // Pastikan provider ini di-watch dengan benar
-  final auth = ref.watch(firebaseAuthProvider); // Menggunakan alias fb_auth jika didefinisikan di auth_provider
-  final firestore = ref.watch(firestoreProvider);
-  return UserProfileNotifier(firestore, auth);
-});
+      final auth = ref.watch(firebaseAuthProvider);
+      final firestore = ref.watch(firestoreProvider);
+      final authNotifier = ref.read(authProvider.notifier); // Baca AuthNotifier
+      return UserProfileNotifier(
+        firestore,
+        auth,
+        authNotifier,
+      ); // Berikan ke konstruktor
+    });

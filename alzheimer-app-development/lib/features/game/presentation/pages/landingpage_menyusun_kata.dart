@@ -7,7 +7,9 @@ import 'menyusun_kata.dart'; // Halaman game utama
 // Untuk contoh ini, kita hardcode dulu daftarnya
 
 class LandingpageMenyusunKata extends StatefulWidget {
+  
   const LandingpageMenyusunKata({super.key});
+  
 
   @override
   State<LandingpageMenyusunKata> createState() =>
@@ -40,7 +42,6 @@ Widget build(BuildContext context) {
   return Scaffold(
     // AppBar tidak diubah, tetap seperti sebelumnya
     appBar: AppBar(
-      title: const Text('Pengaturan Game Susun Kata'),
       backgroundColor: Colors.blue.shade700,
       elevation: 0, // AppBar menyatu dengan body
     ),

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:project/core/providers/auth_provider.dart';
 import 'package:project/core/providers/shared_providers.dart';
 import 'package:project/core/widgets/main_layout.dart';
 import 'package:project/features/login/auth_provider.dart';
+import 'package:project/features/login/phone_signin_page.dart';
 import 'package:project/features/login/signin_form.dart';
 import 'package:project/features/login/signup_page.dart';
-
 
 class SignInPage extends ConsumerWidget {
   const SignInPage({super.key});
@@ -99,7 +98,52 @@ class SignInPage extends ConsumerWidget {
                       style: TextStyle(color: Color(0XFFA1A4B2), fontSize: 12),
                     ),
                     const SizedBox(height: 30),
+
                     SignInForm(),
+
+                    const SizedBox(height: 20),
+                    Text(
+                      "Atau login dengan nomor telepon", //
+                      style: TextStyle(color: Color(0XFFA1A4B2), fontSize: 12),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(
+                          double.infinity,
+                          double.minPositive,
+                        ), //
+                        backgroundColor:
+                            Colors.teal, // Ganti warna sesuai tema Anda
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(38),
+                        ),
+                      ),
+                      onPressed:
+                          isLoading
+                              ? null
+                              : () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => const PhoneSignInPage(),
+                                  ), //
+                                );
+                              },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15), //
+                        child: Text(
+                          'LOGIN DENGAN NOMOR TELEPON', //
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+
                     const SizedBox(height: 30),
                     GestureDetector(
                       onTap:

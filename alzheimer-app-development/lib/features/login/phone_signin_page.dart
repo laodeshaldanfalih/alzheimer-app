@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:project/core/providers/auth_provider.dart';
 import 'package:project/core/providers/shared_providers.dart';
+import 'package:project/features/login/auth_provider.dart' as app_auth_provider; // Alias untuk provider Anda
 import 'package:project/core/widgets/main_layout.dart';
-import 'package:project/features/login/auth_provider.dart';
+// import 'package:project/features/login/auth_provider.dart';
 
 class PhoneSignInPage extends ConsumerStatefulWidget {
   const PhoneSignInPage({super.key});
@@ -18,78 +18,119 @@ class _PhoneSignInPageState extends ConsumerState<PhoneSignInPage> {
   final _smsCodeController = TextEditingController();
   String _verificationId = '';
   bool _codeSent = false;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void _verifyPhoneNumber() async {
     ref.read(isLoadingProvider.notifier).state = true;
-    await _auth.verifyPhoneNumber(
+    final authNotifier = ref.read(app_auth_provider.authProvider.notifier); // Gunakan alias
+    final fAuth = ref.read(app_auth_provider.firebaseAuthProvider); // Gunakan alias
+
+    await fAuth.verifyPhoneNumber( // Panggil langsung instance FirebaseAuth
       phoneNumber: _phoneNumberController.text.trim(),
       verificationCompleted: (PhoneAuthCredential credential) async {
         // Auto-retrieve code on Android
-        await _auth.signInWithCredential(credential);
-        ref.read(isLoadingProvider.notifier).state = false;
+        await authNotifier.signInWithPhoneNumber(credential.verificationId!, credential.smsCode!); // Panggil Notifier
+        if (mounted) ref.read(isLoadingProvider.notifier).state = false;
       },
       verificationFailed: (FirebaseAuthException e) {
-        print("Verification Failed: ${e.message}");
-        ref.read(isLoadingProvider.notifier).state = false;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Verification failed: ${e.message}")),
-        );
+        // ... (error handling)
+        if (mounted) ref.read(isLoadingProvider.notifier).state = false;
       },
       codeSent: (String verificationId, int? resendToken) {
-        setState(() {
-          _verificationId = verificationId;
-          _codeSent = true;
+        if (mounted) {
+          setState(() {
+            _verificationId = verificationId;
+            _codeSent = true;
+          });
           ref.read(isLoadingProvider.notifier).state = false;
-        });
+        }
       },
       codeAutoRetrievalTimeout: (String verificationId) {
-        setState(() {
-          _verificationId = verificationId;
-        });
+         if (mounted) {
+            setState(() {
+              _verificationId = verificationId;
+            });
+          }
       },
       timeout: const Duration(seconds: 60),
     );
   }
-
-  void _signInWithPhoneNumber() async {
-     ref.read(isLoadingProvider.notifier).state = true;
-    try {
-      final credential = PhoneAuthProvider.credential(
-        verificationId: _verificationId,
-        smsCode: _smsCodeController.text.trim(),
-      );
-      await _auth.signInWithCredential(credential);
-      ref.read(isLoadingProvider.notifier).state = false;
-    } catch (e) {
-      print("Sign In with Phone Failed: $e");
-       ref.read(isLoadingProvider.notifier).state = false;
+  void _signInWithPhoneNumber() async { //
+    if (_verificationId.isEmpty || _smsCodeController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Sign in failed: ${e.toString()}")),
+        SnackBar(content: Text("Verification ID atau kode SMS tidak valid.")),
       );
+      return;
+    }
+    ref.read(isLoadingProvider.notifier).state = true;
+    try {
+      // Panggil AuthNotifier untuk proses sign-in
+      await ref.read(app_auth_provider.authProvider.notifier).signInWithPhoneNumber( // Gunakan alias
+            _verificationId,
+            _smsCodeController.text.trim(),
+          );
+      // Navigasi sudah dihandle oleh listener di SignInPage atau AuthWrapper
+    } catch (e) {
+      print("Sign In with Phone Failed from UI: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Gagal melakukan sign in: ${e.toString()}")),
+        );
+      }
+    } finally {
+      if (mounted) {
+        ref.read(isLoadingProvider.notifier).state = false;
+      }
     }
   }
 
-   @override
-  void dispose() {
-    _phoneNumberController.dispose();
-    _smsCodeController.dispose();
-    super.dispose();
-  }
-
-
-  @override
+    @override
   Widget build(BuildContext context) {
-     final isLoading = ref.watch(isLoadingProvider);
+    final isLoading = ref.watch(isLoadingProvider);
 
-     // Listen to auth state changes
-    ref.listen(authProvider, (previous, next) {
-      if (next != null) {
-        Navigator.of(
-          context,
-        ).pushReplacement(MaterialPageRoute(builder: (_) => MainLayout()));
+    // Listen to auth state changes untuk navigasi
+    ref.listen<User?>(app_auth_provider.authProvider, (previous, next) { // Gunakan alias
+      if (next != null && mounted) { // Jika login berhasil
+        // Cek apakah ada halaman sebelumnya di stack selain halaman sign-in/sign-up
+        // Jika ya, kembali. Jika tidak (misalnya dari splash/authwrapper), pergi ke MainLayout.
+        if (Navigator.of(context).canPop()) {
+            // Jika kita datang dari SignInPage, kita ingin mengganti SignInPage dengan MainLayout
+            bool isComingFromAuthFlow = ModalRoute.of(context)?.settings.name == '/signin' || ModalRoute.of(context)?.settings.name == '/signup';
+            if (isComingFromAuthFlow) {
+                 Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const MainLayout()),
+                    (Route<dynamic> route) => false,
+                );
+            } else {
+                 Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const MainLayout()));
+            }
+
+        } else {
+             Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const MainLayout()));
+        }
       }
     });
+
+  //  @override
+  // void dispose() {
+  //   _phoneNumberController.dispose();
+  //   _smsCodeController.dispose();
+  //   super.dispose();
+  // }
+
+
+  // @override
+  // Widget build(BuildContext context) {
+  //    final isLoading = ref.watch(isLoadingProvider);
+
+  //    // Listen to auth state changes
+  //   ref.listen(authProvider, (previous, next) {
+  //     if (next != null) {
+  //       Navigator.of(
+  //         context,
+  //       ).pushReplacement(MaterialPageRoute(builder: (_) => MainLayout()));
+  //     }
+  //   });
 
     return Scaffold(
        appBar: AppBar(

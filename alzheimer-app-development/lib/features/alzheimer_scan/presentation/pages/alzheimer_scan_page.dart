@@ -117,7 +117,7 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Column(
+        child: Column(    
           children: [
             // ── Kotak frame dengan padding di dalamnya ──
             AspectRatio(

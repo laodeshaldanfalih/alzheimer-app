@@ -112,14 +112,33 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
                   context,
                   MaterialPageRoute(
                     builder:
-                        (context) =>
-                            EditProfilePage(userProfile: userProfileState),
+                        (context) => EditProfilePage(
+                          userProfile: userProfileState,
+                        ), // Pastikan userProfileState di sini sudah update
                   ),
                 ).then((value) {
-                  // Muat ulang data setelah kembali dari halaman edit, jika ada perubahan
-                  if (value == true) {
-                    _loadProfileData();
-                  }
+                  if (value == true) _loadProfileData();
+                });
+              } else if (authUser != null) {
+                // Jika profil Firestore belum ada
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => EditProfilePage(
+                          userProfile: UserProfile(
+                            // PASTIKAN SEMUA FIELD ADA, termasuk patientPhone
+                            email: authUser.email ?? '',
+                            name: authUser.displayName,
+                            phone: authUser.phoneNumber,
+                            photoUrl: authUser.photoURL,
+                            patientPhone:
+                                '', // Atau null, tergantung bagaimana Anda ingin menampilkannya jika baru
+                          ),
+                        ),
+                  ),
+                ).then((value) {
+                  if (value == true) _loadProfileData();
                 });
               } else {
                 _showSnackBar('Data profil belum termuat untuk diedit.');
@@ -271,6 +290,10 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
                         'Tanggal Lahir',
                         _formatBirthDate(userProfileState.birthDate),
                       ),
+                      _buildProfileDetailItem(
+                        'Nomor Telepon Pasien',
+                        userProfileState.patientPhone ?? '-',
+                      ),
                     ]),
                     const SizedBox(height: 20),
 
@@ -281,7 +304,13 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
                       [
                         _buildProfileDetailItem2(
                           'Email Login',
-                          authUser?.email ?? userProfileState.email,
+                          // Jika userProfileState.email null atau kosong, dan authUser.email ada, gunakan itu.
+                          // Ini menangani kasus di mana profil Firestore mungkin belum sinkron atau user baru via telepon.
+                          (userProfileState.email?.isEmpty ?? true)
+                              ? (authUser?.email ??
+                                  'Belum diisi') // Tampilkan email dari Auth jika ada, atau "Belum diisi"
+                              : userProfileState
+                                  .email!, // Jika ada di profil, tampilkan
                           isTitleAsLabel: true,
                         ),
                       ],
@@ -295,7 +324,7 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
                       null, // Judul null agar langsung menampilkan item
                       [
                         _buildProfileDetailItem2(
-                          'Nomor Telepon',
+                          'Akun Telepon Login',
                           userProfileState.phone ?? '-',
                           isTitleAsLabel: true,
                         ),
@@ -370,7 +399,7 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
   }) {
     return Padding(
       padding: EdgeInsets.only(
-        bottom: isTitleAsLabel ? 0 : 12.0,
+        bottom: isTitleAsLabel ? 0 : 20,
       ), // Tidak ada bottom padding jika ini adalah item tunggal dengan label sebagai judul
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -389,11 +418,17 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
           ],
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            // padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            padding: const EdgeInsets.only(bottom: 8), 
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[200]!),
+              // Hapus warna latar belakang atau sesuaikan jika ingin berbeda dari Scaffold
+              // color: Colors.white, // Opsional: jika ingin latar belakangnya tetap putih
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey[400]!, // Warna underline, sesuaikan
+                  width: 1.0, // Ketebalan underline, sesuaikan
+                ),
+              ),
             ),
             child: Text(
               value.isEmpty ? '-' : value,
@@ -441,8 +476,8 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
               value.isEmpty ? '-' : value,
               style: const TextStyle(
                 fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF4B5563),
+                fontWeight: FontWeight.w400,
+                color: Colors.blue,
               ),
             ),
           ),
