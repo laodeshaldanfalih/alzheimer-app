@@ -1,20 +1,19 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:project/core/providers/auth_provider.dart';
-import 'package:project/core/providers/user_profile_provider.dart';
+import 'dart:async';
+import 'package:flutter_svg/svg.dart';
+import 'package:project/core/widgets/geometric_shape_page.dart';
 import 'package:project/features/GDS/presentation/gds_history_page.dart';
 import 'package:project/features/MMSE/presentation/mmse_history_page.dart';
 import 'package:project/features/SKILAS/presentation/skilas_history_page.dart';
-import 'package:project/features/auth/presentation/pages/signin_page.dart';
-import 'package:project/features/buletin/presentation/pages/buletin_page.dart';
+import 'package:project/features/alzheimer_scan/presentation/pages/alzheimer_scan_page.dart';
 import 'package:project/features/buletin/data/article_data.dart';
 import 'package:project/features/buletin/models/article_item.dart';
-import 'package:project/features/home/presentation/pages/article_detail_page.dart';
-import 'package:project/features/alzheimer_scan/presentation/pages/alzheimer_scan_page.dart';
+import 'package:project/features/buletin/presentation/pages/buletin_page.dart';
 import 'package:project/features/game/presentation/pages/game_menu_page.dart';
-import 'dart:async';
-import 'package:project/core/widgets/main_layout.dart';
+import 'package:project/features/home/presentation/pages/article_detail_page.dart';
 import 'package:project/features/reminder/presentation/reminder_page.dart';
 import 'package:project/features/sholat/presentation/sholat_reminder_page.dart';
 
@@ -87,72 +86,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     return '${days[dateTime.weekday - 1]}, ${dateTime.day} ${months[dateTime.month - 1]} ${dateTime.year}';
   }
 
-  bool _isProfileComplete(UserProfile? profile) {
-    if (profile == null) return false;
-
-    // Check if essential fields are filled
-    final hasName = profile.name != null && profile.name!.isNotEmpty;
-    final hasAge = profile.age != null;
-    final hasGender = profile.gender != null && profile.gender!.isNotEmpty;
-    final hasBirthdate = profile.birthdate != null;
-
-    // Profile is complete if all essential fields are filled
-    return hasName && hasAge && hasGender && hasBirthdate;
-  }
-
-  void _showProfileIncompleteDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Profil Belum Lengkap'),
-          content: const Text(
-            'Silakan lengkapi profil Anda terlebih dahulu sebelum mengakses fitur tes.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Batal'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Navigate to profile tab using a custom route
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MainLayout(initialIndex: 2),
-                  ),
-                );
-              },
-              child: const Text('Lengkapi Profil'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _handleAssessmentTap(BuildContext context, Widget targetPage) {
-    final userProfile = ref.read(userProfileProvider);
-    if (!_isProfileComplete(userProfile)) {
-      _showProfileIncompleteDialog(context);
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => targetPage),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final userProfile = ref.watch(userProfileProvider);
-    final user = ref.watch(authProvider);
-    final authNotifier = ref.read(authProvider.notifier);
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -167,243 +102,279 @@ class _HomePageState extends ConsumerState<HomePage> {
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.black),
-            onPressed: () async {
-              await authNotifier.signOut();
-              if (mounted) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => SignInPage()),
-                );
-              }
-            },
-          ),
-        ],
+        actions: [],
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Time Card
-              Center(
-                child: Container(
-                  height: 177,
-                  width: 210,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffB5BED4),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        top: 48,
-                        left: 0,
-                        right: 0,
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Column(
-                            children: [
-                              Text(
-                                _timeString,
-                                style: const TextStyle(
-                                  color: Color(0xffFFECCC),
-                                  fontSize: 36,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                _dateString,
-                                style: const TextStyle(
-                                  color: Color(0xffFFECCC),
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: SvgPicture.asset(
-                          'assets/svgs/wave.svg',
-                          color: Color(0xff898CB0),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
+        child: Stack(
+          children: [
+            const GeometricBackground(),
+            SizedBox(
+              width: double.infinity,
+              child: ColoredBox(color: Colors.black),
+            ),
 
-              // Fitur Aplikasi Section
-              const Text(
-                'Fitur Aplikasi',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D3142),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: 60,
-                    child: _buildFeatureItem(
-                      icon: 'assets/svgs/icon_pengingat.svg',
-                      label: 'Notifikasi\nPengingat',
-                      onTap:
-                          () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ReminderPage(),
+                  Center(
+                    child: Container(
+                      height: 177,
+                      width: 210,
+                      decoration: BoxDecoration(
+                        color: const Color(0xffB5BED4),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: 20,
+                            left: 0,
+                            right: 0,
+                            child: Align(
+                              alignment: Alignment.topCenter,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    _timeString,
+                                    style: const TextStyle(
+                                      color: Color(0xffFFECCC),
+                                      fontSize: 36,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    _dateString,
+                                    style: const TextStyle(
+                                      color: Color(0xffFFECCC),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: SvgPicture.asset(
+                              'assets/svgs/wave.svg',
+                              color: Color(0xff898CB0),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(
-                    width: 60,
-                    child: _buildFeatureItem(
-                      icon: 'assets/svgs/icon_game.svg',
-                      label: 'Game',
-                      onTap:
-                          () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const GameMenuPage(),
-                            ),
-                          ),
+
+                  const SizedBox(height: 24),
+
+                  // White background container starts here
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 60,
-                    child: _buildFeatureItem(
-                      icon: 'assets/svgs/icon_waktu_sholat.svg',
-                      label: 'Waktu\nSholat',
-                      onTap:
-                          () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SholatPage(),
-                            ),
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Fitur Aplikasi Section
+                        const Text(
+                          'Fitur Aplikasi',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2D3142),
                           ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 60,
-                    child: _buildFeatureItem(
-                      icon: 'assets/svgs/icon_buletin.svg',
-                      label: 'Panduan\nKesehatan',
-                      onTap:
-                          () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const BuletinPage(),
+                        ),
+                        const SizedBox(height: 16),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: 60,
+                              child: _buildFeatureItem(
+                                icon: 'assets/svgs/icon_pengingat.svg',
+                                label: 'Notifikasi\nPengingat',
+                                onTap:
+                                    () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => const ReminderPage(),
+                                      ),
+                                    ),
+                              ),
                             ),
-                          ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 60,
-                    child: _buildFeatureItem(
-                      icon: 'assets/svgs/icon_screening_otak.svg',
-                      label: 'Screening\nOtak',
-                      onTap:
-                          () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AlzheimerScanPage(),
+                            SizedBox(
+                              width: 60,
+                              child: _buildFeatureItem(
+                                icon: 'assets/svgs/icon_game.svg',
+                                label: 'Game',
+                                onTap:
+                                    () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => const GameMenuPage(),
+                                      ),
+                                    ),
+                              ),
                             ),
+                            SizedBox(
+                              width: 60,
+                              child: _buildFeatureItem(
+                                icon: 'assets/svgs/icon_waktu_sholat.svg',
+                                label: 'Waktu\nSholat',
+                                onTap:
+                                    () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => const SholatPage(),
+                                      ),
+                                    ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 60,
+                              child: _buildFeatureItem(
+                                icon: 'assets/svgs/icon_buletin.svg',
+                                label: 'Panduan\nKesehatan',
+                                onTap:
+                                    () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => const BuletinPage(),
+                                      ),
+                                    ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 60,
+                              child: _buildFeatureItem(
+                                icon: 'assets/svgs/icon_screening_otak.svg',
+                                label: 'Screening\nOtak',
+                                onTap:
+                                    () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) =>
+                                                const AlzheimerScanPage(),
+                                      ),
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Asesmen Geriatri Section
+                        const Text(
+                          'Asesmen Geriatri',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2D3142),
                           ),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildAssessmentItem(
+                                icon: 'assets/svgs/icon_mmse.svg',
+                                title: 'MMSE',
+                                subtitle: 'Mini Mental State Exam',
+                                color: Colors.pink[100]!,
+                                onTap:
+                                    () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) =>
+                                                const MMSEHistoryPage(),
+                                      ),
+                                    ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildAssessmentItem(
+                                icon: 'assets/svgs/icon_gds.svg',
+                                title: 'GDS',
+                                subtitle: 'The Geriatric Depression Scale',
+                                color: Colors.purple[100]!,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => const GDSHistoryPage(),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildAssessmentItem(
+                                icon: 'assets/svgs/icon_skilas.svg',
+                                title: 'SKILAS',
+                                subtitle: 'Skrining Lansia Sederhana',
+                                color: Colors.green[100]!,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) =>
+                                              const SKILASHistoryPage(),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Artikel Section
+                        const Text(
+                          'Artikel Panduan Kesehatan',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2D3142),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ...articles.map(
+                          (article) => _buildArticleItem(context, article),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-
-              const SizedBox(height: 24),
-
-              // Asesmen Geriatri Section
-              const Text(
-                'Asesmen Geriatri',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D3142),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildAssessmentItem(
-                      icon: 'assets/svgs/icon_mmse.svg',
-                      title: 'MMSE',
-                      subtitle: 'Mini Mental State Exam',
-                      color: Colors.pink[100]!,
-                      onTap:
-                          () => _handleAssessmentTap(
-                            context,
-                            const MMSEHistoryPage(),
-                          ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildAssessmentItem(
-                      icon: 'assets/svgs/icon_gds.svg',
-                      title: 'GDS',
-                      subtitle: 'The Geriatric Depression Scale',
-                      color: Colors.purple[100]!,
-                      onTap:
-                          () => _handleAssessmentTap(
-                            context,
-                            const GDSHistoryPage(),
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildAssessmentItem(
-                      icon: 'assets/svgs/icon_skilas.svg',
-                      title: 'SKILAS',
-                      subtitle: 'Skrining Lansia Sederhana',
-                      color: Colors.green[100]!,
-                      onTap:
-                          () => _handleAssessmentTap(
-                            context,
-                            const SKILASHistoryPage(),
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 24),
-
-              // Artikel Section
-              const Text(
-                'Artikel Panduan Kesehatan',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D3142),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ...articles.map((article) => _buildArticleItem(context, article)),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -418,12 +389,14 @@ class _HomePageState extends ConsumerState<HomePage> {
       onTap: onTap,
       child: Column(
         children: [
-          SvgPicture.asset(icon, height: 34, width: 34),
+          SvgPicture.asset(icon, height: 48, width: 48),
           const SizedBox(height: 8),
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 12, color: Color(0xFF2D3142)),
+            style: const TextStyle(fontSize: 10, color: Color(0xFF2D3142)),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
