@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:project/core/providers/auth_provider.dart';
-import 'package:project/features/auth/presentation/pages/signup_page.dart';
+import 'package:project/features/auth/presentation/widgets/signup_page.dart';
+import 'package:project/features/auth/providers/auth_provider.dart';
 
 class SignInForm extends ConsumerStatefulWidget {
   const SignInForm({super.key});
@@ -94,27 +94,73 @@ class _SignInFormState extends ConsumerState<SignInForm> {
   }
 
   void _showForgotPasswordDialog(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
+    final TextEditingController inputController = TextEditingController();
+    String resetMethod = 'email'; // Default to email reset
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Reset Password'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Enter your email to receive a password reset link.'),
-              SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-            ],
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Enter your email or phone number to reset your password.',
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    controller: inputController,
+                    decoration: InputDecoration(
+                      labelText:
+                          resetMethod == 'email' ? 'Email' : 'Nomor Telepon',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType:
+                        resetMethod == 'email'
+                            ? TextInputType.emailAddress
+                            : TextInputType.phone,
+                  ),
+                  SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Reset via:'),
+                      Radio<String>(
+                        value: 'email',
+                        groupValue: resetMethod,
+                        onChanged: (String? value) {
+                          if (value != null) {
+                            setState(() {
+                              resetMethod = value;
+                              inputController
+                                  .clear(); // Clear input when changing method
+                            });
+                          }
+                        },
+                      ),
+                      Text('Email'),
+                      Radio<String>(
+                        value: 'phone',
+                        groupValue: resetMethod,
+                        onChanged: (String? value) {
+                          if (value != null) {
+                            setState(() {
+                              resetMethod = value;
+                              inputController
+                                  .clear(); // Clear input when changing method
+                            });
+                          }
+                        },
+                      ),
+                      Text('Nomor Telepon'),
+                    ],
+                  ),
+                ],
+              );
+            },
           ),
           actions: [
             TextButton(
@@ -125,21 +171,39 @@ class _SignInFormState extends ConsumerState<SignInForm> {
               onPressed: () async {
                 try {
                   final authNotifier = ref.read(authProvider.notifier);
-                  await authNotifier.resetPassword(emailController.text.trim());
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Password reset email sent. Please check your inbox.',
+                  if (resetMethod == 'email') {
+                    await authNotifier.resetPasswordByEmail(
+                      inputController.text.trim(),
+                    );
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Password reset email sent. Please check your inbox.',
+                        ),
+                        backgroundColor: Colors.green,
                       ),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
+                    );
+                  } else {
+                    // Reset via phone number
+                    await authNotifier.resetPasswordByPhoneNumber(
+                      inputController.text.trim(),
+                    );
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'If a user with this phone number exists, a password reset email has been sent to their linked email address.',
+                        ),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        'Failed to send reset email. Please try again.',
+                        'Failed to send reset link: ${e.toString()}',
                       ),
                       backgroundColor: Colors.red,
                     ),
@@ -169,6 +233,10 @@ class _SignInFormState extends ConsumerState<SignInForm> {
         return 'This account has been disabled.';
       case 'too-many-requests':
         return 'Too many failed attempts. Please try again later.';
+      case 'email-not-found for this phone number.': // Custom error from auth_provider
+        return 'No email found linked to this phone number.';
+      case 'No user found with this phone number.': // Custom error from auth_provider
+        return 'No user found with this phone number.';
       default:
         return 'An error occurred. Please try again.';
     }
@@ -231,11 +299,56 @@ class _SignInFormState extends ConsumerState<SignInForm> {
                 });
                 return "Password cannot be empty";
               }
+
+              List<String> requirements = [];
+
+              // Check minimum length
+              if (value.length < 6) {
+                requirements.add("at least 6 characters");
+              }
+
+              // Check for uppercase letter
+              // if (!value.contains(RegExp(r'[A-Z]'))) {
+              //   requirements.add("one uppercase letter");
+              // }
+
+              // Check for number
+              if (!value.contains(RegExp(r'[0-9]'))) {
+                requirements.add("one number");
+              }
+
+              // // Check for special character
+              // if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+              //   requirements.add("one special character");
+              // }
+
+              if (requirements.isNotEmpty) {
+                setState(() {
+                  _passwordValid = false;
+                });
+                return "Password must contain ${requirements.join(", ")}";
+              }
+
               setState(() {
                 _passwordValid = true;
               });
               return null;
             },
+          ),
+          SizedBox(height: 10), // Adjusted spacing
+          Align(
+            alignment: Alignment.centerRight,
+            child: GestureDetector(
+              onTap: () => _showForgotPasswordDialog(context),
+              child: Text(
+                "Forgot Password?",
+                style: TextStyle(
+                  color: Color(0xff7583CA),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           ),
           SizedBox(height: 30),
           ElevatedButton(

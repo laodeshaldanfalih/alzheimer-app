@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:project/core/providers/auth_provider.dart';
 import 'package:project/core/providers/shared_providers.dart';
 import 'package:project/core/widgets/main_layout.dart';
-import 'package:project/features/auth/presentation/widgets/signup_form.dart';
+import 'package:project/features/auth/presentation/pages/singup_form.dart';
+import 'package:project/features/auth/providers/auth_provider.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});

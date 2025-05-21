@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:project/core/providers/auth_provider.dart';
+import 'package:project/features/auth/presentation/pages/phone_signup_page.dart';
+import 'package:project/features/auth/providers/auth_provider.dart';
 
 class SignUpForm extends ConsumerStatefulWidget {
   const SignUpForm({super.key});
@@ -11,11 +12,13 @@ class SignUpForm extends ConsumerStatefulWidget {
 
 class _SignUpFormState extends ConsumerState<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
+  // HAPUS: final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  // HAPUS: bool _usernameValid = true;
   bool _emailValid = true;
   bool _passwordValid = true;
   bool _confirmPasswordValid = true;
@@ -58,6 +61,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
 
   @override
   void dispose() {
+    // HAPUS: _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -70,6 +74,23 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
       key: _formKey,
       child: Column(
         children: <Widget>[
+          // HAPUS TextFormField untuk Username
+          // TextFormField(
+          //   controller: _usernameController,
+          //   decoration: _buildInputDecoration(
+          //     "Username",
+          //     "Enter your username",
+          //     _usernameValid,
+          //   ),
+          //   validator: (value) {
+          //     bool isValid = value != null && value.isNotEmpty;
+          //     setState(() {
+          //       _usernameValid = isValid;
+          //     });
+          //     return isValid ? null : "Username cannot be empty";
+          //   },
+          // ),
+          // SizedBox(height: 20), // Sesuaikan jarak jika perlu
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
@@ -120,26 +141,18 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
               }
 
               List<String> requirements = [];
-
-              // Check minimum length
-              if (value.length < 8) {
-                requirements.add("at least 8 characters");
+              if (value.length < 6) {
+                requirements.add("at least 6 characters");
               }
-
-              // Check for uppercase letter
-              if (!value.contains(RegExp(r'[A-Z]'))) {
-                requirements.add("one uppercase letter");
-              }
-
-              // Check for number
+              // if (!value.contains(RegExp(r'[A-Z]'))) {
+              //   requirements.add("one uppercase letter");
+              // }
               if (!value.contains(RegExp(r'[0-9]'))) {
                 requirements.add("one number");
               }
-
-              // Check for special character
-              if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
-                requirements.add("one special character");
-              }
+              // if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+              //   requirements.add("one special character");
+              // }
 
               if (requirements.isNotEmpty) {
                 setState(() {
@@ -198,23 +211,27 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              RichText(
-                text: TextSpan(
-                  text: "I have read the ",
-                  style: TextStyle(
-                    color: Color(0xFFA1A4B2),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: "Privacy Policy",
-                      style: TextStyle(
-                        color: Color(0xff7583CA),
-                        fontWeight: FontWeight.w500,
-                      ),
+              Flexible(
+                // Tambahkan Flexible untuk teks panjang
+                child: RichText(
+                  text: TextSpan(
+                    text: "I have read the ",
+                    style: TextStyle(
+                      color: Color(0xFFA1A4B2),
+                      fontSize: 16, // Mungkin sedikit kecilkan jika perlu
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
+                    children: [
+                      TextSpan(
+                        text: "Privacy Policy",
+                        style: TextStyle(
+                          color: Color(0xff7583CA),
+                          fontWeight: FontWeight.w500,
+                        ),
+                        // Anda bisa menambahkan recognizer di sini untuk membuka halaman Privacy Policy
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Checkbox(
@@ -229,10 +246,33 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             ],
           ),
           SizedBox(height: 30),
+
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PhoneSignUpPage(),
+                ),
+              );
+            },
+            child: Text(
+              "Daftar menggunakan nomor telepon",
+              style: TextStyle(
+                color: Color(0xff7583CA), // Samakan dengan warna link lain
+                fontSize: 14, // Sesuaikan ukuran font
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          SizedBox(height: 30),
+
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               minimumSize: Size(double.infinity, double.minPositive),
-              backgroundColor: Color(0xffD9D9D9),
+              backgroundColor: Color(
+                0xffD9D9D9,
+              ), // Pertimbangkan warna yang lebih menarik untuk tombol aktif
             ),
             onPressed: () async {
               if (_formKey.currentState!.validate() && isChecked) {
@@ -241,18 +281,24 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                   await authNotifier.signUpWithEmail(
                     _emailController.text.trim(),
                     _passwordController.text,
+                    // HAPUS: _usernameController.text.trim(),
                   );
                 } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Registration failed: ${e.toString()}'),
-                    ),
-                  );
+                  if (mounted) {
+                    // Pastikan widget masih mounted sebelum menampilkan SnackBar
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Registration failed: ${e.toString()}'),
+                      ),
+                    );
+                  }
                 }
               } else if (!isChecked) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Please accept the Privacy Policy')),
-                );
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Please accept the Privacy Policy')),
+                  );
+                }
               }
             },
             child: Padding(

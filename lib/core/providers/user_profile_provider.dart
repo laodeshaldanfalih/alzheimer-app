@@ -1,109 +1,188 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// user_profile_provider.dart
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:project/features/auth/providers/auth_provider.dart'; // Menggunakan alias fb_auth
+
+// ... (Definisi class UserProfile Anda) ...
 class UserProfile {
   final String? name;
   final String email;
-  final int? age;
+  final String? phone;
+  final String? patientPhone; // Optional field
+  final DateTime? birthDate;
   final String? gender;
-  final DateTime? birthdate;
+  final String? photoUrl;
 
   UserProfile({
     this.name,
     required this.email,
-    this.age,
+    this.phone,
+    this.patientPhone, // Optional parameter
+    this.birthDate,
     this.gender,
-    this.birthdate,
+    this.photoUrl,
   });
 
+  // copyWith method jika diperlukan
   UserProfile copyWith({
     String? name,
     String? email,
-    int? age,
+    String? phone,
+    String? patientPhone, // Optional parameter
+    DateTime? birthDate,
     String? gender,
-    DateTime? birthdate,
+    String? photoUrl,
   }) {
     return UserProfile(
       name: name ?? this.name,
       email: email ?? this.email,
-      age: age ?? this.age,
+      phone: phone ?? this.phone,
+      patientPhone: patientPhone ?? this.patientPhone, // Optional field
+      birthDate: birthDate ?? this.birthDate,
       gender: gender ?? this.gender,
-      birthdate: birthdate ?? this.birthdate,
+      photoUrl: photoUrl ?? this.photoUrl,
     );
   }
 }
 
 class UserProfileNotifier extends StateNotifier<UserProfile?> {
-  UserProfileNotifier() : super(null) {
-    _loadProfileFromPrefs();
-  }
+  final AuthNotifier _authNotifier;
+  final FirebaseFirestore _firestore;
+  final fb_auth.FirebaseAuth _auth; // Menggunakan alias fb_auth
 
-  Future<void> _loadProfileFromPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final hasProfile = prefs.getBool('has_profile') ?? false;
+  UserProfileNotifier(this._firestore, this._auth, this._authNotifier)
+    : super(null);
 
-    if (hasProfile) {
-      final name = prefs.getString('profile_name');
-      final ageStr = prefs.getString('profile_age');
-      final gender = prefs.getString('profile_gender');
-      final birthdateStr = prefs.getString('profile_birthdate');
+  Future<void> loadProfile() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      state = null;
+      return;
+    }
 
-      // Get email from auth provider or use a default
-      final email =
-          'user@example.com'; // This should be replaced with actual email from auth provider
-
-      state = UserProfile(
-        name: name,
-        email: email,
-        age: ageStr != null ? int.tryParse(ageStr) : null,
-        gender: gender,
-        birthdate: birthdateStr != null ? DateTime.parse(birthdateStr) : null,
+    try {
+      // First, create a basic profile from Firebase Auth data
+      UserProfile initialProfile = UserProfile(
+        email: user.email ?? '',
+        name: user.displayName,
+        phone: user.phoneNumber,
+        photoUrl: user.photoURL,
       );
+
+      // Set initial state with auth data
+      state = initialProfile;
+
+      // Then try to load additional data from Firestore
+      final doc =
+          await _firestore.collection('user_profiles').doc(user.uid).get();
+
+      if (doc.exists) {
+        final data = doc.data();
+        if (data != null) {
+          state = UserProfile(
+            name: data['name'] ?? user.displayName,
+            email: data['email'] ?? user.email ?? '',
+            phone: data['phone'] ?? user.phoneNumber,
+            patientPhone: data['patientPhone'], // Optional field
+            birthDate:
+                data['birthDate'] != null
+                    ? (data['birthDate'] as Timestamp).toDate()
+                    : null,
+            gender: data['gender'],
+            photoUrl: data['photoUrl'] ?? user.photoURL,
+          );
+        }
+      } else {
+        // If no Firestore document exists, create one with the auth data
+        await _firestore.collection('user_profiles').doc(user.uid).set({
+          'email': user.email,
+          'name': user.displayName,
+          'phone': user.phoneNumber,
+          'photoUrl': user.photoURL,
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      }
+    } catch (e) {
+      print("Error loading profile: $e");
+      // Keep the initial auth-based profile if Firestore fails
+      if (state == null) {
+        state = UserProfile(
+          email: user.email ?? '',
+          name: user.displayName,
+          phone: user.phoneNumber,
+          photoUrl: user.photoURL,
+        );
+      }
     }
   }
 
-  void updateProfile(
-    String email, {
+  // ... (method updateProfile Anda) ...
+  Future<void> updateProfile({
+    required String email,
     String? name,
-    int? age,
+    String? phone,
+    String? patientPhone, // Optional parameter
+    DateTime? birthDate,
     String? gender,
-    DateTime? birthdate,
-  }) {
-    state = UserProfile(
-      name: name,
-      email: email,
-      age: age,
-      gender: gender,
-      birthdate: birthdate,
-    );
-  }
-
-  void updateName(String name) {
-    if (state != null) {
-      state = state!.copyWith(name: name);
+    String? photoUrl,
+  }) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No authenticated user found');
     }
-  }
 
-  void updateAge(int age) {
-    if (state != null) {
-      state = state!.copyWith(age: age);
-    }
-  }
+    try {
+      Map<String, dynamic> profileData = {
+        'email': email,
+        'updatedAt': FieldValue.serverTimestamp(),
+      };
 
-  void updateGender(String gender) {
-    if (state != null) {
-      state = state!.copyWith(gender: gender);
-    }
-  }
+      if (name != null) profileData['name'] = name;
+      if (phone != null) profileData['phone'] = phone;
+      if (patientPhone != null)
+        profileData['patientPhone'] = patientPhone; // Only update if provided
+      if (birthDate != null)
+        profileData['birthDate'] = Timestamp.fromDate(birthDate);
+      if (gender != null) profileData['gender'] = gender;
+      if (photoUrl != null) profileData['photoUrl'] = photoUrl;
 
-  void updateBirthdate(DateTime birthdate) {
-    if (state != null) {
-      state = state!.copyWith(birthdate: birthdate);
+      // Update Firestore
+      await _firestore
+          .collection('user_profiles')
+          .doc(user.uid)
+          .set(profileData, SetOptions(merge: true));
+
+      // Update local state
+      state = UserProfile(
+        name: name ?? state?.name,
+        email: email,
+        phone: phone ?? state?.phone,
+        patientPhone:
+            patientPhone ??
+            state?.patientPhone, // Keep existing value if not provided
+        birthDate: birthDate ?? state?.birthDate,
+        gender: gender ?? state?.gender,
+        photoUrl: photoUrl ?? state?.photoUrl,
+      );
+
+      // Update Firebase Auth display name if changed
+      if (name != null && user.displayName != name) {
+        await user.updateDisplayName(name);
+      }
+    } catch (e) {
+      print("Error updating profile: $e");
+      rethrow;
     }
   }
 }
 
 final userProfileProvider =
     StateNotifierProvider<UserProfileNotifier, UserProfile?>((ref) {
-      return UserProfileNotifier();
+      final auth = ref.watch(firebaseAuthProvider);
+      final firestore = ref.watch(firestoreProvider);
+      final authNotifier = ref.read(authProvider.notifier); // Baca AuthNotifier
+      return UserProfileNotifier(firestore, auth, authNotifier);
     });

@@ -24,6 +24,10 @@ class _MMSEHistoryPageState extends ConsumerState<MMSEHistoryPage> {
     });
   }
 
+  Future<void> _onRefresh() async {
+    await ref.read(mmseHistoryProvider.notifier).loadHistory();
+  }
+
   @override
   Widget build(BuildContext context) {
     final historyState = ref.watch(mmseHistoryProvider);
@@ -86,65 +90,82 @@ class _MMSEHistoryPageState extends ConsumerState<MMSEHistoryPage> {
             ),
             Expanded(
               child:
-                  sortedHistory.isEmpty
+                  historyState.isLoading
                       ? const Center(
-                        child: Text(
-                          'Belum ada riwayat test.',
-                          style: TextStyle(
-                            color: Color(0xFF9C9DB9),
-                            fontSize: 16,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFF2563EB),
                           ),
                         ),
                       )
-                      : ListView.separated(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 8,
-                        ),
-                        itemCount: sortedHistory.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 16),
-                        itemBuilder: (context, index) {
-                          final entry = sortedHistory[index];
-                          String stage;
-                          Color stageColor;
-                          String subtitle;
+                      : RefreshIndicator(
+                        color: Color(0xFF2563EB),
+                        backgroundColor: Colors.white,
+                        onRefresh: _onRefresh,
+                        child:
+                            sortedHistory.isEmpty
+                                ? const Center(
+                                  child: Text(
+                                    'Belum ada riwayat test.',
+                                    style: TextStyle(
+                                      color: Color(0xFF9C9DB9),
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                )
+                                : ListView.separated(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 8,
+                                  ),
+                                  itemCount: sortedHistory.length,
+                                  separatorBuilder:
+                                      (_, __) => const SizedBox(height: 16),
+                                  itemBuilder: (context, index) {
+                                    final entry = sortedHistory[index];
+                                    String stage;
+                                    Color stageColor;
+                                    String subtitle;
 
-                          if (entry.score >= 24) {
-                            stage = 'Normal';
-                            stageColor = const Color(0xFF4CAF50);
-                            subtitle =
-                                'Pasien tidak menunjukkan tanda-tanda gangguan kognitif';
-                          } else if (entry.score >= 18) {
-                            stage = 'Ringan';
-                            stageColor = const Color(0xFFFFD54F);
-                            subtitle =
-                                'Pasien menunjukkan tanda-tanda gangguan kognitif ringan';
-                          } else {
-                            stage = 'Berat';
-                            stageColor = const Color(0xFFD32F2F);
-                            subtitle =
-                                'Pasien menunjukkan tanda-tanda gangguan kognitif berat';
-                          }
+                                    if (entry.score >= 24) {
+                                      stage = 'Normal';
+                                      stageColor = const Color(0xFF4CAF50);
+                                      subtitle =
+                                          'Pasien tidak menunjukkan tanda-tanda gangguan kognitif';
+                                    } else if (entry.score >= 18) {
+                                      stage = 'Ringan';
+                                      stageColor = const Color(0xFFFFD54F);
+                                      subtitle =
+                                          'Pasien menunjukkan tanda-tanda gangguan kognitif ringan';
+                                    } else {
+                                      stage = 'Berat';
+                                      stageColor = const Color(0xFFD32F2F);
+                                      subtitle =
+                                          'Pasien menunjukkan tanda-tanda gangguan kognitif berat';
+                                    }
 
-                          return ResultCard(
-                            date: entry.date,
-                            title: 'Skor: ${entry.score}',
-                            subtitle: subtitle,
-                            backgroundColor: stageColor,
-                            stage: stage,
-                            showStageBadge: true,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) =>
-                                          MMSEHistoryDetailPage(entry: entry),
+                                    return ResultCard(
+                                      date: entry.date,
+                                      title: 'Skor: ${entry.score}',
+                                      subtitle: subtitle,
+                                      backgroundColor: stageColor,
+                                      stage: stage,
+                                      showStageBadge: true,
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) =>
+                                                    MMSEHistoryDetailPage(
+                                                      entry: entry,
+                                                    ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
                                 ),
-                              );
-                            },
-                          );
-                        },
                       ),
             ),
             StartTestButton(
@@ -157,7 +178,6 @@ class _MMSEHistoryPageState extends ConsumerState<MMSEHistoryPage> {
                 );
               },
             ),
-            const SizedBox(height: 20),
           ],
         ),
       ),

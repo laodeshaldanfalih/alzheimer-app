@@ -1,4 +1,5 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +15,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  await FirebaseAppCheck.instance.activate(
+    // Untuk Android, defaultnya adalah Play Integrity.
+    // Anda bisa menentukan provider secara eksplisit jika perlu.
+    androidProvider: AndroidProvider.playIntegrity,
+    // appleProvider: AppleProvider.appAttest, // Untuk iOS
+  );
+
+  // Initialize Awesome Notifications
   await _initializeNotifications();
 
   // Lock orientation to portrait only
@@ -63,7 +72,6 @@ Future<void> _initializeNotifications() async {
   );
 }
 
-// Handle when a notification is clicked
 Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
   if (receivedAction.channelKey == 'reminder_channel') {
     navigatorKey.currentState?.push(
@@ -77,7 +85,6 @@ Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
   }
 }
 
-// Other notification handlers (can remain empty if not needed)
 Future<void> onNotificationCreatedMethod(
   ReceivedNotification receivedNotification,
 ) async {}
@@ -93,6 +100,11 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: SplashPage());
+    return MaterialApp(
+      navigatorKey: navigatorKey,
+      debugShowCheckedModeBanner: false,
+      home: SplashPage(),
+      theme: ThemeData(primaryColor: Colors.white, primarySwatch: Colors.blue),
+    );
   }
 }

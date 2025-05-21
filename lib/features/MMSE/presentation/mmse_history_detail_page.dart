@@ -6,30 +6,42 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:io';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/features/profile/providers/user_profile_provider.dart';
 
-class MMSEHistoryDetailPage extends StatelessWidget {
+class MMSEHistoryDetailPage extends ConsumerWidget {
   final MMSEHistoryEntry entry;
 
   const MMSEHistoryDetailPage({super.key, required this.entry});
 
-  Future<Map<String, String>> _getProfileData() async {
-    final prefs = await SharedPreferences.getInstance();
-    return {
-      'name': prefs.getString('profile_name') ?? '-',
-      'age': prefs.getString('profile_age') ?? '-',
-      'gender': prefs.getString('profile_gender') ?? '-',
-      'birthdate': prefs.getString('profile_birthdate') ?? '-',
-      'imagePath': prefs.getString('profile_image_path') ?? '',
-    };
-  }
+  Future<void> _generateAndSharePDF(BuildContext context, WidgetRef ref) async {
+    final userProfile = ref.read(userProfileProvider);
 
-  Future<void> _generateAndSharePDF() async {
+    if (userProfile == null || !userProfile.isProfileComplete) {
+      final missingFields = userProfile?.missingProfileFields ?? 'profil';
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: Text('Profil Belum Lengkap'),
+              content: Text(
+                'Anda harus melengkapi data diri pasien terlebih dahulu pada halaman profil untuk mengunduh hasil test.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
+                ),
+              ],
+            ),
+      );
+      return;
+    }
+
     final pdf = pw.Document();
-    final profileData = await _getProfileData();
     File? profileImage;
-    if (profileData['imagePath']!.isNotEmpty) {
-      profileImage = File(profileData['imagePath']!);
+    if (userProfile.photoUrl != null && userProfile.photoUrl!.isNotEmpty) {
+      profileImage = File(userProfile.photoUrl!);
     }
 
     // First page with profile info and score
@@ -81,20 +93,17 @@ class MMSEHistoryDetailPage extends StatelessWidget {
                         ),
                       ),
                     pw.SizedBox(height: 10),
-                    _buildProfileInfoRow('Nama', profileData['name']!),
-                    _buildProfileInfoRow('Umur', profileData['age']!),
+                    _buildProfileInfoRow('Nama', userProfile.name ?? '-'),
                     _buildProfileInfoRow(
                       'Gender',
-                      profileData['gender'] == 'Male'
-                          ? 'Laki-laki'
-                          : 'Perempuan',
+                      userProfile.gender == 'Male' ? 'Laki-laki' : 'Perempuan',
                     ),
                     _buildProfileInfoRow(
                       'Tanggal Lahir',
-                      profileData['birthdate'] != '-'
+                      userProfile.birthDate != null
                           ? DateFormat(
                             'dd MMMM yyyy',
-                          ).format(DateTime.parse(profileData['birthdate']!))
+                          ).format(userProfile.birthDate!)
                           : '-',
                     ),
                   ],
@@ -339,7 +348,7 @@ class MMSEHistoryDetailPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -360,7 +369,7 @@ class MMSEHistoryDetailPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.download, color: Color(0xFF2D3142)),
-            onPressed: _generateAndSharePDF,
+            onPressed: () => _generateAndSharePDF(context, ref),
           ),
         ],
       ),

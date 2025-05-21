@@ -1,26 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:project/core/providers/auth_provider.dart';
 import 'package:project/core/providers/shared_providers.dart';
 import 'package:project/core/widgets/main_layout.dart';
-import 'package:project/features/auth/presentation/pages/signup_page.dart';
-import 'package:project/features/auth/presentation/widgets/signin_form.dart';
+import 'package:project/features/auth/presentation/pages/phone_signin_page.dart';
+import 'package:project/features/auth/presentation/widgets/signup_page.dart';
+import 'package:project/features/auth/presentation/widgets/singin_form.dart';
+import 'package:project/features/auth/providers/auth_provider.dart';
 
-class SignInPage extends ConsumerWidget {
+class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isLoading = ref.watch(isLoadingProvider);
+  ConsumerState<SignInPage> createState() => _SignInPageState();
+}
 
-    // Listen to auth state changes
-    ref.listen(authProvider, (previous, next) {
-      if (next != null) {
+class _SignInPageState extends ConsumerState<SignInPage> {
+  late final ProviderSubscription authSub;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // ✅ Gunakan listenManual di initState
+    authSub = ref.listenManual(authProvider, (previous, next) {
+      if (next != null && mounted) {
         Navigator.of(
           context,
         ).pushReplacement(MaterialPageRoute(builder: (_) => MainLayout()));
       }
     });
+  }
+
+  @override
+  void dispose() {
+    // ✅ Jangan lupa cancel agar tidak memory leak
+    authSub.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isLoading = ref.watch(isLoadingProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -56,6 +76,7 @@ class SignInPage extends ConsumerWidget {
                           isLoading
                               ? null
                               : () async {
+                                if (!mounted) return;
                                 try {
                                   ref.read(isLoadingProvider.notifier).state =
                                       true;
@@ -64,12 +85,15 @@ class SignInPage extends ConsumerWidget {
                                   );
                                   await authNotifier.signInWithGoogle();
                                 } catch (e) {
+                                  if (!mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text('Login failed: $e')),
                                   );
                                 } finally {
-                                  ref.read(isLoadingProvider.notifier).state =
-                                      false;
+                                  if (mounted) {
+                                    ref.read(isLoadingProvider.notifier).state =
+                                        false;
+                                  }
                                 }
                               },
                       child: Row(
@@ -97,7 +121,52 @@ class SignInPage extends ConsumerWidget {
                       style: TextStyle(color: Color(0XFFA1A4B2), fontSize: 12),
                     ),
                     const SizedBox(height: 30),
+
                     SignInForm(),
+
+                    const SizedBox(height: 20),
+                    Text(
+                      "Atau login dengan nomor telepon", //
+                      style: TextStyle(color: Color(0XFFA1A4B2), fontSize: 12),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(
+                          double.infinity,
+                          double.minPositive,
+                        ), //
+                        backgroundColor:
+                            Colors.teal, // Ganti warna sesuai tema Anda
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(38),
+                        ),
+                      ),
+                      onPressed:
+                          isLoading
+                              ? null
+                              : () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => const PhoneSignInPage(),
+                                  ), //
+                                );
+                              },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15), //
+                        child: Text(
+                          'LOGIN DENGAN NOMOR TELEPON', //
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+
                     const SizedBox(height: 30),
                     GestureDetector(
                       onTap:
