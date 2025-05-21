@@ -3,14 +3,14 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 
-class ColorGame extends StatefulWidget {
-  const ColorGame({super.key});
+class ColorMatchingPage extends StatefulWidget {
+  const ColorMatchingPage({super.key});
 
   @override
-  State<ColorGame> createState() => _ColorGameState();
+  State<ColorMatchingPage> createState() => _ColorGameState();
 }
 
-class _ColorGameState extends State<ColorGame> {
+class _ColorGameState extends State<ColorMatchingPage> {
   final Map<String, bool> score = {};
   final Map<String, Color> choices = {
     '🥬': Colors.green,

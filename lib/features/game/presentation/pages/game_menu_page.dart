@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:project/features/game/domain/models/game_menu_item.dart';
-import 'package:project/features/game/presentation/pages/menyocokkan_warna_page.dart';
-import 'package:project/features/game/presentation/pages/menyusun_makanan_page.dart';
+import 'package:project/features/game/presentation/pages/color_matching_page.dart';
+import 'package:project/features/game/presentation/pages/word_scramble_page.dart';
+import 'package:project/features/game/presentation/pages/food_stack_page.dart';
 
 class GameMenuPage extends StatelessWidget {
   const GameMenuPage({super.key});
@@ -17,7 +18,7 @@ class GameMenuPage extends StatelessWidget {
         onTap: () {
           Navigator.of(
             context,
-          ).push(MaterialPageRoute(builder: (context) => ColorGame()));
+          ).push(MaterialPageRoute(builder: (context) => ColorMatchingPage()));
         },
       ),
       GameMenuItem(
@@ -26,9 +27,20 @@ class GameMenuPage extends StatelessWidget {
             'Permainan menyusun makanan untuk melatih daya ingat dan pengambilan keputusan',
         emoji: '🍽️',
         onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => MenyusunMakananPage()),
-          );
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => FoodStackPage()));
+        },
+      ),
+      GameMenuItem(
+        title: 'Menyusun Kata',
+        description:
+            'Permainan menyusun kata untuk melatih daya ingat dan pengambilan keputusan',
+        emoji: '🔤',
+        onTap: () {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => WordScramblePage()));
         },
       ),
     ];

@@ -4,14 +4,14 @@ import 'package:confetti/confetti.dart';
 import 'package:project/features/game/domain/models/quick_food_item.dart';
 import 'package:audioplayers/audioplayers.dart';
 
-class MenyusunMakananPage extends StatefulWidget {
-  const MenyusunMakananPage({super.key});
+class FoodStackPage extends StatefulWidget {
+  const FoodStackPage({super.key});
 
   @override
-  State<MenyusunMakananPage> createState() => _MenyusunMakananPageState();
+  State<FoodStackPage> createState() => _FoodStackPageState();
 }
 
-class _MenyusunMakananPageState extends State<MenyusunMakananPage> {
+class _FoodStackPageState extends State<FoodStackPage> {
   late List<QuickFoodItem> originalQuickFoods;
   List<QuickFoodItem> allQuickFoods = [];
   List<QuickFoodItem> availableQuickFoods = [];
