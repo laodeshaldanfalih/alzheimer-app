@@ -5,9 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/profile/providers/user_profile_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'dart:io';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:cross_file/cross_file.dart';
 
 class GDSHistoryDetailPage extends ConsumerWidget {
   final GDSHistoryEntry entry;
@@ -44,14 +45,14 @@ class GDSHistoryDetailPage extends ConsumerWidget {
         context: context,
         builder:
             (context) => AlertDialog(
-              title: Text('Profil Belum Lengkap'),
-              content: Text(
+              title: const Text('Profil Belum Lengkap'),
+              content: const Text(
                 'Anda harus melengkapi data diri pasien terlebih dahulu pada halaman profil untuk mengunduh hasil test.',
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             ),
@@ -114,85 +115,176 @@ class GDSHistoryDetailPage extends ConsumerWidget {
                         ),
                       ),
                     pw.SizedBox(height: 10),
-                    pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text(
-                          'Nama',
-                          style: pw.TextStyle(
-                            fontSize: 14,
-                            color: PdfColors.black,
-                          ),
-                        ),
-                        pw.Text(
-                          userProfile.name ?? '-',
-                          style: pw.TextStyle(
-                            fontSize: 14,
-                            color: PdfColors.blue,
-                            fontWeight: pw.FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    _buildProfileInfoRow('Nama', userProfile.name ?? '-'),
+                    _buildProfileInfoRow(
+                      'Gender',
+                      userProfile.gender == 'Male' ? 'Laki-laki' : 'Perempuan',
                     ),
-                    pw.SizedBox(height: 5),
-                    pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text(
-                          'Gender',
-                          style: pw.TextStyle(
-                            fontSize: 14,
-                            color: PdfColors.black,
-                          ),
-                        ),
-                        pw.Text(
-                          userProfile.gender == 'Male'
-                              ? 'Laki-laki'
-                              : 'Perempuan',
-                          style: pw.TextStyle(
-                            fontSize: 14,
-                            color: PdfColors.blue,
-                            fontWeight: pw.FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    pw.SizedBox(height: 5),
-                    pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text(
-                          'Tanggal Lahir',
-                          style: pw.TextStyle(
-                            fontSize: 14,
-                            color: PdfColors.black,
-                          ),
-                        ),
-                        pw.Text(
-                          userProfile.birthDate != null
-                              ? DateFormat(
-                                'dd MMMM yyyy',
-                              ).format(userProfile.birthDate!)
-                              : '-',
-                          style: pw.TextStyle(
-                            fontSize: 14,
-                            color: PdfColors.blue,
-                            fontWeight: pw.FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    _buildProfileInfoRow(
+                      'Tanggal Lahir',
+                      userProfile.birthDate != null
+                          ? DateFormat(
+                            'dd MMMM yyyy',
+                          ).format(userProfile.birthDate!)
+                          : '-',
                     ),
                   ],
                 ),
               ),
-              // ... rest of the existing PDF generation code ...
+              pw.SizedBox(height: 20),
+
+              // Score and Date
+              pw.Container(
+                padding: const pw.EdgeInsets.all(20),
+                decoration: pw.BoxDecoration(
+                  border: pw.Border.all(),
+                  borderRadius: const pw.BorderRadius.all(
+                    pw.Radius.circular(10),
+                  ),
+                ),
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text(
+                      'Skor Test: ${entry.score}',
+                      style: const pw.TextStyle(fontSize: 18),
+                    ),
+                    pw.SizedBox(height: 10),
+                    pw.Text(
+                      'Tanggal: ${DateFormat('dd MMMM yyyy').format(entry.date)}',
+                      style: const pw.TextStyle(fontSize: 16),
+                    ),
+                    pw.SizedBox(height: 10),
+                    pw.Text(
+                      'Status: ${statusText}',
+                      style: pw.TextStyle(
+                        fontSize: 16,
+                        color:
+                            entry.isDepressed ? PdfColors.red : PdfColors.green,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           );
         },
       ),
     );
 
-    // ... rest of the existing PDF generation code ...
+    // Second page with test results
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                'Detail Hasil Test',
+                style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 20),
+
+              // Test Results
+              _buildSectionPDF('Geriatric Depression Scale (GDS)', [
+                ...List.generate(
+                  questions.length,
+                  (index) => _buildQuestionAnswerPDF(
+                    questions[index],
+                    entry.answers.length > index ? entry.answers[index] : '-',
+                  ),
+                ),
+              ]),
+            ],
+          );
+        },
+      ),
+    );
+
+    // Save PDF
+    final output = await getTemporaryDirectory();
+    final file = File(
+      '${output.path}/gds_result_${entry.date.millisecondsSinceEpoch}.pdf',
+    );
+    await file.writeAsBytes(await pdf.save());
+
+    // Share PDF
+    await Share.shareXFiles([
+      XFile(file.path),
+    ], text: 'Hasil Test GDS - ${userProfile.name ?? 'Pasien'}');
+  }
+
+  pw.Widget _buildSectionPDF(String title, List<pw.Widget> children) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          title,
+          style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+        ),
+        pw.SizedBox(height: 10),
+        pw.Container(
+          padding: const pw.EdgeInsets.all(10),
+          decoration: pw.BoxDecoration(
+            border: pw.Border.all(),
+            borderRadius: const pw.BorderRadius.all(pw.Radius.circular(5)),
+          ),
+          child: pw.Column(children: children),
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _buildQuestionAnswerPDF(String question, String? answer) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 8),
+      child: pw.Row(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Expanded(
+            flex: 2,
+            child: pw.Text(question, style: const pw.TextStyle(fontSize: 12)),
+          ),
+          pw.SizedBox(width: 10),
+          pw.Expanded(
+            flex: 1,
+            child: pw.Text(
+              answer ?? "-",
+              style: const pw.TextStyle(fontSize: 12),
+              textAlign: pw.TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildProfileInfoRow(String label, String value) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 8),
+      child: pw.Row(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Expanded(
+            flex: 2,
+            child: pw.Text(label, style: const pw.TextStyle(fontSize: 12)),
+          ),
+          pw.SizedBox(width: 10),
+          pw.Expanded(
+            flex: 1,
+            child: pw.Text(
+              value,
+              style: const pw.TextStyle(fontSize: 12),
+              textAlign: pw.TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -211,6 +303,12 @@ class GDSHistoryDetailPage extends ConsumerWidget {
             fontSize: 18,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.download, color: Color(0xFF2D3142)),
+            onPressed: () => _generateAndSharePDF(context, ref),
+          ),
+        ],
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
@@ -369,26 +467,6 @@ class GDSHistoryDetailPage extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildProfileInfoRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 14, color: Color(0xFF2D3142)),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Color(0xFF2563EB),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
     );
   }
 }

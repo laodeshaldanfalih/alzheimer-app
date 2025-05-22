@@ -107,7 +107,7 @@ class SKILASHistoryDetailPage extends ConsumerWidget {
                           userProfile.name ?? '-',
                           style: pw.TextStyle(
                             fontSize: 14,
-                            color: PdfColors.blue,
+                            color: PdfColors.black,
                             fontWeight: pw.FontWeight.bold,
                           ),
                         ),
@@ -130,7 +130,7 @@ class SKILASHistoryDetailPage extends ConsumerWidget {
                               : 'Perempuan',
                           style: pw.TextStyle(
                             fontSize: 14,
-                            color: PdfColors.blue,
+                            color: PdfColors.black,
                             fontWeight: pw.FontWeight.bold,
                           ),
                         ),
@@ -155,7 +155,7 @@ class SKILASHistoryDetailPage extends ConsumerWidget {
                               : '-',
                           style: pw.TextStyle(
                             fontSize: 14,
-                            color: PdfColors.blue,
+                            color: PdfColors.black,
                             fontWeight: pw.FontWeight.bold,
                           ),
                         ),

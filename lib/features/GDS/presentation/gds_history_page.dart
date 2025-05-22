@@ -23,6 +23,10 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
     });
   }
 
+  Future<void> _onRefresh() async {
+    await ref.read(gdsHistoryProvider.notifier).loadHistory();
+  }
+
   @override
   Widget build(BuildContext context) {
     final historyState = ref.watch(gdsHistoryProvider);
@@ -85,60 +89,77 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
             ),
             Expanded(
               child:
-                  sortedHistory.isEmpty
+                  historyState.isLoading
                       ? const Center(
-                        child: Text(
-                          'Belum ada riwayat test.',
-                          style: TextStyle(
-                            color: Color(0xFF9C9DB9),
-                            fontSize: 16,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFF2563EB),
                           ),
                         ),
                       )
-                      : ListView.separated(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 8,
-                        ),
-                        itemCount: sortedHistory.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 16),
-                        itemBuilder: (context, index) {
-                          final entry = sortedHistory[index];
-                          String stage;
-                          Color stageColor;
-                          String subtitle;
+                      : RefreshIndicator(
+                        color: const Color(0xFF2563EB),
+                        backgroundColor: Colors.white,
+                        onRefresh: _onRefresh,
+                        child:
+                            sortedHistory.isEmpty
+                                ? const Center(
+                                  child: Text(
+                                    'Belum ada riwayat test.',
+                                    style: TextStyle(
+                                      color: Color(0xFF9C9DB9),
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                )
+                                : ListView.separated(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 8,
+                                  ),
+                                  itemCount: sortedHistory.length,
+                                  separatorBuilder:
+                                      (_, __) => const SizedBox(height: 16),
+                                  itemBuilder: (context, index) {
+                                    final entry = sortedHistory[index];
+                                    String stage;
+                                    Color stageColor;
+                                    String subtitle;
 
-                          if (entry.isDepressed) {
-                            stage = 'Depresi';
-                            stageColor = const Color(0xFFD32F2F);
-                            subtitle =
-                                'Skor ≥ 5 mengindikasikan gejala depresi';
-                          } else {
-                            stage = 'Normal';
-                            stageColor = const Color(0xFF4CAF50);
-                            subtitle =
-                                'Skor < 5 mengindikasikan tidak ada gejala depresi';
-                          }
+                                    if (entry.isDepressed) {
+                                      stage = 'Depresi';
+                                      stageColor = const Color(0xFFD32F2F);
+                                      subtitle =
+                                          'Skor ≥ 5 mengindikasikan gejala depresi';
+                                    } else {
+                                      stage = 'Normal';
+                                      stageColor = const Color(0xFF4CAF50);
+                                      subtitle =
+                                          'Skor < 5 mengindikasikan tidak ada gejala depresi';
+                                    }
 
-                          return ResultCard(
-                            date: entry.date,
-                            title: 'Skor: ${entry.score}',
-                            subtitle: subtitle,
-                            backgroundColor: stageColor,
-                            stage: stage,
-                            showStageBadge: true,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) =>
-                                          GDSHistoryDetailPage(entry: entry),
+                                    return ResultCard(
+                                      date: entry.date,
+                                      title: 'Skor: ${entry.score}',
+                                      subtitle: subtitle,
+                                      backgroundColor: stageColor,
+                                      stage: stage,
+                                      showStageBadge: true,
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) =>
+                                                    GDSHistoryDetailPage(
+                                                      entry: entry,
+                                                    ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
                                 ),
-                              );
-                            },
-                          );
-                        },
                       ),
             ),
             StartTestButton(
@@ -149,7 +170,6 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
                 );
               },
             ),
-            const SizedBox(height: 20),
           ],
         ),
       ),

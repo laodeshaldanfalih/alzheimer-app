@@ -15,6 +15,10 @@ class SKILASHistoryPage extends ConsumerStatefulWidget {
 }
 
 class _SKILASHistoryPageState extends ConsumerState<SKILASHistoryPage> {
+  Future<void> _onRefresh() async {
+    await ref.read(skilasHistoryProvider.notifier).loadHistory();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -82,50 +86,63 @@ class _SKILASHistoryPageState extends ConsumerState<SKILASHistoryPage> {
           ),
           Expanded(
             child:
-                historyState.history.isEmpty
-                    ? const Center(
-                      child: Text(
-                        'Belum ada riwayat test.',
-                        style: TextStyle(
-                          color: Color(0xFF9C9DB9),
-                          fontSize: 16,
-                        ),
-                      ),
-                    )
-                    : ListView.separated(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 8,
-                      ),
-                      itemCount: historyState.sortedHistory.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 16),
-                      itemBuilder: (context, index) {
-                        final entry = historyState.sortedHistory[index];
-                        return ResultCard(
-                          date: entry.date,
-                          title: 'Skor: ${entry.score}',
-                          subtitle:
-                              entry.score == 1
-                                  ? 'Pasien tidak menunjukkan tanda-tanda gangguan kognitif'
-                                  : 'Pasien menunjukkan tanda-tanda gangguan kognitif',
-                          backgroundColor:
-                              entry.score == 1
-                                  ? const Color(0xFF4CAF50)
-                                  : const Color(0xFFD32F2F),
-                          stage: entry.score == 1 ? 'Sehat' : 'Perlu ke RS',
-                          showStageBadge: true,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                        SKILASHistoryDetailPage(entry: entry),
+                historyState.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : RefreshIndicator(
+                      onRefresh: _onRefresh,
+                      child:
+                          historyState.history.isEmpty
+                              ? const Center(
+                                child: Text(
+                                  'Belum ada riwayat test.',
+                                  style: TextStyle(
+                                    color: Color(0xFF9C9DB9),
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              )
+                              : ListView.separated(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 8,
+                                ),
+                                itemCount: historyState.sortedHistory.length,
+                                separatorBuilder:
+                                    (_, __) => const SizedBox(height: 16),
+                                itemBuilder: (context, index) {
+                                  final entry =
+                                      historyState.sortedHistory[index];
+                                  return ResultCard(
+                                    date: entry.date,
+                                    title: 'Skor: ${entry.score}',
+                                    subtitle:
+                                        entry.score == 1
+                                            ? 'Pasien tidak menunjukkan tanda-tanda gangguan kognitif'
+                                            : 'Pasien menunjukkan tanda-tanda gangguan kognitif',
+                                    backgroundColor:
+                                        entry.score == 1
+                                            ? const Color(0xFF4CAF50)
+                                            : const Color(0xFFD32F2F),
+                                    stage:
+                                        entry.score == 1
+                                            ? 'Sehat'
+                                            : 'Perlu ke RS',
+                                    showStageBadge: true,
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) =>
+                                                  SKILASHistoryDetailPage(
+                                                    entry: entry,
+                                                  ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        );
-                      },
                     ),
           ),
           StartTestButton(
