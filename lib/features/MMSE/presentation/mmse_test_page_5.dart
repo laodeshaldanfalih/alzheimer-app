@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:project/features/MMSE/presentation/mmse_result_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/MMSE/providers/mmse_test_provider.dart';
-import 'package:project/core/widgets/test_question_text.dart';
-import 'package:project/core/widgets/test_dropdown.dart';
-import 'package:project/core/widgets/test_next_button.dart';
-import 'package:project/core/widgets/custom_app_bar.dart';
+import 'package:project/core/widgets/test_question_text_widget.dart';
+import 'package:project/core/widgets/test_dropdown_widget.dart';
+import 'package:project/core/widgets/test_next_button_widget.dart';
+import 'package:project/core/widgets/custom_app_bar_widget.dart';
 
 class MMSETestPage5 extends ConsumerStatefulWidget {
   const MMSETestPage5({super.key});
@@ -158,7 +158,7 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Mini-Mental State Exam (MMSE)"),
+      appBar: const CustomAppBarWidget(title: "Mini-Mental State Exam (MMSE)"),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
@@ -180,7 +180,7 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
                       ),
                       const SizedBox(height: 24),
                       // 1. Sebutkan nama benda yang muncul
-                      const TestQuestionText(
+                      const TestQuestionTextWidget(
                         text: "1. Sebutkan nama benda yang muncul.",
                       ),
                       const SizedBox(height: 12),
@@ -206,7 +206,7 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TestDropdown(
+                      TestDropdownWidget(
                         value: bendaAnswer,
                         options: jumlahBenarOptions,
                         onChanged: (value) {
@@ -217,12 +217,12 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
                       ),
                       const SizedBox(height: 24),
                       // 2. Ulangi rangkaian kata
-                      const TestQuestionText(
+                      const TestQuestionTextWidget(
                         text:
                             '2. Ulangi rangkaian kata (cont: "tanpa kalau dan atau tetapi")',
                       ),
                       const SizedBox(height: 12),
-                      TestDropdown(
+                      TestDropdownWidget(
                         value: kataAnswer,
                         options: benarSalahOptions,
                         onChanged: (value) {
@@ -233,12 +233,12 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
                       ),
                       const SizedBox(height: 24),
                       // 3. Instruksikan pasien
-                      const TestQuestionText(
+                      const TestQuestionTextWidget(
                         text:
                             '3. Instruksikan pasien "Ambil kertas ini dengan tangan kanan, lipatlah menjadi dua dan letakkan di lantai".',
                       ),
                       const SizedBox(height: 12),
-                      TestDropdown(
+                      TestDropdownWidget(
                         value: instruksiAnswer,
                         options: jumlahBenarOptions3,
                         onChanged: (value) {
@@ -249,12 +249,12 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
                       ),
                       const SizedBox(height: 24),
                       // 4. Instruksikan pasien "Angkatlah tangan kiri anda".
-                      const TestQuestionText(
+                      const TestQuestionTextWidget(
                         text:
                             '4. Instruksikan pasien "Angkatlah tangan kiri anda".',
                       ),
                       const SizedBox(height: 12),
-                      TestDropdown(
+                      TestDropdownWidget(
                         value: angkatTanganAnswer,
                         options: benarSalahOptions,
                         onChanged: (value) {
@@ -265,12 +265,12 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
                       ),
                       const SizedBox(height: 24),
                       // 5. Instruksikan pasien untuk menulis sebuah kalimat
-                      const TestQuestionText(
+                      const TestQuestionTextWidget(
                         text:
                             '5. Instruksikan pasien untuk menulis sebuah kalimat (minimal terdiri dari subject + predikat).',
                       ),
                       const SizedBox(height: 12),
-                      TestDropdown(
+                      TestDropdownWidget(
                         value: tulisKalimatAnswer,
                         options: benarSalahOptions,
                         onChanged: (value) {
@@ -281,7 +281,7 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
                       ),
                       const SizedBox(height: 24),
                       // 6. Instruksikan pasien untuk meniru gambar ini.
-                      const TestQuestionText(
+                      const TestQuestionTextWidget(
                         text: '6. Instruksikan pasien untuk meniru gambar ini.',
                       ),
                       const SizedBox(height: 12),
@@ -307,7 +307,7 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TestDropdown(
+                      TestDropdownWidget(
                         value: tiruGambarAnswer,
                         options: benarSalahOptions,
                         onChanged: (value) {
@@ -323,7 +323,7 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
             ),
             Padding(
               padding: const EdgeInsets.all(20),
-              child: TestNextButton(
+              child: TestNextButtonWidget(
                 isComplete: _isPageComplete(),
                 onPressed: () {
                   _updateScores();

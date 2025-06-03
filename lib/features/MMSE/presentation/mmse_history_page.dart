@@ -4,9 +4,9 @@ import 'package:project/features/MMSE/presentation/mmse_history_detail_page.dart
 import 'package:project/features/MMSE/providers/mmse_history_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:project/features/MMSE/presentation/mmse_test_page_1.dart';
-import 'package:project/core/widgets/start_test_button.dart';
-import 'package:project/core/widgets/result_card.dart';
-import 'package:project/core/widgets/custom_app_bar.dart';
+import 'package:project/core/widgets/start_test_button_widget.dart';
+import 'package:project/core/widgets/result_card_widget.dart';
+import 'package:project/core/widgets/custom_app_bar_widget.dart';
 
 class MMSEHistoryPage extends ConsumerStatefulWidget {
   const MMSEHistoryPage({super.key});
@@ -34,7 +34,7 @@ class _MMSEHistoryPageState extends ConsumerState<MMSEHistoryPage> {
     final sortedHistory = historyState.sortedHistory;
 
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: CustomAppBarWidget(
         title: "Mini-Mental State Exam (MMSE)",
         showCloseButton: true,
         onClose: () => Navigator.of(context).popUntil((route) => route.isFirst),
@@ -144,11 +144,11 @@ class _MMSEHistoryPageState extends ConsumerState<MMSEHistoryPage> {
                                           'Pasien menunjukkan tanda-tanda gangguan kognitif berat';
                                     }
 
-                                    return ResultCard(
+                                    return ResultCardWidget(
                                       date: entry.date,
                                       title: 'Skor: ${entry.score}',
                                       subtitle: subtitle,
-                                      backgroundColor: stageColor,
+                                      accentColor: stageColor,
                                       stage: stage,
                                       showStageBadge: true,
                                       onTap: () {
@@ -168,7 +168,7 @@ class _MMSEHistoryPageState extends ConsumerState<MMSEHistoryPage> {
                                 ),
                       ),
             ),
-            StartTestButton(
+            StartTestButtonWidget(
               onPressed: () {
                 Navigator.push(
                   context,

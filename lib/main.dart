@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:project/features/home/presentation/pages/home_page.dart';
 import 'package:project/features/reminder/presentation/reminder_page.dart';
 import 'package:project/features/sholat/presentation/sholat_reminder_page.dart';
 import 'package:project/features/splash/presentation/pages/splash_page.dart';
@@ -18,9 +20,14 @@ void main() async {
   await FirebaseAppCheck.instance.activate(
     // Untuk Android, defaultnya adalah Play Integrity.
     // Anda bisa menentukan provider secara eksplisit jika perlu.
-    androidProvider: AndroidProvider.playIntegrity,
+    // androidProvider: AndroidProvider.playIntegrity,
     // appleProvider: AppleProvider.appAttest, // Untuk iOS
+    androidProvider: AndroidProvider.debug,
+    
   );
+
+  await initializeDateFormatting('id_ID', null);
+
 
   // Initialize Awesome Notifications
   await _initializeNotifications();
@@ -80,7 +87,7 @@ Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
   }
   if (receivedAction.channelKey == 'sholat_channel') {
     navigatorKey.currentState?.push(
-      MaterialPageRoute(builder: (_) => SholatPage()),
+      MaterialPageRoute(builder: (_) => const SholatPage()),
     );
   }
 }
@@ -103,7 +110,8 @@ class MyApp extends ConsumerWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      home: SplashPage(),
+      home: const SplashPage(),
+      // home: HomePage(),
       theme: ThemeData(primaryColor: Colors.white, primarySwatch: Colors.blue),
     );
   }

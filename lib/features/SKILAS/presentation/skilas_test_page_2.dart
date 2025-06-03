@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/SKILAS/presentation/skilas_test_page_3.dart';
 import 'package:project/features/SKILAS/providers/skilas_test_provider.dart';
-import 'package:project/core/widgets/test_dropdown.dart';
-import 'package:project/core/widgets/test_question_text.dart';
-import 'package:project/core/widgets/test_next_button.dart';
+import 'package:project/core/widgets/test_dropdown_widget.dart';
+import 'package:project/core/widgets/test_question_text_widget.dart';
+import 'package:project/core/widgets/test_next_button_widget.dart';
 
 class SKILASPage2 extends ConsumerStatefulWidget {
   const SKILASPage2({super.key});
@@ -73,9 +73,9 @@ class _SKILASPage2State extends ConsumerState<SKILASPage2> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        TestQuestionText(text: questions[index]),
+                        TestQuestionTextWidget(text: questions[index]),
                         const SizedBox(height: 8),
-                        TestDropdown(
+                        TestDropdownWidget(
                           value: answers[index],
                           options: options,
                           onChanged: (val) {
@@ -90,7 +90,7 @@ class _SKILASPage2State extends ConsumerState<SKILASPage2> {
                 ),
               ),
               const SizedBox(height: 12),
-              TestNextButton(
+              TestNextButtonWidget(
                 isComplete: _isPageComplete(),
                 onPressed: () {
                   ref

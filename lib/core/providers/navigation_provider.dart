@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:project/features/auth/presentation/widgets/signup_page.dart';
+import 'package:project/features/auth/presentation/pages/signup_page.dart';
 
 // Global navigator key provider
 final navigatorKeyProvider = Provider<GlobalKey<NavigatorState>>((ref) {
@@ -11,6 +11,6 @@ final navigatorKeyProvider = Provider<GlobalKey<NavigatorState>>((ref) {
 void navigateToRegister(BuildContext context) {
   Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => SignUpPage()),
+    MaterialPageRoute(builder: (context) => const SignUpPage()),
   );
 }

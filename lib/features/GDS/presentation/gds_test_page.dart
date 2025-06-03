@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:project/core/widgets/custom_app_bar.dart';
-import 'package:project/core/widgets/test_dropdown.dart';
-import 'package:project/core/widgets/test_question_text.dart';
-import 'package:project/core/widgets/test_next_button.dart';
+import 'package:project/core/widgets/custom_app_bar_widget.dart';
+import 'package:project/core/widgets/test_dropdown_widget.dart';
+import 'package:project/core/widgets/test_question_text_widget.dart';
+import 'package:project/core/widgets/test_next_button_widget.dart';
 import 'package:project/features/GDS/providers/gds_test_provider.dart';
 import 'package:project/features/GDS/presentation/gds_result_page.dart';
 
@@ -43,7 +43,7 @@ class _GDSTestPageState extends ConsumerState<GDSTestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Geriatric Depression Scale (GDS)"),
+      appBar: const CustomAppBarWidget(title: "Geriatric Depression Scale (GDS)"),
       backgroundColor: const Color(0xFFF8FAFB),
       body: SafeArea(
         child: Padding(
@@ -69,9 +69,9 @@ class _GDSTestPageState extends ConsumerState<GDSTestPage> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        TestQuestionText(text: questions[index]),
+                        TestQuestionTextWidget(text: questions[index]),
                         const SizedBox(height: 8),
-                        TestDropdown(
+                        TestDropdownWidget(
                           value: answers[index],
                           options: options,
                           onChanged: (val) {
@@ -86,7 +86,7 @@ class _GDSTestPageState extends ConsumerState<GDSTestPage> {
                 ),
               ),
               const SizedBox(height: 12),
-              TestNextButton(
+              TestNextButtonWidget(
                 isComplete: _isPageComplete(),
                 onPressed: () {
                   ref.read(gdsTestProvider.notifier).setAnswers(answers);

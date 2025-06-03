@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/GDS/providers/gds_history_provider.dart';
 import 'package:project/features/GDS/presentation/gds_test_page.dart';
-import 'package:project/core/widgets/start_test_button.dart';
-import 'package:project/core/widgets/result_card.dart';
-import 'package:project/core/widgets/custom_app_bar.dart';
+import 'package:project/core/widgets/start_test_button_widget.dart';
+import 'package:project/core/widgets/result_card_widget.dart';
+import 'package:project/core/widgets/custom_app_bar_widget.dart';
 import 'package:project/features/GDS/presentation/gds_history_detail_page.dart';
 
 class GDSHistoryPage extends ConsumerStatefulWidget {
@@ -33,7 +33,7 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
     final sortedHistory = historyState.sortedHistory;
 
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: CustomAppBarWidget(
         title: "Geriatric Depression Scale (GDS)",
         showCloseButton: true,
         onClose: () => Navigator.of(context).popUntil((route) => route.isFirst),
@@ -138,11 +138,11 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
                                           'Skor < 5 mengindikasikan tidak ada gejala depresi';
                                     }
 
-                                    return ResultCard(
+                                    return ResultCardWidget(
                                       date: entry.date,
                                       title: 'Skor: ${entry.score}',
                                       subtitle: subtitle,
-                                      backgroundColor: stageColor,
+                                      accentColor: stageColor,
                                       stage: stage,
                                       showStageBadge: true,
                                       onTap: () {
@@ -162,7 +162,7 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
                                 ),
                       ),
             ),
-            StartTestButton(
+            StartTestButtonWidget(
               onPressed: () {
                 Navigator.push(
                   context,

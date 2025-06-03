@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:project/core/widgets/custom_app_bar.dart';
+import 'package:project/core/widgets/custom_app_bar_widget.dart';
 import 'package:project/features/MMSE/presentation/mmse_test_page_2.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/MMSE/providers/mmse_test_provider.dart';
-import 'package:project/core/widgets/test_dropdown.dart';
-import 'package:project/core/widgets/test_question_text.dart';
-import 'package:project/core/widgets/test_next_button.dart';
+import 'package:project/core/widgets/test_dropdown_widget.dart';
+import 'package:project/core/widgets/test_question_text_widget.dart';
+import 'package:project/core/widgets/test_next_button_widget.dart';
 
 class MMSETestPage1 extends ConsumerStatefulWidget {
   const MMSETestPage1({super.key});
@@ -33,7 +33,7 @@ class _MMSETestPage1State extends ConsumerState<MMSETestPage1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Mini-Mental State Exam (MMSE)"),
+      appBar: const CustomAppBarWidget(title: "Mini-Mental State Exam (MMSE)"),
       backgroundColor: const Color(0xFFF8FAFB),
       body: SafeArea(
         child: Padding(
@@ -59,9 +59,9 @@ class _MMSETestPage1State extends ConsumerState<MMSETestPage1> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        TestQuestionText(text: questions[index]),
+                        TestQuestionTextWidget(text: questions[index]),
                         const SizedBox(height: 8),
-                        TestDropdown(
+                        TestDropdownWidget(
                           value: answers[index],
                           options: options,
                           onChanged: (val) {
@@ -76,7 +76,7 @@ class _MMSETestPage1State extends ConsumerState<MMSETestPage1> {
                 ),
               ),
               const SizedBox(height: 12),
-              TestNextButton(
+              TestNextButtonWidget(
                 isComplete: _isPageComplete(),
                 onPressed: () {
                   ref

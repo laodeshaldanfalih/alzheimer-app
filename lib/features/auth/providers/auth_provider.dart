@@ -25,42 +25,45 @@ class AuthNotifier extends StateNotifier<User?> {
   }
 
   // Google Sign-In (Jika masih digunakan)
-  Future<void> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        return;
-      }
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-      final userCredential = await _auth.signInWithCredential(credential);
-      state = userCredential.user;
-
-      // Saat Google Sign-In, Firebase Auth biasanya sudah mengisi displayName.
-      // Kita akan membuat dokumen profil dasar di Firestore.
-      // Nama akan diisi/diupdate nanti melalui halaman profil.
-      if (userCredential.user != null) {
-        await _firestore
-            .collection('user_profiles')
-            .doc(userCredential.user!.uid)
-            .set(
-              {
-                'email': userCredential.user!.email,
-                // 'name': userCredential.user!.displayName, // Bisa diisi dari Google, atau biarkan kosong untuk diisi di profil
-                'createdAt': FieldValue.serverTimestamp(),
-              },
-              SetOptions(merge: true),
-            ); // Merge true penting jika dokumen sudah ada
-      }
-    } catch (e) {
-      print("Google Sign-In Error: $e");
-      rethrow;
+Future<void> signInWithGoogle() async {
+  try {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    if (googleUser == null) {
+      return; // Pengguna membatalkan login
     }
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    final userCredential = await _auth.signInWithCredential(credential);
+    state = userCredential.user;
+
+    if (userCredential.user != null) {
+      final user = userCredential.user!;
+      final docRef = _firestore.collection('user_profiles').doc(user.uid);
+      final docSnap = await docRef.get();
+
+      // HANYA buat dokumen profil jika belum ada
+      if (!docSnap.exists) {
+        await docRef.set({
+          'email': user.email,
+          'createdAt': FieldValue.serverTimestamp(),
+          'role': 'user', // Role default untuk pengguna baru
+        });
+        print('Profil baru dibuat untuk pengguna Google.');
+      } else {
+        print('Pengguna Google sudah ada, tidak ada perubahan role.');
+        // Jika dokumen sudah ada, kita tidak melakukan apa-apa.
+        // Ini akan mempertahankan peran 'admin' atau data lain yang sudah diubah manual.
+      }
+    }
+  } catch (e) {
+    print("Google Sign-In Error: $e");
+    rethrow;
   }
+}
 
   // Email/Password Sign-Up
   Future<void> signUpWithEmail(
@@ -89,6 +92,7 @@ class AuthNotifier extends StateNotifier<User?> {
                 'email': email,
                 // 'name': username, // HAPUS field username dari sini
                 'createdAt': FieldValue.serverTimestamp(),
+                'role': 'user',
               },
             ); // Tidak perlu merge true karena ini pembuatan user baru, dokumen belum ada.
       }
@@ -138,12 +142,14 @@ class AuthNotifier extends StateNotifier<User?> {
               user.phoneNumber ??
               '', // Pastikan ini terisi dari auth jika memungkinkan
           'updatedAt': FieldValue.serverTimestamp(),
+          
         };
 
         if (!profileDoc.exists) {
           profileData['email'] =
               user.email; // Akan null untuk pengguna baru via telepon
           profileData['createdAt'] = FieldValue.serverTimestamp();
+          profileData['role'] = 'user';
           await profileDocRef.set(profileData);
         } else {
           // Jika sudah ada, hanya update phone jika belum ada atau berbeda

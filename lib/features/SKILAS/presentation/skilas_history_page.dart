@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/SKILAS/providers/skilas_history_provider.dart';
-import 'package:project/core/widgets/custom_app_bar.dart';
-import 'package:project/core/widgets/result_card.dart';
-import 'package:project/core/widgets/start_test_button.dart';
+import 'package:project/core/widgets/custom_app_bar_widget.dart';
+import 'package:project/core/widgets/result_card_widget.dart';
+import 'package:project/core/widgets/start_test_button_widget.dart';
 import 'skilas_test_page_1.dart';
 import 'skilas_history_detail_page.dart';
 
@@ -32,7 +32,7 @@ class _SKILASHistoryPageState extends ConsumerState<SKILASHistoryPage> {
     final historyState = ref.watch(skilasHistoryProvider);
 
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBarWidget(
         title: "Skrining Lansia Sederhana (SKILAS)",
         showCloseButton: true,
       ),
@@ -112,14 +112,14 @@ class _SKILASHistoryPageState extends ConsumerState<SKILASHistoryPage> {
                                 itemBuilder: (context, index) {
                                   final entry =
                                       historyState.sortedHistory[index];
-                                  return ResultCard(
+                                  return ResultCardWidget(
                                     date: entry.date,
                                     title: 'Skor: ${entry.score}',
                                     subtitle:
                                         entry.score == 1
                                             ? 'Pasien tidak menunjukkan tanda-tanda gangguan kognitif'
                                             : 'Pasien menunjukkan tanda-tanda gangguan kognitif',
-                                    backgroundColor:
+                                    accentColor:
                                         entry.score == 1
                                             ? const Color(0xFF4CAF50)
                                             : const Color(0xFFD32F2F),
@@ -145,7 +145,7 @@ class _SKILASHistoryPageState extends ConsumerState<SKILASHistoryPage> {
                               ),
                     ),
           ),
-          StartTestButton(
+          StartTestButtonWidget(
             onPressed: () {
               Navigator.push(
                 context,

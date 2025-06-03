@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:project/core/widgets/custom_app_bar.dart';
+import 'package:project/core/widgets/custom_app_bar_widget.dart';
 import 'package:project/features/MMSE/presentation/mmse_test_page_5.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/MMSE/providers/mmse_test_provider.dart';
@@ -36,7 +36,7 @@ class _MMSETestPage4State extends ConsumerState<MMSETestPage4> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Mini-Mental State Exam (MMSE)"),
+      appBar: const CustomAppBarWidget(title: "Mini-Mental State Exam (MMSE)"),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(

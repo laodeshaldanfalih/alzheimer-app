@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:project/features/MMSE/presentation/mmse_test_page_4.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/MMSE/providers/mmse_test_provider.dart';
-import 'package:project/core/widgets/test_question_text.dart';
-import 'package:project/core/widgets/test_next_button.dart';
-import 'package:project/core/widgets/custom_app_bar.dart';
+import 'package:project/core/widgets/test_question_text_widget.dart';
+import 'package:project/core/widgets/test_next_button_widget.dart';
+import 'package:project/core/widgets/custom_app_bar_widget.dart';
 
 class MMSETestPage3 extends ConsumerStatefulWidget {
   const MMSETestPage3({super.key});
@@ -46,7 +46,7 @@ class _MMSETestPage3State extends ConsumerState<MMSETestPage3> {
       onTap: () => FocusScope.of(context).unfocus(), // Close keyboard
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: const CustomAppBar(title: "Mini-Mental State Exam (MMSE)"),
+        appBar: const CustomAppBarWidget(title: "Mini-Mental State Exam (MMSE)"),
         backgroundColor: Colors.white,
         body: SafeArea(
           child: Column(
@@ -66,7 +66,7 @@ class _MMSETestPage3State extends ConsumerState<MMSETestPage3> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      const TestQuestionText(text: "Instruksi:"),
+                      const TestQuestionTextWidget(text: "Instruksi:"),
                       const SizedBox(height: 16),
                       _buildInstructionItem(
                         "1. Sebutkan 3 buah nama benda (contoh: jeruk, uang, mawar), tiap benda disebutkan pelan selama jeda 1 detik.",
@@ -106,7 +106,7 @@ class _MMSETestPage3State extends ConsumerState<MMSETestPage3> {
               ),
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: TestNextButton(
+                child: TestNextButtonWidget(
                   isComplete: _isPageComplete(),
                   onPressed: () {
                     _updateScores();

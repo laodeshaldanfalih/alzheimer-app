@@ -2,20 +2,21 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:async';
 import 'package:flutter_svg/svg.dart';
-import 'package:project/core/widgets/geometric_shape_page.dart';
+import 'package:project/core/widgets/geometric_shape_page_widget.dart';
+import 'package:project/core/widgets/live_clock_widget.dart';
 import 'package:project/features/GDS/presentation/gds_history_page.dart';
 import 'package:project/features/MMSE/presentation/mmse_history_page.dart';
 import 'package:project/features/SKILAS/presentation/skilas_history_page.dart';
 import 'package:project/features/alzheimer_scan/presentation/pages/alzheimer_scan_page.dart';
-import 'package:project/features/buletin/data/article_data.dart';
-import 'package:project/features/buletin/models/article_item.dart';
-import 'package:project/features/buletin/presentation/pages/buletin_page.dart';
+import 'package:project/features/article/data/article_data.dart';
+import 'package:project/features/article/models/article_item.dart';
+import 'package:project/features/article/presentation/pages/article_buletin_page.dart';
 import 'package:project/features/game/presentation/pages/game_menu_page.dart';
-import 'package:project/features/home/presentation/pages/article_detail_page.dart';
+import 'package:project/features/health_page/health_page.dart';
+import 'package:project/features/article/presentation/pages/article_detail_page.dart';
 import 'package:project/features/reminder/presentation/reminder_page.dart';
-import 'package:project/features/sholat/presentation/sholat_reminder_page.dart';
+import 'package:project/features/sholat/versi1/sholat_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -25,66 +26,81 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  late Timer _timer;
-  late String _timeString;
-  late String _dateString;
+  // late Timer _timer;
+  // late String _timeString;
+  // late String _dateString;
+  final ScrollController _scrollController = ScrollController();
+  bool _showFade = true;
 
   @override
   void initState() {
     super.initState();
-    _timeString = _formatTime(DateTime.now());
-    _dateString = _formatDate(DateTime.now());
-    _timer = Timer.periodic(
-      const Duration(seconds: 1),
-      (Timer timer) => _getTime(),
-    );
+    // _timeString = _formatTime(DateTime.now());
+    // _dateString = _formatDate(DateTime.now());
+    // _timer = Timer.periodic(
+    //   const Duration(seconds: 1),
+    //   (Timer timer) => _getTime(),
+    // );
+
+    _scrollController.addListener(() {
+      // Cek apakah sudah scroll sampai ujung
+      final atRightEnd =
+          _scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent;
+      if (atRightEnd != !_showFade) {
+        setState(() {
+          _showFade = !atRightEnd;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    // _timer.cancel();
     super.dispose();
+    _scrollController.dispose();
   }
 
-  void _getTime() {
-    final DateTime now = DateTime.now();
-    setState(() {
-      _timeString = _formatTime(now);
-      _dateString = _formatDate(now);
-    });
-  }
+  // void _getTime() {
+  //   final DateTime now = DateTime.now();
+  //   setState(() {
+  //     _timeString = _formatTime(now);
+  //     _dateString = _formatDate(now);
+  //   });
+  // }
 
-  String _formatTime(DateTime dateTime) {
-    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-  }
+  // String _formatTime(DateTime dateTime) {
+  //   return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  // }
 
-  String _formatDate(DateTime dateTime) {
-    final List<String> months = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
-    ];
-    final List<String> days = [
-      'Senin',
-      'Selasa',
-      'Rabu',
-      'Kamis',
-      'Jumat',
-      'Sabtu',
-      'Minggu',
-    ];
+  // String _formatDate(DateTime dateTime) {
+  //   final List<String> months = [
+  //     'Januari',
+  //     'Februari',
+  //     'Maret',
+  //     'April',
+  //     'Mei',
+  //     'Juni',
+  //     'Juli',
+  //     'Agustus',
+  //     'September',
+  //     'Oktober',
+  //     'November',
+  //     'Desember',
+  //   ];
+  //   final List<String> days = [
+  //     'Senin',
+  //     'Selasa',
+  //     'Rabu',
+  //     'Kamis',
+  //     'Jumat',
+  //     'Sabtu',
+  //     'Minggu',
+  //   ];
 
-    return '${days[dateTime.weekday - 1]}, ${dateTime.day} ${months[dateTime.month - 1]} ${dateTime.year}';
-  }
+  //   return '${days[dateTime.weekday - 1]}, ${dateTime.day} ${months[dateTime.month - 1]} ${dateTime.year}';
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -107,8 +123,8 @@ class _HomePageState extends ConsumerState<HomePage> {
       body: SingleChildScrollView(
         child: Stack(
           children: [
-            const GeometricBackground(),
-            SizedBox(
+            const GeometricBackgroundWidget(),
+            const SizedBox(
               width: double.infinity,
               child: ColoredBox(color: Colors.black),
             ),
@@ -128,31 +144,15 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ),
                       child: Stack(
                         children: [
-                          Positioned(
-                            top: 20,
+                          const Positioned(
+                            top:
+                                20, // Sesuaikan posisi jika perlu setelah mengganti dengan LiveClockWidget
                             left: 0,
                             right: 0,
                             child: Align(
                               alignment: Alignment.topCenter,
-                              child: Column(
-                                children: [
-                                  Text(
-                                    _timeString,
-                                    style: const TextStyle(
-                                      color: Color(0xffFFECCC),
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    _dateString,
-                                    style: const TextStyle(
-                                      color: Color(0xffFFECCC),
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              // GUNAKAN WIDGET BARU DI SINI
+                              child: LiveClockWidget(),
                             ),
                           ),
                           Positioned(
@@ -160,7 +160,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                             right: 0,
                             child: SvgPicture.asset(
                               'assets/svgs/wave.svg',
-                              color: Color(0xff898CB0),
+                              color: const Color(
+                                0xff898CB0,
+                              ), // Perbaiki warna jika sebelumnya salah ketik
                             ),
                           ),
                         ],
@@ -195,87 +197,135 @@ class _HomePageState extends ConsumerState<HomePage> {
                         ),
                         const SizedBox(height: 16),
 
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 60,
-                              child: _buildFeatureItem(
-                                icon: 'assets/svgs/icon_pengingat.svg',
-                                label: 'Notifikasi\nPengingat',
-                                onTap:
-                                    () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) => const ReminderPage(),
-                                      ),
+                        Scrollbar(
+                          thumbVisibility: true,
+                          radius: const Radius.circular(10),
+                          controller: _scrollController,
+                          child: SingleChildScrollView(
+                            controller: _scrollController,
+                            scrollDirection: Axis.horizontal,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 80,
+                                    child: _buildFeatureItem(
+                                      icon:
+                                          'assets/svgs/icon_screening_otak_hitam.svg',
+                                      label: 'Screening\nOtak',
+                                      onTap:
+                                          () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) =>
+                                                      const AlzheimerScanPage(),
+                                            ),
+                                          ),
                                     ),
+                                  ),
+                                  const SizedBox(width: 8),
+
+                                  SizedBox(
+                                    width: 80,
+                                    child: _buildFeatureItem(
+                                      icon:
+                                          'assets/svgs/icon_kesehatan_medikal.svg',
+                                      label: 'Dasbor\nKesehatan',
+                                      onTap:
+                                          () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) =>
+                                                      const HealthPage(),
+                                            ),
+                                          ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 8),
+
+                                  SizedBox(
+                                    width: 80,
+                                    child: _buildFeatureItem(
+                                      icon: 'assets/svgs/icon_pengingat.svg',
+                                      label: 'Notifikasi\nPengingat',
+                                      onTap:
+                                          () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) =>
+                                                      const ReminderPage(),
+                                            ),
+                                          ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+
+                                  SizedBox(
+                                    width: 80,
+                                    child: _buildFeatureItem(
+                                      icon: 'assets/svgs/icon_buletin.svg',
+                                      label: 'Artikel\nPanduan',
+                                      onTap:
+                                          () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) =>
+                                                      const ArticleBuletinPage(),
+                                            ),
+                                          ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 8),
+
+                                  SizedBox(
+                                    width: 80,
+                                    child: _buildFeatureItem(
+                                      icon: 'assets/svgs/icon_game.svg',
+                                      label: 'Game',
+                                      onTap:
+                                          () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) =>
+                                                      const GameMenuPage(),
+                                            ),
+                                          ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+
+                                  SizedBox(
+                                    width: 80,
+                                    child: _buildFeatureItem(
+                                      icon:
+                                          'assets/svgs/icon_waktu_sholat_biru.svg',
+                                      label: 'Waktu\nSholat',
+                                      onTap:
+                                          () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) =>
+                                                      const SholatPage(),
+                                            ),
+                                          ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(
-                              width: 60,
-                              child: _buildFeatureItem(
-                                icon: 'assets/svgs/icon_game.svg',
-                                label: 'Game',
-                                onTap:
-                                    () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) => const GameMenuPage(),
-                                      ),
-                                    ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 60,
-                              child: _buildFeatureItem(
-                                icon: 'assets/svgs/icon_waktu_sholat.svg',
-                                label: 'Waktu\nSholat',
-                                onTap:
-                                    () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) => const SholatPage(),
-                                      ),
-                                    ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 60,
-                              child: _buildFeatureItem(
-                                icon: 'assets/svgs/icon_buletin.svg',
-                                label: 'Panduan\nKesehatan',
-                                onTap:
-                                    () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) => const BuletinPage(),
-                                      ),
-                                    ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 60,
-                              child: _buildFeatureItem(
-                                icon: 'assets/svgs/icon_screening_otak.svg',
-                                label: 'Screening\nOtak',
-                                onTap:
-                                    () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) =>
-                                                const AlzheimerScanPage(),
-                                      ),
-                                    ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
 
                         const SizedBox(height: 24),

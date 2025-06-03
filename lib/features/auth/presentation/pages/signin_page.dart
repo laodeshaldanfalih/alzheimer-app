@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/core/providers/shared_providers.dart';
-import 'package:project/core/widgets/main_layout.dart';
-import 'package:project/features/auth/presentation/pages/phone_signin_page.dart';
-import 'package:project/features/auth/presentation/widgets/signup_page.dart';
+import 'package:project/core/widgets/main_layout_widget.dart';
+import 'package:project/features/auth/presentation/pages/signup_page.dart';
 import 'package:project/features/auth/presentation/widgets/singin_form.dart';
 import 'package:project/features/auth/providers/auth_provider.dart';
 
@@ -26,7 +25,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
       if (next != null && mounted) {
         Navigator.of(
           context,
-        ).pushReplacement(MaterialPageRoute(builder: (_) => MainLayout()));
+        ).pushReplacement(MaterialPageRoute(builder: (_) => const MainLayout()));
       }
     });
   }
@@ -54,7 +53,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const SizedBox(height: 40),
-                    Text(
+                    const Text(
                       "Login Aplikasi",
                       style: TextStyle(
                         fontSize: 24,
@@ -64,11 +63,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                     const SizedBox(height: 40),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 20),
+                        padding: const EdgeInsets.symmetric(vertical: 20),
                         backgroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(38),
-                          side: BorderSide(width: 1, color: Color(0xffEBEAEC)),
+                          side: const BorderSide(width: 1, color: Color(0xffEBEAEC)),
                         ),
                         elevation: 0,
                       ),
@@ -103,8 +102,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                             "assets/images/google_icons.png",
                             width: 24,
                           ),
-                          SizedBox(width: 10),
-                          Text(
+                          const SizedBox(width: 10),
+                          const Text(
                             "CONTINUE WITH GOOGLE",
                             style: TextStyle(
                               fontSize: 14,
@@ -116,56 +115,13 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    Text(
+                    const Text(
                       "Atau login dengan email",
                       style: TextStyle(color: Color(0XFFA1A4B2), fontSize: 12),
                     ),
                     const SizedBox(height: 30),
 
-                    SignInForm(),
-
-                    const SizedBox(height: 20),
-                    Text(
-                      "Atau login dengan nomor telepon", //
-                      style: TextStyle(color: Color(0XFFA1A4B2), fontSize: 12),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(
-                          double.infinity,
-                          double.minPositive,
-                        ), //
-                        backgroundColor:
-                            Colors.teal, // Ganti warna sesuai tema Anda
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(38),
-                        ),
-                      ),
-                      onPressed:
-                          isLoading
-                              ? null
-                              : () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => const PhoneSignInPage(),
-                                  ), //
-                                );
-                              },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 15), //
-                        child: Text(
-                          'LOGIN DENGAN NOMOR TELEPON', //
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
+                    const SignInForm(),
 
                     const SizedBox(height: 30),
                     GestureDetector(
@@ -175,11 +131,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                               : () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => SignUpPage(),
+                                  builder: (context) => const SignUpPage(),
                                 ),
                               ),
                       child: RichText(
-                        text: TextSpan(
+                        text: const TextSpan(
                           text: "Belum punya akun? ",
                           style: TextStyle(
                             color: Color(0xFFA1A4B2),
@@ -207,7 +163,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
           if (isLoading)
             Container(
               color: Colors.black.withOpacity(0.5),
-              child: Center(child: CircularProgressIndicator()),
+              child: const Center(child: CircularProgressIndicator()),
             ),
         ],
       ),

@@ -8,8 +8,8 @@ plugins {
 
 android {
     namespace = "com.example.project"
-    compileSdk = 34
-    ndkVersion = "28.0.13004108"
+    compileSdk = 35
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -25,8 +25,10 @@ android {
         applicationId = "com.example.alzheimerApp"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
+        // implementation = "com.google.firebase:firebase-appcheck-debug:16.0.0-beta01"
+
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }

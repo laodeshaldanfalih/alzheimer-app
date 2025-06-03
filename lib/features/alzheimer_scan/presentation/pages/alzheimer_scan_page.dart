@@ -347,30 +347,7 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
                       ],
                     ),
                     const Divider(),
-                    const SizedBox(height: 8),
-                    Center(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(
-                            0xFFA1A4B2,
-                          ), // Warna button A1A4B2
-                          foregroundColor: Colors.white, // Warna text putih
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              6,
-                            ), // Radius border 6
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ), // Padding button
-                        ),
-                        onPressed: () {
-                          // TODO: simpan hasil
-                        },
-                        child: const Text('Simpan Hasil'),
-                      ),
-                    ),
+                    const SizedBox(height: 12),
                   ],
                 ),
               ),
