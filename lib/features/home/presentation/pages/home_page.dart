@@ -13,10 +13,10 @@ import 'package:project/features/article/data/article_data.dart';
 import 'package:project/features/article/models/article_item.dart';
 import 'package:project/features/article/presentation/pages/article_buletin_page.dart';
 import 'package:project/features/game/presentation/pages/game_menu_page.dart';
-import 'package:project/features/health_page/health_page.dart';
+import 'package:project/features/health_dashboard/presentation/health_page.dart';
 import 'package:project/features/article/presentation/pages/article_detail_page.dart';
 import 'package:project/features/reminder/presentation/reminder_page.dart';
-import 'package:project/features/sholat/versi1/sholat_page.dart';
+import 'package:project/features/sholat/presentation/sholat_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -26,81 +26,69 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  // late Timer _timer;
-  // late String _timeString;
-  // late String _dateString;
   final ScrollController _scrollController = ScrollController();
-  bool _showFade = true;
+  // bool _showFade = true;
+
+  bool _showLeftArrow = false;
+  bool _showRightArrow = true;
 
   @override
   void initState() {
     super.initState();
-    // _timeString = _formatTime(DateTime.now());
-    // _dateString = _formatDate(DateTime.now());
-    // _timer = Timer.periodic(
-    //   const Duration(seconds: 1),
-    //   (Timer timer) => _getTime(),
-    // );
+    _scrollController.addListener(_scrollListener);
 
-    _scrollController.addListener(() {
-      // Cek apakah sudah scroll sampai ujung
-      final atRightEnd =
-          _scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent;
-      if (atRightEnd != !_showFade) {
-        setState(() {
-          _showFade = !atRightEnd;
-        });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scrollController.hasClients) {
+        _scrollListener();
+      } else if (mounted) {
+        final position = _scrollController.position;
+        if (position.maxScrollExtent == 0) {
+          if (_showLeftArrow || _showRightArrow) {
+            setState(() {
+              _showLeftArrow = false;
+              _showRightArrow = false;
+            });
+          }
+        }
       }
     });
   }
 
-  @override
-  void dispose() {
-    // _timer.cancel();
-    super.dispose();
-    _scrollController.dispose();
+  void _scrollListener() {
+    if (!_scrollController.hasClients) return;
+
+    final position = _scrollController.position;
+    bool newShowLeftArrow =
+        position.pixels >
+        position.minScrollExtent + 10; // Add a small threshold
+    bool newShowRightArrow =
+        position.pixels <
+        position.maxScrollExtent - 10; // Add a small threshold
+
+    // If there's no scroll extent (content fits), no arrows should be shown.
+    if (position.maxScrollExtent == 0) {
+      newShowLeftArrow = false;
+      newShowRightArrow = false;
+    }
+
+    if (newShowLeftArrow != _showLeftArrow ||
+        newShowRightArrow != _showRightArrow) {
+      if (mounted) {
+        setState(() {
+          _showLeftArrow = newShowLeftArrow;
+          _showRightArrow = newShowRightArrow;
+        });
+      }
+    }
   }
 
-  // void _getTime() {
-  //   final DateTime now = DateTime.now();
-  //   setState(() {
-  //     _timeString = _formatTime(now);
-  //     _dateString = _formatDate(now);
-  //   });
-  // }
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
 
-  // String _formatTime(DateTime dateTime) {
-  //   return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-  // }
-
-  // String _formatDate(DateTime dateTime) {
-  //   final List<String> months = [
-  //     'Januari',
-  //     'Februari',
-  //     'Maret',
-  //     'April',
-  //     'Mei',
-  //     'Juni',
-  //     'Juli',
-  //     'Agustus',
-  //     'September',
-  //     'Oktober',
-  //     'November',
-  //     'Desember',
-  //   ];
-  //   final List<String> days = [
-  //     'Senin',
-  //     'Selasa',
-  //     'Rabu',
-  //     'Kamis',
-  //     'Jumat',
-  //     'Sabtu',
-  //     'Minggu',
-  //   ];
-
-  //   return '${days[dateTime.weekday - 1]}, ${dateTime.day} ${months[dateTime.month - 1]} ${dateTime.year}';
-  // }
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,9 +96,9 @@ class _HomePageState extends ConsumerState<HomePage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: false,
-        title: Text(
+        title: const Text(
           "Halo, Selamat datang!",
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             color: Colors.black,
             fontWeight: FontWeight.w500,
@@ -118,16 +106,12 @@ class _HomePageState extends ConsumerState<HomePage> {
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        actions: [],
+        actions: const [],
       ),
       body: SingleChildScrollView(
         child: Stack(
           children: [
             const GeometricBackgroundWidget(),
-            const SizedBox(
-              width: double.infinity,
-              child: ColoredBox(color: Colors.black),
-            ),
 
             Padding(
               padding: const EdgeInsets.only(top: 16),
@@ -145,8 +129,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       child: Stack(
                         children: [
                           const Positioned(
-                            top:
-                                20, // Sesuaikan posisi jika perlu setelah mengganti dengan LiveClockWidget
+                            top: 20,
                             left: 0,
                             right: 0,
                             child: Align(
@@ -175,14 +158,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                   // White background container starts here
                   Container(
                     width: double.infinity,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20),
                         topRight: Radius.circular(20),
                       ),
                     ),
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -195,137 +178,194 @@ class _HomePageState extends ConsumerState<HomePage> {
                             color: Color(0xFF2D3142),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 8),
 
-                        Scrollbar(
-                          thumbVisibility: true,
-                          radius: const Radius.circular(10),
-                          controller: _scrollController,
-                          child: SingleChildScrollView(
-                            controller: _scrollController,
-                            scrollDirection: Axis.horizontal,
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: 80,
-                                    child: _buildFeatureItem(
-                                      icon:
-                                          'assets/svgs/icon_screening_otak_hitam.svg',
-                                      label: 'Screening\nOtak',
-                                      onTap:
-                                          () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (context) =>
-                                                      const AlzheimerScanPage(),
-                                            ),
-                                          ),
-                                    ),
+                        Stack(
+                          children: [
+                            Scrollbar(
+                              thumbVisibility: true,
+                              radius: const Radius.circular(10),
+                              controller: _scrollController,
+                              child: SingleChildScrollView(
+                                controller: _scrollController,
+                                scrollDirection: Axis.horizontal,
+                                physics: const BouncingScrollPhysics(),
+
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 26),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width: 80,
+                                        child: _buildFeatureItem(
+                                          icon:
+                                              'assets/svgs/icon_screening_otak_hitam.svg',
+                                          label: 'Klasifikasi\nOtak',
+                                          onTap:
+                                              () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) =>
+                                                          const AlzheimerScanPage(),
+                                                ),
+                                              ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+
+                                      SizedBox(
+                                        width: 80,
+                                        child: _buildFeatureItem(
+                                          icon:
+                                              'assets/svgs/icon_kesehatan_medikal.svg',
+                                          label: 'Dasbor\nKesehatan',
+                                          onTap:
+                                              () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) =>
+                                                          const HealthPage(),
+                                                ),
+                                              ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(width: 8),
+
+                                      SizedBox(
+                                        width: 80,
+                                        child: _buildFeatureItem(
+                                          icon:
+                                              'assets/svgs/icon_pengingat.svg',
+                                          label: 'Notifikasi\nPengingat',
+                                          onTap:
+                                              () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) =>
+                                                          const ReminderPage(),
+                                                ),
+                                              ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+
+                                      SizedBox(
+                                        width: 80,
+                                        child: _buildFeatureItem(
+                                          icon: 'assets/svgs/icon_buletin.svg',
+                                          label: 'Artikel\nPanduan',
+                                          onTap:
+                                              () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) =>
+                                                          const ArticleBuletinPage(),
+                                                ),
+                                              ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(width: 8),
+
+                                      SizedBox(
+                                        width: 80,
+                                        child: _buildFeatureItem(
+                                          icon: 'assets/svgs/icon_game.svg',
+                                          label: 'Game',
+                                          onTap:
+                                              () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) =>
+                                                          const GameMenuPage(),
+                                                ),
+                                              ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+
+                                      SizedBox(
+                                        width: 80,
+                                        child: _buildFeatureItem(
+                                          icon:
+                                              'assets/svgs/icon_waktu_sholat_biru.svg',
+                                          label: 'Waktu\nSholat',
+                                          onTap:
+                                              () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) =>
+                                                          const SholatPage(),
+                                                ),
+                                              ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 8),
-
-                                  SizedBox(
-                                    width: 80,
-                                    child: _buildFeatureItem(
-                                      icon:
-                                          'assets/svgs/icon_kesehatan_medikal.svg',
-                                      label: 'Dasbor\nKesehatan',
-                                      onTap:
-                                          () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (context) =>
-                                                      const HealthPage(),
-                                            ),
-                                          ),
-                                    ),
-                                  ),
-
-                                  const SizedBox(width: 8),
-
-                                  SizedBox(
-                                    width: 80,
-                                    child: _buildFeatureItem(
-                                      icon: 'assets/svgs/icon_pengingat.svg',
-                                      label: 'Notifikasi\nPengingat',
-                                      onTap:
-                                          () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (context) =>
-                                                      const ReminderPage(),
-                                            ),
-                                          ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-
-                                  SizedBox(
-                                    width: 80,
-                                    child: _buildFeatureItem(
-                                      icon: 'assets/svgs/icon_buletin.svg',
-                                      label: 'Artikel\nPanduan',
-                                      onTap:
-                                          () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (context) =>
-                                                      const ArticleBuletinPage(),
-                                            ),
-                                          ),
-                                    ),
-                                  ),
-
-                                  const SizedBox(width: 8),
-
-                                  SizedBox(
-                                    width: 80,
-                                    child: _buildFeatureItem(
-                                      icon: 'assets/svgs/icon_game.svg',
-                                      label: 'Game',
-                                      onTap:
-                                          () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (context) =>
-                                                      const GameMenuPage(),
-                                            ),
-                                          ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-
-                                  SizedBox(
-                                    width: 80,
-                                    child: _buildFeatureItem(
-                                      icon:
-                                          'assets/svgs/icon_waktu_sholat_biru.svg',
-                                      label: 'Waktu\nSholat',
-                                      onTap:
-                                          () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (context) =>
-                                                      const SholatPage(),
-                                            ),
-                                          ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
+                            
+                            if (_showLeftArrow)
+                              Positioned(
+                                left: 0,
+                                bottom: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.8),
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 3,
+                                        spreadRadius: 1,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.arrow_back,
+                                    size: 18,
+                                    color: Color(0xFF2D3142),
+                                  ),
+                                ),
+                              ),
+                            if (_showRightArrow)
+                              Positioned(
+                                right: 0,
+                                bottom: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.8),
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 3,
+                                        spreadRadius: 1,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.arrow_forward,
+                                    size: 18,
+                                    color: Color(0xFF2D3142),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
 
                         const SizedBox(height: 24),
@@ -359,7 +399,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     ),
                               ),
                             ),
-                            const SizedBox(width: 16),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+
+                        Row(
+                          children: [
                             Expanded(
                               child: _buildAssessmentItem(
                                 icon: 'assets/svgs/icon_gds.svg',
@@ -430,72 +475,110 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  Widget _buildFeatureItem({
-    required String icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
+Widget _buildFeatureItem({
+  required String icon,
+  required String label,
+  required VoidCallback onTap,
+}) {
+  return Material(
+    color: Colors.transparent,
+    child: InkWell(
       onTap: onTap,
-      child: Column(
-        children: [
-          SvgPicture.asset(icon, height: 48, width: 48),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 10, color: Color(0xFF2D3142)),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAssessmentItem({
-    required String icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SvgPicture.asset(icon, height: 34, width: 34),
-          SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3142),
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF2D3142),
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+      borderRadius: BorderRadius.circular(8),
+      splashColor: Colors.grey.withOpacity(0.3),
+      highlightColor: Colors.grey.withOpacity(0.1),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            SvgPicture.asset(icon, height: 48, width: 48),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 10, color: Color(0xFF2D3142)),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+Widget _buildAssessmentItem({
+  required String icon,
+  required String title,
+  required String subtitle,
+  required Color color,
+  required VoidCallback onTap,
+}) {
+  return Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.2),
+          spreadRadius: 1,
+          blurRadius: 4,
+          offset: const Offset(0, 2), // Shadow di bagian bawah
+        ),
+      ],
+    ),
+    child: Material(
+      color: Colors.white,
+      // shape: RoundedRectangleBorder(
+      //   borderRadius: BorderRadius.circular(8),
+      //   side: BorderSide(color: Colors.grey.shade300, width: 1),
+      // ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        splashColor: Colors.grey.withOpacity(0.3),
+        highlightColor: Colors.grey.withOpacity(0.1),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.only(top: 6, bottom: 6, left: 6),
+                child: SvgPicture.asset(icon, height: 40, width: 40),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2D3142),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade700,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
   Widget _buildArticleItem(BuildContext context, ArticleItem article) {
     return GestureDetector(

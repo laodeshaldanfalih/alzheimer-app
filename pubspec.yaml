@@ -67,6 +67,8 @@ dependencies:
   torch_light: ^1.1.0
   fl_chart: ^1.0.0
   file_picker: ^8.3.7
+  flutter_launcher_icons: ^0.14.3
+
 
 
 
@@ -86,6 +88,19 @@ dev_dependencies:
   custom_lint: ^0.7.3
   riverpod_lint: ^2.6.4
 
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo_app.png"
+  min_sdk_android: 23
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^5.0.0
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -98,6 +113,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/images/logo_app.png
     - assets/images/google_icons.png
     - assets/images/mosque.png
     - assets/svgs/wave.svg

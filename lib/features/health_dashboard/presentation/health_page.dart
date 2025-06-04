@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:project/features/health_page/health_graphic_chart_page.dart';
-import 'package:project/features/health_page/health_history_list_page.dart';
-import 'package:project/features/health_page/health_input_page.dart';
+import 'package:project/features/health_dashboard/presentation/health_graphic_chart_page.dart';
+import 'package:project/features/health_dashboard/presentation/health_history_list_page.dart';
+import 'package:project/features/health_dashboard/presentation/health_input_page.dart';
 
 // DIUBAH: TabController sekarang memiliki panjang 3
 class HealthPage extends StatelessWidget {

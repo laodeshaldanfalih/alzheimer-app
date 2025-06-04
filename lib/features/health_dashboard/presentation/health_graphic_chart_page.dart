@@ -6,8 +6,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:project/features/health_page/health_data_model.dart';
-import 'package:project/features/health_page/health_provider.dart';
+import 'package:project/features/health_dashboard/data/health_data_model.dart';
+import 'package:project/features/health_dashboard/providers/health_provider.dart';
 
 class HealthGraphicChartPage extends ConsumerStatefulWidget {
   const HealthGraphicChartPage({super.key});

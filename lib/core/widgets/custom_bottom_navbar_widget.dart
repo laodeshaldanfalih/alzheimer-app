@@ -36,7 +36,7 @@ class CustomBottomNavBarWidget extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
           BottomNavigationBarItem(
             icon: Icon(Icons.qr_code_scanner),
-            label: 'Scan',
+            label: 'Klasifikasi',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.menu_book_rounded), label: 'Artikel Panduan'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),

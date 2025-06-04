@@ -615,7 +615,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
             email: newEmail,
             name: newName,
             phone: newPhone.isNotEmpty ? newPhone : null,
-            patientPhone: newpatientPhone.isNotEmpty ? newpatientPhone : null,
+            patientPhone: newpatientPhone.isNotEmpty ? newpatientPhone : "-",
             birthDate: _birthDate,
             gender: _genderValue.isNotEmpty ? _genderValue : null,
             photoUrl: finalPhotoUrl,
@@ -958,12 +958,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
                         _buildLabeledFormField(
                           label: 'Nomor Telepon Pasien',
-                          tooltipMessage:
-                              'Otomatis terisi setelah mengisi tanggal lahir.',
                           child: TextFormField(
                             controller: _patientPhoneNumberController,
                             decoration: _fieldInputDecoration(
-                              hintText: 'Opsional',
+                              hintText:
+                                  'Opsional',
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -977,6 +976,36 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               }
                               return null;
                             },
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+
+                            children: [
+                              // Icon di samping kiri (tetap di baris yang sama)
+                              Icon(
+                                Icons.info_outline,
+                                size: 16,
+                                color: Colors.grey[500],
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ), // Jarak antara icon dan teks
+                              Expanded(
+                                child: Text(
+                                  "Kosongkan field ini apabila pasien tidak memiliki nomor telepon",
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -1087,96 +1116,96 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                         // --- END BAGIAN EMAIL ---
                         const SizedBox(height: 24),
 
-                        // --- NOMOR TELEPON (FIELD + TOMBOL VERIFIKASI) ---
-                        _buildLabeledFormField(
-                          label: 'Akun Telepon Login ',
-                          child: TextFormField(
-                            controller: _phoneNumberController,
-                            keyboardType: TextInputType.phone,
-                            decoration: _fieldInputDecoration(
-                              hintText: 'Contoh: 08123456789',
-                            ), // Ubah hint ke format lokal
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return null; // Tidak wajib
-                              }
-                              // Validasi sederhana untuk nomor Indonesia (8-13 digit setelah 0/62)
-                              if (!RegExp(r'^(0|(\+62))\d{8,13}$').hasMatch(
-                                value.replaceAll(RegExp(r'\s+|-'), ''),
-                              )) {
-                                return 'Format nomor telepon tidak valid (08xx atau +628xx)';
-                              }
-                              return null;
-                            },
-                            onChanged: (_) {
-                              _validateForm(); // Panggil validate form umum
-                              setState(
-                                () {},
-                              ); // Rebuild untuk update status tombol link
-                            },
-                          ),
-                        ),
-                        // Tombol untuk Verifikasi & Tautkan Nomor Telepon
-                        if (_phoneNumberController.text.isNotEmpty &&
-                            !isCurrentPhoneLinked &&
-                            !_isLinkingPhone)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: ElevatedButton.icon(
-                              icon: Icon(
-                                Icons.phonelink_ring_outlined,
-                                size: 18,
-                              ),
-                              label: Text('Verifikasi & Tautkan Nomor Telepon'),
-                              onPressed:
-                                  (isLoading || _isLinkingPhone)
-                                      ? null
-                                      : _handleLinkPhoneNumber,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal, // Warna berbeda
-                                foregroundColor: Colors.white,
-                                textStyle: TextStyle(fontSize: 14),
-                                minimumSize: Size(double.infinity, 60),
-                              ),
-                            ),
-                          ),
-                        if (_isLinkingPhone) // Tampilkan loading khusus untuk telepon
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Center(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CircularProgressIndicator(strokeWidth: 2),
-                                  SizedBox(width: 10),
-                                  Text("Memproses OTP..."),
-                                ],
-                              ),
-                            ),
-                          ),
-                        if (isCurrentPhoneLinked)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0, left: 4.0),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.check_circle,
-                                  color: Colors.green,
-                                  size: 24,
-                                ),
-                                SizedBox(width: 8),
-                                Flexible(
-                                  child: Text(
-                                    "Nomor ini sudah tertaut sebagai metode login",
-                                    style: TextStyle(
-                                      color: Colors.green,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                        // --- NOMOR TELEPON (FIELD + TOMBOL VERIFIKASI) !!!!!!!TIDAK DIPAKAI!!!!!! ---
+                        // _buildLabeledFormField(
+                        //   label: 'Akun Telepon Login ',
+                        //   child: TextFormField(
+                        //     controller: _phoneNumberController,
+                        //     keyboardType: TextInputType.phone,
+                        //     decoration: _fieldInputDecoration(
+                        //       hintText: 'Contoh: 08123456789',
+                        //     ), // Ubah hint ke format lokal
+                        //     validator: (value) {
+                        //       if (value == null || value.isEmpty) {
+                        //         return null; // Tidak wajib
+                        //       }
+                        //       // Validasi sederhana untuk nomor Indonesia (8-13 digit setelah 0/62)
+                        //       if (!RegExp(r'^(0|(\+62))\d{8,13}$').hasMatch(
+                        //         value.replaceAll(RegExp(r'\s+|-'), ''),
+                        //       )) {
+                        //         return 'Format nomor telepon tidak valid (08xx atau +628xx)';
+                        //       }
+                        //       return null;
+                        //     },
+                        //     onChanged: (_) {
+                        //       _validateForm(); // Panggil validate form umum
+                        //       setState(
+                        //         () {},
+                        //       ); // Rebuild untuk update status tombol link
+                        //     },
+                        //   ),
+                        // ),
+                        // // Tombol untuk Verifikasi & Tautkan Nomor Telepon
+                        // if (_phoneNumberController.text.isNotEmpty &&
+                        //     !isCurrentPhoneLinked &&
+                        //     !_isLinkingPhone)
+                        //   Padding(
+                        //     padding: const EdgeInsets.only(top: 8.0),
+                        //     child: ElevatedButton.icon(
+                        //       icon: Icon(
+                        //         Icons.phonelink_ring_outlined,
+                        //         size: 18,
+                        //       ),
+                        //       label: Text('Verifikasi & Tautkan Nomor Telepon'),
+                        //       onPressed:
+                        //           (isLoading || _isLinkingPhone)
+                        //               ? null
+                        //               : _handleLinkPhoneNumber,
+                        //       style: ElevatedButton.styleFrom(
+                        //         backgroundColor: Colors.teal, // Warna berbeda
+                        //         foregroundColor: Colors.white,
+                        //         textStyle: TextStyle(fontSize: 14),
+                        //         minimumSize: Size(double.infinity, 60),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // if (_isLinkingPhone) // Tampilkan loading khusus untuk telepon
+                        //   Padding(
+                        //     padding: const EdgeInsets.only(top: 8.0),
+                        //     child: Center(
+                        //       child: Row(
+                        //         mainAxisSize: MainAxisSize.min,
+                        //         children: [
+                        //           CircularProgressIndicator(strokeWidth: 2),
+                        //           SizedBox(width: 10),
+                        //           Text("Memproses OTP..."),
+                        //         ],
+                        //       ),
+                        //     ),
+                        //   ),
+                        // if (isCurrentPhoneLinked)
+                        //   Padding(
+                        //     padding: const EdgeInsets.only(top: 8.0, left: 4.0),
+                        //     child: Row(
+                        //       children: [
+                        //         Icon(
+                        //           Icons.check_circle,
+                        //           color: Colors.green,
+                        //           size: 24,
+                        //         ),
+                        //         SizedBox(width: 8),
+                        //         Flexible(
+                        //           child: Text(
+                        //             "Nomor ini sudah tertaut sebagai metode login",
+                        //             style: TextStyle(
+                        //               color: Colors.green,
+                        //               fontSize: 12,
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
                       ],
                     ),
                     const SizedBox(height: 32),

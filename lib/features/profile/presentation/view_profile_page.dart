@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:project/core/providers/shared_providers.dart';
 import 'package:project/features/auth/presentation/pages/signin_page.dart';
 import 'package:project/features/auth/providers/auth_provider.dart';
-import 'package:project/features/profile/presentation/pages/edit_profile_page.dart';
+import 'package:project/features/profile/presentation/edit_profile_page.dart';
 import 'package:project/features/profile/providers/user_profile_provider.dart';
 
 class ViewProfilePage extends ConsumerStatefulWidget {
@@ -314,19 +314,19 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
                     ),
                     const SizedBox(height: 20),
 
-                    // KARTU NOMOR TELEPON
-                    _buildInfoSection(
-                      context,
-                      null, // Judul null agar langsung menampilkan item
-                      [
-                        _buildProfileDetailItem2(
-                          'Akun Telepon Login',
-                          userProfileState.phone ?? '-',
-                          isTitleAsLabel: true,
-                        ),
-                      ],
-                      isSingleItemSection: true,
-                    ),
+                    // KARTU NOMOR TELEPON  !!!!!!!! TIDAK DIPAKAI !!!!!!!!
+                    // _buildInfoSection(
+                    //   context,
+                    //   null, // Judul null agar langsung menampilkan item
+                    //   [
+                    //     _buildProfileDetailItem2(
+                    //       'Akun Telepon Login',
+                    //       userProfileState.phone ?? '-',
+                    //       isTitleAsLabel: true,
+                    //     ),
+                    //   ],
+                    //   isSingleItemSection: true,
+                    // ),
                     const SizedBox(height: 24), // Padding bawah
                   ],
                 ),

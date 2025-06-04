@@ -6,6 +6,8 @@ import 'package:project/core/widgets/start_test_button_widget.dart';
 import 'package:project/core/widgets/result_card_widget.dart';
 import 'package:project/core/widgets/custom_app_bar_widget.dart';
 import 'package:project/features/GDS/presentation/gds_history_detail_page.dart';
+// Asumsi GDSHistoryEntry adalah tipe data untuk entri riwayat GDS
+// import 'package:project/features/GDS/models/gds_history_entry.dart'; // Anda mungkin perlu import modelnya
 
 class GDSHistoryPage extends ConsumerStatefulWidget {
   const GDSHistoryPage({super.key});
@@ -25,6 +27,56 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
 
   Future<void> _onRefresh() async {
     await ref.read(gdsHistoryProvider.notifier).loadHistory();
+  }
+
+  // Method untuk menampilkan dialog konfirmasi penghapusan
+  Future<void> _showDeleteConfirmationDialog(BuildContext context, dynamic entry) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button!
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          backgroundColor: const Color(0xffFAF9F6),
+          title: const Text('Konfirmasi Hapus'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Apakah Anda yakin ingin menghapus riwayat tes ini?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Batal'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Hapus'),
+              onPressed: () {
+                // Panggil metode deleteEntry pada provider Anda
+                // Pastikan provider memiliki metode seperti `deleteEntry`
+                // dan `entry` memiliki identifier yang bisa digunakan (misal: entry.id atau entry.date)
+                // Contoh: ref.read(gdsHistoryProvider.notifier).deleteEntry(entry);
+                // Untuk placeholder, kita akan mengasumsikan ada metode deleteEntry(entry)
+                try {
+                   ref.read(gdsHistoryProvider.notifier).deleteEntry(entry);
+                } catch (e) {
+                  // Handle jika metode deleteEntry belum ada atau error lain
+                  debugPrint("Error deleting GDS entry: $e. Pastikan provider memiliki metode 'deleteEntry'.");
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Gagal menghapus riwayat. Metode belum diimplementasi di provider.')),
+                  );
+                }
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -103,13 +155,20 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
                         onRefresh: _onRefresh,
                         child:
                             sortedHistory.isEmpty
-                                ? const Center(
-                                  child: Text(
-                                    'Belum ada riwayat test.',
-                                    style: TextStyle(
-                                      color: Color(0xFF9C9DB9),
-                                      fontSize: 16,
-                                    ),
+                                ? Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.history_rounded, size: 80, color: Colors.grey.shade300),
+                                      const SizedBox(height: 16),
+                                      const Text(
+                                        'Belum ada riwayat tes.',
+                                        style: TextStyle(
+                                          color: Color(0xFF9C9DB9),
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 )
                                 : ListView.separated(
@@ -156,6 +215,9 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
                                                     ),
                                           ),
                                         );
+                                      },
+                                      onDeletePressed: () { // Tambahkan ini
+                                        _showDeleteConfirmationDialog(context, entry);
                                       },
                                     );
                                   },

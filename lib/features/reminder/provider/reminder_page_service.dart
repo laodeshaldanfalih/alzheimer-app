@@ -45,7 +45,7 @@ class ReminderPageService {
 
   Future<void> testNotification() async {
     try {
-      final scheduleTime = DateTime.now().add(Duration(seconds: 5));
+      final scheduleTime = DateTime.now().add(const Duration(seconds: 5));
 
       await AwesomeNotifications().createNotification(
         content: NotificationContent(
@@ -89,6 +89,7 @@ class ReminderPageService {
         wakeUpScreen: true,
         category: NotificationCategory.Reminder,
         payload: {'reminderId': id.toString()}, // Tambahkan payload
+        criticalAlert: true,
       ),
       schedule: NotificationCalendar(
         year: reminder.dateTime.year,
@@ -99,6 +100,7 @@ class ReminderPageService {
         second: 0,
         millisecond: 0,
         timeZone: await AwesomeNotifications().getLocalTimeZoneIdentifier(),
+        preciseAlarm: true,
       ),
     );
   }

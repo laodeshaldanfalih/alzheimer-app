@@ -7,10 +7,10 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:project/features/sholat/utils/sholat_service.dart';
-import 'package:project/features/sholat/versi1/sholat_time_tile.dart';
-import 'package:project/features/sholat/versi1/sholat_utilities.dart';
+import 'package:project/features/sholat/utils/sholat_time_tile.dart';
+import 'package:project/features/sholat/utils/sholat_utilities.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'sholat_notification_service.dart';
+import '../utils/sholat_notification_service.dart';
 
 class SholatPage extends StatefulWidget {
   const SholatPage({super.key});
@@ -65,17 +65,6 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
         });
       }
     });
-
-    // currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
-    // _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-    //   setState(() {
-    //     currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
-    //   });
-    // });
-
-    // _loadNotificationPreferences().then((_) {
-    //   loadAllData();
-    // });
   }
 
   Future<void> _initializeDateFormatting() async {
@@ -166,12 +155,12 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
       );
       await SholatNotificationService().schedulePrayerNotifications(
         timings.map((key, value) {
-          if (notificationEnabled[key] == true) {
-            return MapEntry(key, value);
-          } else {
-            return MapEntry(key, ''); // Kosongkan jika nonaktif
-          }
-        })..removeWhere((key, value) => value == ''),
+          // Gunakan timings yang baru diambil
+          // Tidak perlu filter di sini lagi jika schedulePrayerNotifications sudah menghandle
+          // status enabled dari argumen notificationEnabled
+          return MapEntry(key, value);
+        }),
+        notificationEnabled, // <-- KIRIM MAP INI
       );
     } catch (e) {
       // Jika error (misal: lokasi tidak diizinkan), ambil data dari cache
@@ -226,13 +215,8 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && prayerTimes != null) {
       SholatNotificationService().schedulePrayerNotifications(
-        prayerTimes!.map((key, value) {
-          if (notificationEnabled[key] == true) {
-            return MapEntry(key, value);
-          } else {
-            return MapEntry(key, '');
-          }
-        })..removeWhere((key, value) => value == ''),
+        prayerTimes!, // Asumsi prayerTimes sudah terisi dan terfilter jika perlu
+        notificationEnabled, // <-- KIRIM MAP INI
       );
     }
   }
@@ -607,7 +591,7 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
                                             ],
                                           ),
                                         ),
-                                        CircleAvatar(
+                                        const CircleAvatar(
                                           backgroundImage: AssetImage(
                                             'assets/images/mosque.png',
                                           ),
@@ -641,11 +625,11 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
+                                              const Padding(
+                                                padding: EdgeInsets.only(
                                                   top: 4,
                                                 ),
-                                                child: const Icon(
+                                                child: Icon(
                                                   Icons.calendar_today_rounded,
                                                   color: Colors.grey,
                                                   size: 20,
@@ -819,26 +803,8 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
                                               if (prayerTimes != null) {
                                                 await SholatNotificationService()
                                                     .schedulePrayerNotifications(
-                                                      prayerTimes!.map((
-                                                        key,
-                                                        value,
-                                                      ) {
-                                                        if (notificationEnabled[key] ==
-                                                            true) {
-                                                          return MapEntry(
-                                                            key,
-                                                            value,
-                                                          );
-                                                        } else {
-                                                          return MapEntry(
-                                                            key,
-                                                            '',
-                                                          );
-                                                        }
-                                                      })..removeWhere(
-                                                        (key, value) =>
-                                                            value == '',
-                                                      ),
+                                                      prayerTimes!,
+                                                      notificationEnabled, // <-- KIRIM MAP INI
                                                     );
                                               }
                                             },
@@ -864,23 +830,10 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
                                             allNotificationsEnabled,
                                           );
                                           if (prayerTimes != null) {
-                                            SholatNotificationService()
+                                            await SholatNotificationService()
                                                 .schedulePrayerNotifications(
-                                                  prayerTimes!.map((
-                                                    key,
-                                                    value,
-                                                  ) {
-                                                    if (allNotificationsEnabled) {
-                                                      return MapEntry(
-                                                        key,
-                                                        value,
-                                                      );
-                                                    } else {
-                                                      return MapEntry(key, '');
-                                                    }
-                                                  })..removeWhere(
-                                                    (key, value) => value == '',
-                                                  ),
+                                                  prayerTimes!,
+                                                  notificationEnabled, // <-- KIRIM MAP INI
                                                 );
                                           }
                                         },

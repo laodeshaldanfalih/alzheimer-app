@@ -6,6 +6,8 @@ import 'package:project/core/widgets/result_card_widget.dart';
 import 'package:project/core/widgets/start_test_button_widget.dart';
 import 'skilas_test_page_1.dart';
 import 'skilas_history_detail_page.dart';
+// Asumsi SKILASHistoryEntry adalah tipe data untuk entri riwayat SKILAS
+// import 'package:project/features/SKILAS/models/skilas_history_entry.dart'; // Anda mungkin perlu import modelnya
 
 class SKILASHistoryPage extends ConsumerStatefulWidget {
   const SKILASHistoryPage({super.key});
@@ -27,14 +29,74 @@ class _SKILASHistoryPageState extends ConsumerState<SKILASHistoryPage> {
     );
   }
 
+  // Method untuk menampilkan dialog konfirmasi penghapusan
+  Future<void> _showDeleteConfirmationDialog(
+    BuildContext context,
+    dynamic entry,
+  ) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button!
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          backgroundColor: const Color(0xffFAF9F6),
+
+          title: const Text('Konfirmasi Hapus'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Apakah Anda yakin ingin menghapus riwayat tes ini?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Batal'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Hapus'),
+              onPressed: () {
+                // Panggil metode deleteEntry pada provider Anda
+                // Contoh: ref.read(skilasHistoryProvider.notifier).deleteEntry(entry);
+                try {
+                  ref.read(skilasHistoryProvider.notifier).deleteEntry(entry);
+                } catch (e) {
+                  debugPrint(
+                    "Error deleting SKILAS entry: $e. Pastikan provider memiliki metode 'deleteEntry'.",
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Gagal menghapus riwayat. Metode belum diimplementasi di provider.',
+                      ),
+                    ),
+                  );
+                }
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final historyState = ref.watch(skilasHistoryProvider);
+    // Menggunakan sortedHistory dari state jika ada, jika tidak, fallback ke history
+    final sortedHistory = historyState.sortedHistory;
 
     return Scaffold(
-      appBar: const CustomAppBarWidget(
+      appBar: CustomAppBarWidget(
+        // Menambahkan onClose untuk konsistensi
         title: "Skrining Lansia Sederhana (SKILAS)",
         showCloseButton: true,
+        onClose: () => Navigator.of(context).popUntil((route) => route.isFirst),
       ),
       backgroundColor: const Color(0xFFF8FAFB),
       body: Column(
@@ -87,18 +149,40 @@ class _SKILASHistoryPageState extends ConsumerState<SKILASHistoryPage> {
           Expanded(
             child:
                 historyState.isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFF2563EB), // Menggunakan warna yang konsisten
+                        ),
+                      ),
+                    )
                     : RefreshIndicator(
+                      color: const Color(
+                        0xFF2563EB,
+                      ), // Menggunakan warna yang konsisten
+                      backgroundColor: Colors.white,
                       onRefresh: _onRefresh,
                       child:
-                          historyState.history.isEmpty
-                              ? const Center(
-                                child: Text(
-                                  'Belum ada riwayat test.',
-                                  style: TextStyle(
-                                    color: Color(0xFF9C9DB9),
-                                    fontSize: 16,
-                                  ),
+                          sortedHistory
+                                  .isEmpty // Menggunakan sortedHistory
+                              ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.history_rounded,
+                                      size: 80,
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Text(
+                                      'Belum ada riwayat tes.',
+                                      style: TextStyle(
+                                        color: Color(0xFF9C9DB9),
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               )
                               : ListView.separated(
@@ -106,27 +190,34 @@ class _SKILASHistoryPageState extends ConsumerState<SKILASHistoryPage> {
                                   horizontal: 24,
                                   vertical: 8,
                                 ),
-                                itemCount: historyState.sortedHistory.length,
+                                itemCount:
+                                    sortedHistory
+                                        .length, // Menggunakan sortedHistory
                                 separatorBuilder:
                                     (_, __) => const SizedBox(height: 16),
                                 itemBuilder: (context, index) {
                                   final entry =
-                                      historyState.sortedHistory[index];
+                                      sortedHistory[index]; // Menggunakan sortedHistory
                                   return ResultCardWidget(
                                     date: entry.date,
                                     title: 'Skor: ${entry.score}',
                                     subtitle:
-                                        entry.score == 1
+                                        entry.score ==
+                                                1 // Asumsi dari kode asli, nilai 1 adalah sehat
                                             ? 'Pasien tidak menunjukkan tanda-tanda gangguan kognitif'
                                             : 'Pasien menunjukkan tanda-tanda gangguan kognitif',
                                     accentColor:
                                         entry.score == 1
-                                            ? const Color(0xFF4CAF50)
-                                            : const Color(0xFFD32F2F),
+                                            ? const Color(
+                                              0xFF4CAF50,
+                                            ) // Hijau untuk sehat
+                                            : const Color(
+                                              0xFFD32F2F,
+                                            ), // Merah untuk tidak sehat
                                     stage:
                                         entry.score == 1
                                             ? 'Sehat'
-                                            : 'Perlu ke RS',
+                                            : 'Tidak Sehat',
                                     showStageBadge: true,
                                     onTap: () {
                                       Navigator.push(
@@ -138,6 +229,13 @@ class _SKILASHistoryPageState extends ConsumerState<SKILASHistoryPage> {
                                                     entry: entry,
                                                   ),
                                         ),
+                                      );
+                                    },
+                                    onDeletePressed: () {
+                                      // Tambahkan ini
+                                      _showDeleteConfirmationDialog(
+                                        context,
+                                        entry,
                                       );
                                     },
                                   );

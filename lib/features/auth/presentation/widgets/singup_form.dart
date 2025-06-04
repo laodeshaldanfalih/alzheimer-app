@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/auth/providers/auth_provider.dart';
@@ -23,6 +24,81 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
   bool _confirmPasswordValid = true;
   String? _confirmPasswordError;
   bool isChecked = false;
+
+  void _showPrivacyPolicy() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+          backgroundColor: const Color(0xffFAF9F6),
+            title: const Text('Ketentuan & Kebijakan Privasi'),
+            content: SingleChildScrollView(
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: privacyPolicyText,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xff7583CA),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Tutup'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  // Teks kebijakan privasi aplikasi
+  final String privacyPolicyText = '''
+Aplikasi Kesehatan Alzheimer ("Kami") berkomitmen untuk melindungi privasi pengguna. Kebijakan ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda.
+
+1. Informasi yang Kami Kumpulkan:
+- Data profil pengguna (nama, email, foto profil)
+- Data kesehatan (hasil klasifikasi otak, asesmen geriatri)
+- Data penggunaan (interaksi dengan fitur dasbor kesehatan)
+- Data perangkat (untuk notifikasi pengingat)
+
+2. Penggunaan Data:
+- Memberikan layanan personalisasi (artikel kesehatan, pengingat)
+- Meningkatkan akurasi klasifikasi kondisi otak
+- Mengembangkan fitur baru (asesmen geriatri)
+- Mengirim pembaruan dan informasi kesehatan
+
+3. Perlindungan Data:
+- Enkripsi data selama penyimpanan dan transmisi
+- Akses terbatas hanya untuk stah medis terkait
+- Penyimpanan data di server dengan sertifikat keamanan
+
+4. Hak Pengguna:
+- Mengakses dan memperbarui data profil
+- Menghapus akun dan data pribadi
+- Menerima salinan data kesehatan Anda
+- Menolak pengumpulan data tertentu
+
+5. Data Kesehatan:
+- Hasil klasifikasi otak hanya digunakan untuk tujuan medis
+- Data asesmen geriatri disimpan terpisah dengan identifikasi unik
+- Informasi kesehatan tidak akan dijual/dibagikan ke pihak ketiga tanpa persetujuan
+
+6. Perubahan Kebijakan:
+Kebijakan ini dapat diperbarui secara berkala. Versi terbaru akan selalu tersedia di aplikasi.
+
+Dengan menggunakan aplikasi ini, Anda menyetujui pengumpulan dan penggunaan informasi sesuai kebijakan ini.
+
+''';
 
   InputDecoration _buildInputDecoration(
     String label,
@@ -119,18 +195,18 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                 setState(() {
                   _passwordValid = false;
                 });
-                return "Password cannot be empty";
+                return "Password tidak boleh kosong!";
               }
 
               List<String> requirements = [];
               if (value.length < 6) {
-                requirements.add("at least 6 characters");
+                requirements.add("Min. 6 karakter dengan angka");
               }
               // if (!value.contains(RegExp(r'[A-Z]'))) {
               //   requirements.add("one uppercase letter");
               // }
               if (!value.contains(RegExp(r'[0-9]'))) {
-                requirements.add("one number");
+                requirements.add("angka");
               }
               // if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
               //   requirements.add("one special character");
@@ -140,7 +216,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                 setState(() {
                   _passwordValid = false;
                 });
-                return "Password must contain ${requirements.join(", ")}";
+                return "Password harus mengandung ${requirements.join(", ")}";
               }
 
               setState(() {
@@ -178,9 +254,9 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
               if (value != _passwordController.text) {
                 setState(() {
                   _confirmPasswordValid = false;
-                  _confirmPasswordError = "Passwords do not match";
+                  _confirmPasswordError = "Password tidak sesuai";
                 });
-                return "Passwords do not match";
+                return "Password tidak sesuai";
               }
               setState(() {
                 _confirmPasswordValid = true;
@@ -196,9 +272,9 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
               Flexible(
                 // Tambahkan Flexible untuk teks panjang
                 child: RichText(
-                  text: const TextSpan(
+                  text: TextSpan(
                     text: "Saya telah membaca ",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color(0xFFA1A4B2),
                       fontSize: 16, // Mungkin sedikit kecilkan jika perlu
                       fontWeight: FontWeight.w500,
@@ -206,10 +282,12 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                     children: [
                       TextSpan(
                         text: "Ketentuan & Kebijakan privasi",
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Color(0xff7583CA),
                           fontWeight: FontWeight.w500,
                         ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = _showPrivacyPolicy,
                         // Anda bisa menambahkan recognizer di sini untuk membuka halaman Privacy Policy
                       ),
                     ],
@@ -257,7 +335,11 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
               } else if (!isChecked) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Please accept the Privacy Policy')),
+                    const SnackBar(
+                      content: Text(
+                        'Tolong setujui kotak ketentuan & kebijakan privasi ',
+                      ),
+                    ),
                   );
                 }
               }

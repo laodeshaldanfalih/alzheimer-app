@@ -2,7 +2,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:project/features/health_page/health_data_model.dart';
+import 'package:project/features/health_dashboard/data/health_data_model.dart';
 
 // --- Provider untuk Firebase (Tidak ada perubahan) ---
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);

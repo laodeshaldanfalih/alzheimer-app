@@ -3,7 +3,7 @@ import 'package:project/core/widgets/custom_bottom_navbar_widget.dart';
 import 'package:project/features/alzheimer_scan/presentation/pages/alzheimer_scan_page.dart';
 import 'package:project/features/article/presentation/pages/article_buletin_page.dart';
 import 'package:project/features/home/presentation/pages/home_page.dart';
-import 'package:project/features/profile/providers/view_profile_page.dart';
+import 'package:project/features/profile/presentation/view_profile_page.dart';
 
 class MainLayout extends StatefulWidget {
   final int initialIndex;

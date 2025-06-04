@@ -1,7 +1,7 @@
 import 'package:project/features/article/models/article_item.dart';
 
 final List<ArticleItem> articles = [
-  ArticleItem(
+  const ArticleItem(
     title: "Tips Menjaga Kesehatan Mental Lansia",
     description:
         "Kesehatan mental sama pentingnya dengan kesehatan fisik bagi lansia. Simak tips-tips praktis untuk menjaga kesehatan mental orang tua dan kakek nenek kita.",

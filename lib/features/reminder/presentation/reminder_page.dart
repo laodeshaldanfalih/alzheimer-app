@@ -80,8 +80,8 @@ class _ReminderPageState extends State<ReminderPage> {
         onChanged: _filterReminders,
         style: const TextStyle(fontSize: 16),
         decoration: InputDecoration(
-          prefixIcon: Padding(
-            padding: const EdgeInsets.only(left: 8, right: 8),
+          prefixIcon: const Padding(
+            padding: EdgeInsets.only(left: 8, right: 8),
             child: Icon(Icons.search, color: Color(0xFF2D3142), size: 28),
           ),
           suffixIcon:
@@ -214,6 +214,7 @@ class _ReminderPageState extends State<ReminderPage> {
                             context: context,
                             builder:
                                 (context) => AlertDialog(
+                                  backgroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20),
                                   ),

@@ -96,10 +96,77 @@ class GDSHistoryNotifier extends StateNotifier<GDSHistoryState> {
         'answers': entry.answers,
       });
 
-      final newHistory = [...state.history, entry];
+      // Ambil data terbaru setelah menambahkan untuk konsistensi, atau tambahkan secara lokal
+      // Untuk saat ini, kita tambahkan secara lokal dan berharap sinkron.
+      // Idealnya, Anda mungkin ingin memuat ulang atau memastikan ID entri dilampirkan.
+      final newHistory = [entry, ...state.history]; // Tambahkan ke depan agar urutan default (tanggal terbaru) terjaga jika tidak ada sort khusus
+      // Atau jika ingin menambahkan di akhir: final newHistory = [...state.history, entry];
+      // Sesuaikan dengan bagaimana Anda ingin daftar awal ditampilkan sebelum sorting.
+      // Mengingat loadHistory mengurutkan berdasarkan 'date descending', menambahkan ke depan lebih konsisten.
       state = state.copyWith(history: newHistory);
+      // Untuk memastikan data paling baru dan terurut, panggil loadHistory lagi bisa jadi pilihan
+      // await loadHistory(); // Uncomment jika ingin selalu refresh dari Firestore setelah add
     } catch (e) {
       print('Error adding GDS entry: $e');
+    }
+  }
+
+  Future<void> deleteEntry(GDSHistoryEntry entryToDelete) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    state = state.copyWith(isLoading: true); // Opsional: tandai loading selama proses hapus
+
+    try {
+      // Cari dokumen di Firestore berdasarkan tanggal dan skor
+      // Ini berasumsi kombinasi tanggal & skor cukup unik.
+      // Untuk keandalan lebih, simpan dan gunakan ID dokumen Firestore.
+      final querySnapshot = await _firestore
+          .collection('gds_tests')
+          .doc(user.uid)
+          .collection('tests')
+          .where('date', isEqualTo: Timestamp.fromDate(entryToDelete.date))
+          .where('score', isEqualTo: entryToDelete.score)
+          // Tambahkan field lain jika perlu untuk meningkatkan keunikan query
+          // .where('isDepressed', isEqualTo: entryToDelete.isDepressed) 
+          .limit(1) // Harapannya hanya 1 dokumen yang cocok
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final docId = querySnapshot.docs.first.id;
+        await _firestore
+            .collection('gds_tests')
+            .doc(user.uid)
+            .collection('tests')
+            .doc(docId)
+            .delete();
+
+        // Hapus dari state lokal
+        final updatedHistory = state.history
+            .where((entry) =>
+                !(entry.date == entryToDelete.date &&
+                    entry.score == entryToDelete.score &&
+                    entry.isDepressed == entryToDelete.isDepressed)) // Cocokkan lebih banyak field
+            .toList();
+        state = state.copyWith(history: updatedHistory, isLoading: false);
+      } else {
+        print('GDS entry to delete not found in Firestore.');
+        // Jika tidak ditemukan di Firestore, mungkin hanya perlu update state lokal jika entri ada di sana karena suatu alasan
+        final updatedHistory = state.history
+            .where((entry) =>
+                !(entry.date == entryToDelete.date &&
+                    entry.score == entryToDelete.score &&
+                    entry.isDepressed == entryToDelete.isDepressed))
+            .toList();
+        if (updatedHistory.length < state.history.length) {
+           state = state.copyWith(history: updatedHistory, isLoading: false);
+        } else {
+           state = state.copyWith(isLoading: false);
+        }
+      }
+    } catch (e) {
+      print('Error deleting GDS entry: $e');
+      state = state.copyWith(isLoading: false);
     }
   }
 

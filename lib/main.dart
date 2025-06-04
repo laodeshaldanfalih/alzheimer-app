@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:project/features/home/presentation/pages/home_page.dart';
 import 'package:project/features/reminder/presentation/reminder_page.dart';
-import 'package:project/features/sholat/presentation/sholat_reminder_page.dart';
-import 'package:project/features/splash/presentation/pages/splash_page.dart';
+import 'package:project/features/sholat/presentation/sholat_page.dart';
+import 'package:project/features/splash/presentation/splash_page.dart';
 import 'package:project/firebase_options.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -17,17 +17,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await FirebaseAppCheck.instance.activate(
-    // Untuk Android, defaultnya adalah Play Integrity.
-    // Anda bisa menentukan provider secara eksplisit jika perlu.
-    // androidProvider: AndroidProvider.playIntegrity,
-    // appleProvider: AppleProvider.appAttest, // Untuk iOS
-    androidProvider: AndroidProvider.debug,
-    
-  );
+  await FirebaseAppCheck.instance.activate();
 
   await initializeDateFormatting('id_ID', null);
-
 
   // Initialize Awesome Notifications
   await _initializeNotifications();
@@ -42,7 +34,7 @@ void main() async {
 }
 
 Future<void> _initializeNotifications() async {
-  await AwesomeNotifications().initialize('resource://drawable/test_icon', [
+  await AwesomeNotifications().initialize('resource://drawable/logo_app', [
     NotificationChannel(
       channelKey: 'sholat_channel',
       channelName: 'Jadwal Sholat',
@@ -53,7 +45,8 @@ Future<void> _initializeNotifications() async {
       playSound: true,
       enableLights: true,
       enableVibration: true,
-      icon: 'resource://drawable/sholat_icon',
+      icon: 'resource://drawable/logo_app',
+      // soundSource: 'resource://raw/res_gio_alarm',
     ),
     NotificationChannel(
       channelKey: 'reminder_channel',
@@ -65,7 +58,7 @@ Future<void> _initializeNotifications() async {
       playSound: true,
       enableLights: true,
       enableVibration: true,
-      icon: 'resource://drawable/reminder_icon',
+      icon: 'resource://drawable/logo_app',
       soundSource: 'resource://raw/res_gio_alarm',
     ),
   ], debug: true);

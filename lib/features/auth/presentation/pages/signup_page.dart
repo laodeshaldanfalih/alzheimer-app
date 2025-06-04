@@ -134,7 +134,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     ),
                     const Text(
                       "(Mohon daftar dengan email yang valid)",
-                      style: TextStyle(color: Color(0XFFA1A4B2), fontSize: 12),
+                      style: TextStyle(color: Color(0XFFA1A4B2), fontSize: 12, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 30),
                     const SignUpForm(),

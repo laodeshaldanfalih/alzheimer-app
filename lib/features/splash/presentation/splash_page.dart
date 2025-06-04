@@ -26,17 +26,17 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     if (user != null) {
       Navigator.of(
         context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => MainLayout()));
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const MainLayout()));
     } else {
       Navigator.of(
         context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => SignInPage()));
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const SignInPage()));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
@@ -48,8 +48,8 @@ class _SplashPageState extends ConsumerState<SplashPage> {
             //   width: 150,
             //   height: 150,
             // ),
-            const SizedBox(height: 24),
-            const CircularProgressIndicator(
+            SizedBox(height: 24),
+            CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Color(0xff7583CA)),
             ),
           ],

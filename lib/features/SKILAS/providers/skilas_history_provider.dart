@@ -76,7 +76,6 @@ class SKILASHistoryNotifier extends StateNotifier<SKILASHistoryState> {
     } catch (e) {
       print('Error loading SKILAS history: $e');
       state = state.copyWith(isLoading: false);
-      // Handle error appropriately
     }
   }
 
@@ -85,7 +84,6 @@ class SKILASHistoryNotifier extends StateNotifier<SKILASHistoryState> {
     if (user == null) return;
 
     try {
-      // Create a new document with auto-generated ID
       final docRef =
           _firestore
               .collection('skilas_tests')
@@ -101,12 +99,61 @@ class SKILASHistoryNotifier extends StateNotifier<SKILASHistoryState> {
         'page3Answers': entry.page3Answers,
       });
 
-      // Update local state
-      final newHistory = [...state.history, entry];
+      final newHistory = [entry, ...state.history];
       state = state.copyWith(history: newHistory);
+      // await loadHistory(); // Uncomment jika ingin selalu refresh dari Firestore setelah add
     } catch (e) {
       print('Error adding SKILAS entry: $e');
-      // Handle error appropriately
+    }
+  }
+
+  Future<void> deleteEntry(SKILASHistoryEntry entryToDelete) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final querySnapshot = await _firestore
+          .collection('skilas_tests')
+          .doc(user.uid)
+          .collection('tests')
+          .where('date', isEqualTo: Timestamp.fromDate(entryToDelete.date))
+          .where('score', isEqualTo: entryToDelete.score)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final docId = querySnapshot.docs.first.id;
+        await _firestore
+            .collection('skilas_tests')
+            .doc(user.uid)
+            .collection('tests')
+            .doc(docId)
+            .delete();
+
+        final updatedHistory = state.history
+            .where((entry) =>
+                !(entry.date == entryToDelete.date &&
+                    entry.score == entryToDelete.score)) // Asumsi date & score cukup unik
+            .toList();
+        state = state.copyWith(history: updatedHistory, isLoading: false);
+      } else {
+        print('SKILAS entry to delete not found in Firestore.');
+        final updatedHistory = state.history
+            .where((entry) =>
+                !(entry.date == entryToDelete.date &&
+                    entry.score == entryToDelete.score))
+            .toList();
+        if (updatedHistory.length < state.history.length) {
+           state = state.copyWith(history: updatedHistory, isLoading: false);
+        } else {
+           state = state.copyWith(isLoading: false);
+        }
+      }
+    } catch (e) {
+      print('Error deleting SKILAS entry: $e');
+      state = state.copyWith(isLoading: false);
     }
   }
 

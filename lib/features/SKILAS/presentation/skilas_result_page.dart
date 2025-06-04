@@ -20,11 +20,9 @@ class _SKILASResultPageState extends ConsumerState<SKILASResultPage> {
     Future.microtask(() {
       final skilasState = ref.read(skilasTestProvider);
       final isBad = skilasState.isAnyAnswerWrong;
-      ref
-          .read(skilasHistoryProvider.notifier)
-          .addEntry(
+      ref.read(skilasHistoryProvider.notifier).addEntry(
             SKILASHistoryEntry(
-              score: isBad ? 0 : 1,
+              score: isBad ? 0 : 1, // 0 for bad, 1 for good
               date: DateTime.now(),
               page1Answers: skilasState.page1Answers,
               page2Answers: skilasState.page2Answers,
@@ -34,99 +32,142 @@ class _SKILASResultPageState extends ConsumerState<SKILASResultPage> {
     });
   }
 
+  String _getResultImage(bool isAnyAnswerWrong) {
+    return isAnyAnswerWrong 
+        ? 'assets/images/skilas_bad.png' 
+        : 'assets/images/skilas_good.png';
+  }
+
+  Color _getResultColor(bool isAnyAnswerWrong) {
+    return isAnyAnswerWrong 
+        ? const Color(0xFFFF8A65).withOpacity(0.1) 
+        : const Color(0xFFAFE073).withOpacity(0.1);
+  }
+
   @override
   Widget build(BuildContext context) {
     final skilasState = ref.watch(skilasTestProvider);
     final isBad = skilasState.isAnyAnswerWrong;
+    final image = _getResultImage(isBad);
+    final color = _getResultColor(isBad);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFB),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        centerTitle: false,
-        title: const Text(
-          'Skrining Lansia Sederhana (SKILAS)',
-          style: TextStyle(
-            color: Color(0xFF222B45),
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8FAFB),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.5,
+          centerTitle: false,
+          title: const Text(
+            'Skrining Lansia Sederhana (SKILAS)',
+            style: TextStyle(
+              color: Color(0xFF222B45),
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+            ),
           ),
+          automaticallyImplyLeading: false,
         ),
-        automaticallyImplyLeading: false,
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color:
-                      isBad
-                          ? const Color(0xFFFF8A65).withOpacity(0.1)
-                          : const Color(0xFFAFE073).withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isBad ? Icons.warning_rounded : Icons.check_circle_rounded,
-                  size: 60,
-                  color:
-                      isBad ? const Color(0xFFFF8A65) : const Color(0xFFAFE073),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                isBad ? 'Perlu ke Rumah Sakit' : 'Sehat',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color:
-                      isBad ? const Color(0xFFFF8A65) : const Color(0xFFAFE073),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                isBad
-                    ? 'Pasien menunjukkan tanda-tanda gangguan kognitif'
-                    : 'Pasien tidak menunjukkan tanda-tanda gangguan kognitif',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16, color: Color(0xFF1F2937)),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
+        body: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
+              child: Container(
                 width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                constraints: const BoxConstraints(maxWidth: 400),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.06),
+                      blurRadius: 12,
+                      offset: const Offset(0, 2),
                     ),
-                  ),
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SKILASHistoryPage(),
+                  ],
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Image
+                    Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
                       ),
-                      (route) => route.isFirst,
-                    );
-                  },
-                  child: const Text(
-                    "Lihat Riwayat",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                      child: Center(
+                        child: Image.asset(
+                          image,
+                          height: 120,
+                          width: 120,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 24),
+                    // Title
+                    Text(
+                      isBad ? 'Perlu Pemeriksaan Lebih ke Instansi KEsehatan' : 'Terindikasi Sehat!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        color: isBad ? const Color(0xFFFF8A65) : const Color(0xFFAFE073),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Description
+                    Text(
+                      isBad
+                          ? 'Pasien menunjukkan tanda-tanda gangguan kognitif'
+                          : 'Pasien tidak menunjukkan tanda-tanda gangguan kognitif',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF6B7280),
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    // Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 44,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2563EB),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          elevation: 0,
+                        ),
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SKILASHistoryPage(),
+                            ),
+                            (route) => route.isFirst,
+                          );
+                        },
+                        child: const Text(
+                          'Lihat Riwayat',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),

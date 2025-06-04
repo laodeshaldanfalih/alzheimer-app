@@ -111,6 +111,8 @@ class _SignInFormState extends ConsumerState<SignInForm> {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
+          backgroundColor: const Color(0xffFAF9F6),
+          // backgroundColor: Colors.white,
           title: const Text('Reset Password'),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
           contentPadding: const EdgeInsets.all(20.0),
