@@ -86,7 +86,6 @@ class MMSEHistoryNotifier extends StateNotifier<MMSEHistoryState> {
 
       state = state.copyWith(history: history, isLoading: false);
     } catch (e) {
-      print('Error loading MMSE history: $e');
       state = state.copyWith(isLoading: false);
     }
   }
@@ -122,7 +121,6 @@ class MMSEHistoryNotifier extends StateNotifier<MMSEHistoryState> {
 
       final newHistory = [entry, ...state.history];
       state = state.copyWith(history: newHistory);
-      // await loadHistory(); // Uncomment jika ingin selalu refresh dari Firestore setelah add
     } catch (e) {
       print('Error adding MMSE entry: $e');
     }
@@ -135,16 +133,17 @@ class MMSEHistoryNotifier extends StateNotifier<MMSEHistoryState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      final querySnapshot = await _firestore
-          .collection('mmse_tests')
-          .doc(user.uid)
-          .collection('tests')
-          .where('date', isEqualTo: Timestamp.fromDate(entryToDelete.date))
-          .where('score', isEqualTo: entryToDelete.score)
-          // Pertimbangkan menambahkan field lain yang lebih spesifik untuk MMSE jika diperlukan
-          // .where('registrationScore', isEqualTo: entryToDelete.registrationScore)
-          .limit(1)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection('mmse_tests')
+              .doc(user.uid)
+              .collection('tests')
+              .where('date', isEqualTo: Timestamp.fromDate(entryToDelete.date))
+              .where('score', isEqualTo: entryToDelete.score)
+              // Pertimbangkan menambahkan field lain yang lebih spesifik untuk MMSE jika diperlukan
+              // .where('registrationScore', isEqualTo: entryToDelete.registrationScore)
+              .limit(1)
+              .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         final docId = querySnapshot.docs.first.id;
@@ -155,27 +154,31 @@ class MMSEHistoryNotifier extends StateNotifier<MMSEHistoryState> {
             .doc(docId)
             .delete();
 
-        final updatedHistory = state.history
-            .where((entry) =>
-                !(entry.date == entryToDelete.date &&
-                    entry.score == entryToDelete.score)) // Sesuaikan kriteria pencocokan jika perlu
-            .toList();
+        final updatedHistory =
+            state.history
+                .where(
+                  (entry) =>
+                      !(entry.date == entryToDelete.date &&
+                          entry.score == entryToDelete.score),
+                ) // Sesuaikan kriteria pencocokan jika perlu
+                .toList();
         state = state.copyWith(history: updatedHistory, isLoading: false);
       } else {
-        print('MMSE entry to delete not found in Firestore.');
-         final updatedHistory = state.history
-            .where((entry) =>
-                !(entry.date == entryToDelete.date &&
-                    entry.score == entryToDelete.score))
-            .toList();
+        final updatedHistory =
+            state.history
+                .where(
+                  (entry) =>
+                      !(entry.date == entryToDelete.date &&
+                          entry.score == entryToDelete.score),
+                )
+                .toList();
         if (updatedHistory.length < state.history.length) {
-           state = state.copyWith(history: updatedHistory, isLoading: false);
+          state = state.copyWith(history: updatedHistory, isLoading: false);
         } else {
-           state = state.copyWith(isLoading: false);
+          state = state.copyWith(isLoading: false);
         }
       }
     } catch (e) {
-      print('Error deleting MMSE entry: $e');
       state = state.copyWith(isLoading: false);
     }
   }

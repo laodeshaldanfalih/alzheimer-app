@@ -99,7 +99,10 @@ class _MMSEResultPageState extends ConsumerState<MMSEResultPage> {
         body: Center(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 18.0,
+                vertical: 12,
+              ),
               child: Container(
                 width: double.infinity,
                 constraints: const BoxConstraints(maxWidth: 400),
@@ -114,7 +117,10 @@ class _MMSEResultPageState extends ConsumerState<MMSEResultPage> {
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -177,7 +183,8 @@ class _MMSEResultPageState extends ConsumerState<MMSEResultPage> {
                               builder: (context) => const MMSEHistoryPage(),
                             ),
                             (route) => route.isFirst,
-                          );},
+                          );
+                        },
                         child: const Text(
                           'Lihat Riwayat',
                           style: TextStyle(
