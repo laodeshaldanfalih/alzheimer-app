@@ -11,6 +11,8 @@ import 'package:project/features/sholat/utils/sholat_time_tile.dart';
 import 'package:project/features/sholat/utils/sholat_utilities.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/sholat_notification_service.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 class SholatPage extends StatefulWidget {
   const SholatPage({super.key});
@@ -46,12 +48,18 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
     _initializeDateFormatting();
 
     Future.microtask(() async {
-      await _handlePermissions(); // ⬅ ini yang baru
-      await _loadNotificationPreferences();
+      // First try to get location data
       await loadAllData();
+
+      // Only proceed with notification-related tasks if we have location data
+      if (prayerTimes != null && mounted) {
+        // Initialize notification service first
+        await SholatNotificationService().initialize();
+        await _loadNotificationPreferences();
+        await _handlePermissions();
+      }
     });
 
-    SholatNotificationService().initialize();
     _scrollController.addListener(() {
       final triggerOffset = 180;
       if (_scrollController.offset > triggerOffset && !isScrolledPastHeader) {
@@ -153,15 +161,7 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
           (key) => MapEntry(key, notificationEnabled[key] ?? true),
         ),
       );
-      await SholatNotificationService().schedulePrayerNotifications(
-        timings.map((key, value) {
-          // Gunakan timings yang baru diambil
-          // Tidak perlu filter di sini lagi jika schedulePrayerNotifications sudah menghandle
-          // status enabled dari argumen notificationEnabled
-          return MapEntry(key, value);
-        }),
-        notificationEnabled, // <-- KIRIM MAP INI
-      );
+      // Remove notification scheduling from here - we'll do it after permissions
     } catch (e) {
       // Jika error (misal: lokasi tidak diizinkan), ambil data dari cache
       final cachedLocation = prefs.getString('locationName');
@@ -252,17 +252,23 @@ class _SholatPageState extends State<SholatPage> with WidgetsBindingObserver {
   }
 
   Future<void> _handlePermissions() async {
-    // 1. Notifikasi dulu
+    if (!mounted) return;
+
+    // Request notification permission using AwesomeNotifications
     final notifAllowed = await AwesomeNotifications().isNotificationAllowed();
     if (!notifAllowed) {
       await AwesomeNotifications().requestPermissionToSendNotifications();
-      await Future.delayed(Duration(milliseconds: 500));
     }
 
-    // 2. Lalu lokasi
-    final locStatus = await Permission.location.status;
-    if (!locStatus.isGranted) {
-      await Permission.location.request();
+    // Initialize notification service
+    await SholatNotificationService().initialize();
+
+    // Now that we have both location and notification permissions, schedule notifications
+    if (prayerTimes != null) {
+      await SholatNotificationService().schedulePrayerNotifications(
+        prayerTimes!,
+        notificationEnabled,
+      );
     }
   }
 

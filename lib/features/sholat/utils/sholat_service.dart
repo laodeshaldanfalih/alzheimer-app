@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:adhan/adhan.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,13 +8,45 @@ import 'package:permission_handler/permission_handler.dart';
 class SholatService {
   /// Ambil koordinat dari lokasi saat ini
   Future<Position> getCurrentPosition() async {
-    final status = await Permission.location.request();
-    if (!status.isGranted) {
-      return Future.error('Location services are disabled.');
+    try {
+      // Check if location services are enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        throw 'Lokasi tidak aktif. Mohon aktifkan layanan lokasi di pengaturan perangkat Anda.';
+      }
+
+      // Check location permission
+      LocationPermission permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        // For iOS 18, we need to handle the temporary permission case
+        if (Platform.isIOS) {
+          // Try regular permission first
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            throw 'Izin lokasi ditolak. Mohon berikan izin lokasi untuk aplikasi ini.';
+          }
+        } else {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            throw 'Izin lokasi ditolak. Mohon berikan izin lokasi untuk aplikasi ini.';
+          }
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        throw 'Izin lokasi ditolak secara permanen. Mohon aktifkan izin lokasi di pengaturan perangkat Anda.';
+      }
+
+      // Get current position with reduced accuracy for iOS 18
+      return await Geolocator.getCurrentPosition(
+        desiredAccuracy:
+            Platform.isIOS ? LocationAccuracy.reduced : LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 10),
+      );
+    } catch (e) {
+      throw 'Gagal mendapatkan lokasi: $e';
     }
-    return await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
   }
 
   /// Ambil nama lokasi dari koordinat

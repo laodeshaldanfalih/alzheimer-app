@@ -2,6 +2,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:flutter/material.dart';
 
 class SholatNotificationService {
   static final SholatNotificationService _instance =
@@ -13,40 +14,25 @@ class SholatNotificationService {
     tz.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
 
-    final isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    if (!isAllowed) {
-      await AwesomeNotifications().requestPermissionToSendNotifications();
-    }
+    // Initialize notification channel
+    await AwesomeNotifications().initialize(
+      null, // null means use default app icon
+      [
+        NotificationChannel(
+          channelKey: 'sholat_channel',
+          channelName: 'Sholat Notifications',
+          channelDescription: 'Notifications for prayer times',
+          defaultColor: Colors.blue,
+          ledColor: Colors.blue,
+          importance: NotificationImportance.High,
+          channelShowBadge: true,
+          enableVibration: true,
+          enableLights: true,
+          criticalAlerts: true,
+        ),
+      ],
+    );
   }
-
-  // ======================================================================
-  // Test Notifikasi Lama   !!!!! TIDAK DIPAKAI !!!!
-  // ======================================================================
-
-  // Future<void> testScheduleNotification() async {
-  //   final scheduleTime = DateTime.now().add(const Duration(seconds: 5));
-
-  //   await AwesomeNotifications().createNotification(
-  //     content: NotificationContent(
-  //       id: 2,
-  //       channelKey: 'sholat_channel',
-  //       title: 'Tes Jadwal',
-  //       body: 'Meow.',
-  //       notificationLayout: NotificationLayout.Default,
-  //     ),
-  //     schedule: NotificationCalendar(
-  //       year: scheduleTime.year,
-  //       month: scheduleTime.month,
-  //       day: scheduleTime.day,
-  //       hour: scheduleTime.hour,
-  //       minute: scheduleTime.minute,
-  //       second: scheduleTime.second,
-  //       millisecond: 0,
-  //       timeZone: await AwesomeNotifications().getLocalTimeZoneIdentifier(),
-  //       preciseAlarm: true,
-  //     ),
-  //   );
-  // }
 
   Future<void> testScheduleNotification() async {
     final scheduleTime = DateTime.now().add(
