@@ -35,14 +35,14 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
         context: context,
         builder:
             (context) => AlertDialog(
-              title: Text('Profil Belum Lengkap'),
-              content: Text(
+              title: const Text('Profil Belum Lengkap'),
+              content: const Text(
                 'Anda harus melengkapi data diri pasien terlebih dahulu pada halaman profil untuk mengunduh hasil test.',
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             ),
@@ -236,6 +236,10 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
                 _buildQuestionAnswerPDF(
                   "Banyak jumlah pengulangan",
                   "${entry.registrationRepetitions}",
+                ),
+                _buildQuestionAnswerPDF(
+                  "Nilai Akhir registrasi",
+                  "${entry.finalScoreAnswer}",
                 ),
               ]),
               pw.SizedBox(height: 20),
@@ -457,14 +461,24 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
             ]),
             const SizedBox(height: 24),
             _buildSection("Registrasi", [
+              const Text(
+                "Perulangan 3 kata objek",
+                style: TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 12),
               _buildQuestionAnswer(
                 "Banyak nama benda yang benar",
                 "${entry.registrationScore}",
-                isLast: false,
+                isLast: true,
               ),
               _buildQuestionAnswer(
                 "Banyak jumlah pengulangan",
                 "${entry.registrationRepetitions}",
+                isLast: false,
+              ),
+              _buildQuestionAnswer(
+                "Nilai Akhir registrasi",
+                "${entry.finalScoreAnswer}",
                 isLast: true,
               ),
             ]),
@@ -538,20 +552,28 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
             const Text(
               "Informasi Pasien",
               style: TextStyle(
-                fontSize: 16, 
-                fontWeight: FontWeight.bold, 
-                color: Color(0xFF2D3142)
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2D3142),
               ),
             ),
             const Divider(height: 24),
-            _buildInfoRow(Icons.person_outline, "Nama Pasien", userProfile.name ?? "-"),
-            _buildInfoRow(Icons.cake_outlined, "Tanggal Lahir", 
-              userProfile.birthDate != null 
-                ? DateFormat('dd MMMM yyyy').format(userProfile.birthDate!) 
-                : "-"
+            _buildInfoRow(
+              Icons.person_outline,
+              "Nama Pasien",
+              userProfile.name ?? "-",
             ),
-            _buildInfoRow(Icons.wc_outlined, "Gender", 
-              userProfile.gender == 'Male' ? 'Laki-laki' : 'Perempuan'
+            _buildInfoRow(
+              Icons.cake_outlined,
+              "Tanggal Lahir",
+              userProfile.birthDate != null
+                  ? DateFormat('dd MMMM yyyy').format(userProfile.birthDate!)
+                  : "-",
+            ),
+            _buildInfoRow(
+              Icons.wc_outlined,
+              "Gender",
+              userProfile.gender == 'Male' ? 'Laki-laki' : 'Perempuan',
             ),
           ],
         ),
@@ -567,12 +589,18 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
         children: [
           Icon(icon, color: Colors.blue.shade700, size: 20),
           const SizedBox(width: 12),
-          Text(label, style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
+          Text(
+            label,
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          ),
           const Spacer(),
-          Text(value, style: const TextStyle(
-            fontSize: 14, 
-            fontWeight: FontWeight.w600, 
-            color: Color(0xFF2D3142))
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2D3142),
+            ),
           ),
         ],
       ),
@@ -601,38 +629,41 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text(
-              "Status Kesehatan Mental", 
+              "Status Kesehatan Mental",
               style: TextStyle(
-                fontSize: 14, 
-                color: Color(0xFF2D3142), 
-                fontWeight: FontWeight.w500
-              )
+                fontSize: 14,
+                color: Color(0xFF2D3142),
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: statusColor, 
-                borderRadius: BorderRadius.circular(20)
+                color: statusColor,
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 statusText.toUpperCase(),
                 style: const TextStyle(
-                  color: Colors.white, 
-                  fontWeight: FontWeight.bold, 
-                  letterSpacing: 0.5
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
             const SizedBox(height: 24),
-            const Text("Skor MMSE", style: TextStyle(fontSize: 14, color: Colors.grey)),
+            const Text(
+              "Skor MMSE",
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
             const SizedBox(height: 4),
             Text(
               entry.score.toString(),
               style: const TextStyle(
-                fontSize: 52, 
-                fontWeight: FontWeight.bold, 
-                color: Color(0xFF2D3142)
+                fontSize: 52,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2D3142),
               ),
             ),
             Text(
@@ -645,11 +676,18 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.calendar_today_outlined, size: 16, color: Color(0xFF2D3142)),
+                const Icon(
+                  Icons.calendar_today_outlined,
+                  size: 16,
+                  color: Color(0xFF2D3142),
+                ),
                 const SizedBox(width: 8),
                 Text(
                   "Tanggal Penilaian: ${DateFormat('dd MMMM yyyy').format(entry.date)}",
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF2D3142)),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF2D3142),
+                  ),
                 ),
               ],
             ),
@@ -675,12 +713,12 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              title, 
+              title,
               style: const TextStyle(
-                fontSize: 16, 
-                fontWeight: FontWeight.bold, 
-                color: Color(0xFF2D3142)
-              )
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2D3142),
+              ),
             ),
             const SizedBox(height: 16),
             ...children,
@@ -691,7 +729,11 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
   }
 
   // Widget Pertanyaan-Jawaban (sama dengan GDS)
-  Widget _buildQuestionAnswer(String question, String? answer, {bool isLast = false}) {
+  Widget _buildQuestionAnswer(
+    String question,
+    String? answer, {
+    bool isLast = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -703,9 +745,9 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
               child: Text(
                 question,
                 style: TextStyle(
-                  fontSize: 14, 
-                  color: Colors.grey.shade800, 
-                  height: 1.4
+                  fontSize: 14,
+                  color: Colors.grey.shade800,
+                  height: 1.4,
                 ),
               ),
             ),
@@ -713,9 +755,9 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
             Text(
               answer ?? "-",
               style: TextStyle(
-                fontSize: 14, 
-                color: Colors.blue.shade800, 
-                fontWeight: FontWeight.w600
+                fontSize: 14,
+                color: Colors.blue.shade800,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],

@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// lib/features/game/domain/models/ws_word_data.dart
 
 //   WS = WORD SCRAMBLE = MENYUSUN KATA
 
 class WordScrambleWordData {
-  final String id; // ID Dokumen dari Firestore
+  final String id; // ID Dokumen dari indeks list lokal
   final String kataAsli;
   final String petunjuk;
   final String levelKesulitan;
@@ -19,10 +19,10 @@ class WordScrambleWordData {
     required this.panjangKata,
   });
 
-  factory WordScrambleWordData.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  // Mengubah factory dari Firestore menjadi fromMap
+  factory WordScrambleWordData.fromMap(Map<String, dynamic> data, String id) {
     return WordScrambleWordData(
-      id: doc.id,
+      id: id,
       kataAsli: data['kataAsli'] ?? '',
       petunjuk: data['petunjuk'] ?? 'Tidak ada petunjuk.',
       levelKesulitan: data['levelKesulitan'] ?? 'sedang',

@@ -50,21 +50,22 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDHxzCO-IERNGsq2P2zBRGlaZcrBZ6a8nk',
-    appId: '1:281214992798:android:d6e6c536ab69e58d28568f',
-    messagingSenderId: '281214992798',
-    projectId: 'alzheimer-app-c23db',
-    storageBucket: 'alzheimer-app-c23db.firebasestorage.app',
+    apiKey: 'AIzaSyAixPDT-0c8BnZoxK4D_i8AZuKMVOWrUEg',
+    appId: '1:36607507492:android:da877a4cb685577cb32cb1',
+    messagingSenderId: '36607507492',
+    projectId: 'medika-alzheimerapp',
+    storageBucket: 'medika-alzheimerapp.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAUWD3qGDeVgM7pEMbxI7DYLPb48juz1YQ',
-    appId: '1:281214992798:ios:b139373a2e6c7c9628568f',
-    messagingSenderId: '281214992798',
-    projectId: 'alzheimer-app-c23db',
-    storageBucket: 'alzheimer-app-c23db.firebasestorage.app',
-    androidClientId: '281214992798-alvbls9f25klaug9p0fg4d5oaab004oi.apps.googleusercontent.com',
-    iosClientId: '281214992798-3hu14ajvjs67b32hhf8aqiff60dan53j.apps.googleusercontent.com',
-    iosBundleId: 'com.example.alzheimerApp',
+    apiKey: 'AIzaSyDaIeOJSanp0CzcpliHtB9dwNVQtaOSkCc',
+    appId: '1:36607507492:ios:2716e9a427edfb1db32cb1',
+    messagingSenderId: '36607507492',
+    projectId: 'medika-alzheimerapp',
+    storageBucket: 'medika-alzheimerapp.firebasestorage.app',
+    androidClientId: '36607507492-9nkfu4sbbhi0pmmrs5blg2p2basa15bc.apps.googleusercontent.com',
+    iosClientId: '36607507492-1usd929soeddbh757udcpdk9b8enfhol.apps.googleusercontent.com',
+    iosBundleId: 'com.alzheimerApp',
   );
+
 }

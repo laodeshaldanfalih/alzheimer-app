@@ -1,6 +1,6 @@
 import 'package:project/features/article/models/article_item.dart';
 
-final List<ArticleItem> articles = [
+final List<ArticleItem> articlesH = [
   const ArticleItem(
     title: "Tips Menjaga Kesehatan Mental Lansia",
     description:
@@ -36,7 +36,7 @@ Menjaga kesehatan mental lansia merupakan aspek penting dalam merawat orang tua 
     imagePath:
         "https://images.unsplash.com/photo-1516307365426-bea591f05011?q=80&w=1000",
   ),
-  ArticleItem(
+  const ArticleItem(
     title: "Manfaat Musik untuk Penderita Alzheimer",
     description:
         "Terapi musik terbukti memiliki dampak positif bagi penderita Alzheimer. Penelitian menunjukkan musik dapat membantu meningkatkan mood dan memori.",
@@ -71,7 +71,7 @@ Musik memiliki kekuatan luar biasa dalam membantu penderita Alzheimer. Berikut a
     imagePath:
         "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?q=80&w=1000",
   ),
-  ArticleItem(
+  const ArticleItem(
     title: "Pentingnya Aktivitas Fisik untuk Lansia",
     description:
         "Aktivitas fisik teratur dapat membantu lansia menjaga kesehatan, kemandirian, dan kualitas hidup. Temukan jenis olahraga yang aman dan bermanfaat.",
@@ -111,7 +111,7 @@ Aktivitas fisik merupakan kunci untuk menjaga kesehatan dan kemandirian lansia. 
     imagePath:
         "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1000",
   ),
-  ArticleItem(
+  const ArticleItem(
     title: "Nutrisi Seimbang untuk Kesehatan Lansia",
     description:
         "Pola makan yang tepat sangat penting untuk menjaga kesehatan lansia. Pelajari panduan nutrisi seimbang dan tips memilih makanan yang tepat.",
@@ -153,7 +153,7 @@ Nutrisi yang tepat adalah fondasi kesehatan yang baik bagi lansia. Berikut pandu
     imagePath:
         "https://images.unsplash.com/photo-1498837167922-ddd27525d352?q=80&w=1000",
   ),
-  ArticleItem(
+  const ArticleItem(
     title: "Cara Merawat Lansia dengan Demensia",
     description:
         "Merawat lansia dengan demensia membutuhkan kesabaran dan pemahaman khusus. Pelajari strategi perawatan yang efektif dan penuh kasih sayang.",
@@ -192,7 +192,7 @@ Merawat lansia dengan demensia membutuhkan pendekatan khusus. Berikut panduan le
     imagePath:
         "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1000",
   ),
-  ArticleItem(
+  const ArticleItem(
     title: "Pentingnya Pemeriksaan Kesehatan Rutin untuk Lansia",
     description:
         "Pemeriksaan kesehatan rutin sangat penting untuk mendeteksi masalah kesehatan sejak dini. Ketahui jenis pemeriksaan yang diperlukan dan jadwal yang disarankan.",
@@ -233,7 +233,7 @@ Pemeriksaan kesehatan rutin merupakan kunci untuk menjaga kesehatan lansia. Beri
     imagePath:
         "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=1000",
   ),
-  ArticleItem(
+  const ArticleItem(
     title: "Tips Menjaga Kualitas Tidur Lansia",
     description:
         "Kualitas tidur yang baik sangat penting untuk kesehatan lansia. Temukan cara mengatasi masalah tidur dan menciptakan rutinitas tidur yang sehat.",
@@ -273,7 +273,7 @@ Kualitas tidur yang baik sangat penting untuk kesehatan lansia. Berikut panduan 
     imagePath:
         "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1000",
   ),
-  ArticleItem(
+  const ArticleItem(
     title: "Pentingnya Interaksi Sosial untuk Lansia",
     description:
         "Interaksi sosial sangat penting untuk kesehatan mental dan fisik lansia. Temukan cara meningkatkan koneksi sosial dan mencegah isolasi.",

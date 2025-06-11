@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>281214992798-3hu14ajvjs67b32hhf8aqiff60dan53j.apps.googleusercontent.com</string>
+	<string>36607507492-1usd929soeddbh757udcpdk9b8enfhol.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.281214992798-3hu14ajvjs67b32hhf8aqiff60dan53j</string>
+	<string>com.googleusercontent.apps.36607507492-1usd929soeddbh757udcpdk9b8enfhol</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>281214992798-07a46cva02l5p0a506q2c188qvduftlo.apps.googleusercontent.com</string>
+	<string>36607507492-9nkfu4sbbhi0pmmrs5blg2p2basa15bc.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAUWD3qGDeVgM7pEMbxI7DYLPb48juz1YQ</string>
+	<string>AIzaSyDaIeOJSanp0CzcpliHtB9dwNVQtaOSkCc</string>
 	<key>GCM_SENDER_ID</key>
-	<string>281214992798</string>
+	<string>36607507492</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.alzheimerApp</string>
+	<string>com.alzheimerApp</string>
 	<key>PROJECT_ID</key>
-	<string>alzheimer-app-c23db</string>
+	<string>medika-alzheimerapp</string>
 	<key>STORAGE_BUCKET</key>
-	<string>alzheimer-app-c23db.firebasestorage.app</string>
+	<string>medika-alzheimerapp.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:281214992798:ios:b139373a2e6c7c9628568f</string>
-	<key>DATABASE_URL</key>
-	<string>https://alzheimer-app-c23db-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+	<string>1:36607507492:ios:2716e9a427edfb1db32cb1</string>
 </dict>
 </plist>

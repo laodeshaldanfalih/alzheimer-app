@@ -144,21 +144,60 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
           TextButton(
             onPressed: () async {
               if (!mounted) return;
-              ref.read(isLoadingProvider.notifier).state = true;
-              try {
-                await ref.read(authProvider.notifier).signOut();
-                if (mounted) {
-                  // Navigasi ke SignInPage dan hapus semua route sebelumnya
-                  Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const SignInPage()),
-                    (Route<dynamic> route) => false,
-                  );
-                }
-              } catch (e) {
-                _showSnackBar('Gagal logout: ${e.toString()}');
-              } finally {
-                if (mounted) {
-                  ref.read(isLoadingProvider.notifier).state = false;
+
+              // Tampilkan dialog konfirmasi
+              final shouldLogout = await showDialog<bool>(
+                context: context,
+                builder:
+                    (context) => AlertDialog(
+                      backgroundColor: Colors.white,
+                      title: const Text('Konfirmasi Keluar'),
+                      content: const Text(
+                        'Apakah Anda yakin ingin keluar dari akun?',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: const Text(
+                            'Batal',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: const Text(
+                            'Keluar',
+                            style: TextStyle(color: Colors.blueAccent),
+                          ),
+                        ),
+                      ],
+                    ),
+              );
+
+              // Jika user memilih keluar
+              if (shouldLogout == true) {
+                ref.read(isLoadingProvider.notifier).state = true;
+                try {
+                  await ref.read(authProvider.notifier).signOut();
+                  if (mounted) {
+                    Navigator.of(
+                      context,
+                      rootNavigator: true,
+                    ).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => const SignInPage(),
+                      ),
+                      (Route<dynamic> route) => false,
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    _showSnackBar('Gagal logout: ${e.toString()}');
+                  }
+                } finally {
+                  if (mounted) {
+                    ref.read(isLoadingProvider.notifier).state = false;
+                  }
                 }
               }
             },
@@ -184,23 +223,66 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
       body: Stack(
         children: [
           if (userProfileState == null && !isLoading)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Data profil tidak ditemukan atau belum lengkap.',
+            Container(
+              margin: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Illustration Container
+                  Container(
+                    width: 200,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.blue.shade100, Colors.purple.shade100],
+                      ),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Icon(
+                      Icons.person_outline_rounded,
+                      size: 80,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Title
+                  Text(
+                    'Profil Belum Lengkap',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade800,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Subtitle
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'Data profil Anda tidak ditemukan atau belum lengkap. Lengkapi profil untuk pengalaman yang lebih baik.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade600,
+                        height: 1.5,
+                      ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: _loadProfileData,
-                      child: const Text('Coba Muat Ulang'),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  // Primary Button - Complete Profile
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    child: ElevatedButton(
                       onPressed: () {
                         // Membuat UserProfile dummy hanya dengan email jika authUser ada
                         // atau UserProfile kosong jika authUser juga null
@@ -219,10 +301,68 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
                           if (value == true) _loadProfileData();
                         });
                       },
-                      child: const Text('Lengkapi Profil Sekarang'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade600,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 2,
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.edit_rounded, size: 20),
+                          SizedBox(width: 8),
+                          Text(
+                            'Lengkapi Profil Sekarang',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Secondary Button - Reload
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    child: OutlinedButton(
+                      onPressed: _loadProfileData,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.blue.shade600,
+                        side: BorderSide(
+                          color: Colors.blue.shade600,
+                          width: 1.5,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.refresh_rounded, size: 20),
+                          SizedBox(width: 8),
+                          Text(
+                            'Coba Muat Ulang',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             )
           else if (userProfileState != null)

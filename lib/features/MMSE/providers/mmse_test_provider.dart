@@ -12,6 +12,7 @@ class MMSETestState {
   // Page 3 - Registration
   final int? registrationScore;
   final int? registrationRepetitions;
+  final int? finalScoreAnswer;
 
   // Page 4 - Attention and Recall
   final int? attentionScore;
@@ -32,6 +33,7 @@ class MMSETestState {
     this.orientationPlaceScore,
     this.registrationScore,
     this.registrationRepetitions,
+    this.finalScoreAnswer,
     this.attentionScore,
     this.recallScore,
     this.bendaScore,
@@ -49,6 +51,7 @@ class MMSETestState {
     int? orientationPlaceScore,
     int? registrationScore,
     int? registrationRepetitions,
+    int? finalScoreAnswer,
     int? attentionScore,
     int? recallScore,
     int? bendaScore,
@@ -68,7 +71,8 @@ class MMSETestState {
           orientationPlaceScore ?? this.orientationPlaceScore,
       registrationScore: registrationScore ?? this.registrationScore,
       registrationRepetitions:
-          registrationRepetitions ?? this.registrationRepetitions,
+          registrationRepetitions ?? this.registrationRepetitions,      finalScoreAnswer:
+          finalScoreAnswer ?? this.finalScoreAnswer,
       attentionScore: attentionScore ?? this.attentionScore,
       recallScore: recallScore ?? this.recallScore,
       bendaScore: bendaScore ?? this.bendaScore,
@@ -87,11 +91,14 @@ class MMSETestState {
     // Page 1 scores
     score += orientationTimeScore ?? 0;
     score += orientationPlaceScore ?? 0;
-    score += registrationScore ?? 0;
 
     // Page 2 scores
     score += attentionScore ?? 0;
     score += recallScore ?? 0;
+
+    // Page 3 scores
+    score += finalScoreAnswer ?? 0;
+
 
     // Page 5 scores
     score += bendaScore ?? 0;
@@ -166,10 +173,11 @@ class MMSETestNotifier extends StateNotifier<MMSETestState> {
     );
   }
 
-  void setRegistrationScore(int score, int repetitions) {
+  void setRegistrationScore(int score, int repetitions, int finalScoreAnswer) {
     state = state.copyWith(
       registrationScore: score,
       registrationRepetitions: repetitions,
+      finalScoreAnswer: finalScoreAnswer,
     );
   }
 

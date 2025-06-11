@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:project/features/MMSE/presentation/mmse_test_page_4.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,20 +18,23 @@ class _MMSETestPage3State extends ConsumerState<MMSETestPage3> {
   final TextEditingController _correctAnswersController =
       TextEditingController();
   final TextEditingController _repetitionsController = TextEditingController();
+  final List<String> finalScore = ["0", "1", "2", "3"];
+  String? finalScoreAnswer;
 
   void _updateScores() {
-    if (_correctAnswersController.text.isNotEmpty) {
+    if (_correctAnswersController.text.isNotEmpty && finalScoreAnswer != null) {
       ref
           .read(mmseTestProvider.notifier)
           .setRegistrationScore(
             int.parse(_correctAnswersController.text),
             int.parse(_repetitionsController.text),
+            int.parse(finalScoreAnswer!),
           );
     }
   }
 
   bool _isPageComplete() {
-    return _correctAnswersController.text.isNotEmpty;
+  return _correctAnswersController.text.isNotEmpty && finalScoreAnswer != null;
   }
 
   @override
@@ -46,7 +50,9 @@ class _MMSETestPage3State extends ConsumerState<MMSETestPage3> {
       onTap: () => FocusScope.of(context).unfocus(), // Close keyboard
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: const CustomAppBarWidget(title: "Mini-Mental State Exam (MMSE)"),
+        appBar: const CustomAppBarWidget(
+          title: "Mini-Mental State Exam (MMSE)",
+        ),
         backgroundColor: Colors.white,
         body: SafeArea(
           child: Column(
@@ -100,6 +106,85 @@ class _MMSETestPage3State extends ConsumerState<MMSETestPage3> {
                         ),
                       ),
                       const SizedBox(height: 24),
+                      _buildInstructionItem(
+                        "Pemberian nilai final berdasarkan respon pasien:",
+                      ),
+                      const SizedBox(height: 12),
+
+                      DropdownButtonHideUnderline(
+                        child: DropdownButtonFormField2<String>(
+                          isExpanded: true,
+                          hint: const Text(
+                            'Jumlah nilai total (max 3)',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF9C9DB9),
+                            ),
+                          ),
+                          items:
+                              finalScore
+                                  .map(
+                                    (item) => DropdownMenuItem<String>(
+                                      value: item,
+                                      child: Text(
+                                        item,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Color(0xFF2D3142),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                          value: finalScoreAnswer,
+                          onChanged: (value) {
+                            setState(() {
+                              finalScoreAnswer = value;
+                            });
+                          },
+                          dropdownStyleData: DropdownStyleData(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: Colors.white,
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 8,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            offset: const Offset(0, -4),
+                          ),
+                          iconStyleData: const IconStyleData(
+                            icon: Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: Color(0xFF8A94A6),
+                            ),
+                          ),
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFE4E4E4),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF2563EB),
+                                width: 1.4,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

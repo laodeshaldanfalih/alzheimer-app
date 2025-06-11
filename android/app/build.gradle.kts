@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.alzheimerApp"
+        applicationId = "com.medika.alzheimerapp"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         // implementation = "com.google.firebase:firebase-appcheck-debug:16.0.0-beta01"

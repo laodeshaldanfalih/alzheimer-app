@@ -17,17 +17,46 @@ class HealthPage extends StatelessWidget {
           backgroundColor: Colors.white,
           title: const Text('Dasbor Kesehatan'),
           centerTitle: true,
+          elevation: 0,
           bottom: const TabBar(
             indicatorSize: TabBarIndicatorSize.tab,
             indicatorColor: Colors.blue,
-            labelColor: Colors.blue, // Warna teks tab yang aktif
+            labelColor: Colors.blue,
             unselectedLabelColor: Colors.grey,
+            labelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+            unselectedLabelStyle: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.normal,
+            ),
+            isScrollable: false,
+            tabAlignment: TabAlignment.fill,
             tabs: [
-              Tab(icon: Icon(Icons.edit_note), text: "Input Data"),
-              Tab(icon: Icon(Icons.show_chart), text: "Grafik"), // DIUBAH
+              Tab(
+                icon: Icon(Icons.edit_note),
+                child: Text(
+                  "Input Data",
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Tab(
+                icon: Icon(Icons.show_chart),
+                child: Text(
+                  "Grafik",
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ), // DIUBAH
               Tab(
                 icon: Icon(Icons.history),
-                text: "Riwayat & Aksi",
+                child: Text(
+                  "Riwayat &\nAksi",
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ), // TAB BARU
             ],
           ),
@@ -41,7 +70,6 @@ class HealthPage extends StatelessWidget {
             ),
           ),
           child: const TabBarView(
-            
             children: [
               HealthInputPage(),
               HealthGraphicChartPage(),

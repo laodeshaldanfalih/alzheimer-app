@@ -575,7 +575,7 @@ class _HealthInputPageState extends ConsumerState<HealthInputPage> {
             ),
             focusedBorder: OutlineInputBorder( // Perubahan warna saat fokus
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
+              borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),

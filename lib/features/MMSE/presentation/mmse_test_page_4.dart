@@ -68,7 +68,7 @@ class _MMSETestPage4State extends ConsumerState<MMSETestPage4> {
                       DropdownButtonHideUnderline(
                         child: DropdownButtonFormField2<String>(
                           isExpanded: true,
-                          hint: Text(
+                          hint: const Text(
                             'Berapa banyak yang benar?',
                             style: TextStyle(
                               fontSize: 14,
@@ -156,7 +156,7 @@ class _MMSETestPage4State extends ConsumerState<MMSETestPage4> {
                       DropdownButtonHideUnderline(
                         child: DropdownButtonFormField2<String>(
                           isExpanded: true,
-                          hint: Text(
+                          hint: const Text(
                             'Berapa banyak yang benar?',
                             style: TextStyle(
                               fontSize: 14,

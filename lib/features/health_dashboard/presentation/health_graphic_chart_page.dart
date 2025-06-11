@@ -85,6 +85,15 @@ class _HealthGraphicChartPageState // Mengganti nama state
                 "Lingkar Pinggang",
               ),
             ),
+            _buildChartCard(
+              "Berat Badan (kg)",
+              _buildSingleMetricChart(
+                records,
+                (d) => d.weight,
+                Colors.blueAccent,
+                "Berat Badan",
+              ),
+            ),
             if (records.any(
               // Cek apakah ada data gula darah yang valid sebelum membuat card
               (r) => r.bloodSugar != null && r.bloodSugar! > 0,
@@ -134,7 +143,7 @@ class _HealthGraphicChartPageState // Mengganti nama state
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+            padding: const EdgeInsets.fromLTRB(16, 20, 48, 16),
             child: SizedBox(height: 200, child: chart),
           ),
         ],
@@ -214,7 +223,6 @@ class _HealthGraphicChartPageState // Mengganti nama state
             },
           ),
         ),
-
       ),
     );
   }
@@ -371,6 +379,9 @@ class _HealthGraphicChartPageState // Mengganti nama state
 
   double _calculateInterval(List<FlSpot> spots) {
     if (spots.isEmpty) return 10;
+    if (spots.first.y > 30 && spots.first.y < 200) {
+      return 2;
+    }
     double minY = spots.first.y;
     double maxY = spots.first.y;
     for (var spot in spots) {
@@ -437,6 +448,7 @@ class _HealthGraphicChartPageState // Mengganti nama state
     return LineChartBarData(
       spots: spots,
       isCurved: true,
+      preventCurveOverShooting: true,
       color: color,
       barWidth: 3,
       dotData: const FlDotData(show: true),

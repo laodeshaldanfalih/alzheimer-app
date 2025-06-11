@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/core/providers/shared_providers.dart';
 import 'package:project/features/auth/providers/auth_provider.dart';
 
 class SignUpForm extends ConsumerStatefulWidget {
@@ -30,7 +31,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
       context: context,
       builder:
           (context) => AlertDialog(
-          backgroundColor: const Color(0xffFAF9F6),
+            backgroundColor: const Color(0xffFAF9F6),
             title: const Text('Ketentuan & Kebijakan Privasi'),
             content: SingleChildScrollView(
               child: Text.rich(
@@ -46,13 +47,13 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             ),
             actions: [
               TextButton(
-                              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff7583CA),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xff7583CA),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
-              ),
                 onPressed: () => Navigator.pop(context),
                 child: const Text('Tutup'),
               ),
@@ -145,6 +146,8 @@ Dengan menggunakan aplikasi ini, Anda menyetujui pengumpulan dan penggunaan info
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(isLoadingProvider);
+
     return Form(
       key: _formKey,
       child: Column(
@@ -286,8 +289,8 @@ Dengan menggunakan aplikasi ini, Anda menyetujui pengumpulan dan penggunaan info
                           color: Color(0xff7583CA),
                           fontWeight: FontWeight.w500,
                         ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = _showPrivacyPolicy,
+                        recognizer:
+                            TapGestureRecognizer()..onTap = _showPrivacyPolicy,
                         // Anda bisa menambahkan recognizer di sini untuk membuka halaman Privacy Policy
                       ),
                     ],
@@ -311,50 +314,74 @@ Dengan menggunakan aplikasi ini, Anda menyetujui pengumpulan dan penggunaan info
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(double.infinity, double.minPositive),
               backgroundColor: const Color(0xff7583CA),
-              foregroundColor: Colors.white, // Warna teks tombol
-            ),
-            onPressed: () async {
-              if (_formKey.currentState!.validate() && isChecked) {
-                try {
-                  final authNotifier = ref.read(authProvider.notifier);
-                  await authNotifier.signUpWithEmail(
-                    _emailController.text.trim(),
-                    _passwordController.text,
-                    // HAPUS: _usernameController.text.trim(),
-                  );
-                } catch (e) {
-                  if (mounted) {
-                    // Pastikan widget masih mounted sebelum menampilkan SnackBar
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Registration failed: ${e.toString()}'),
-                      ),
-                    );
-                  }
-                }
-              } else if (!isChecked) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Tolong setujui kotak ketentuan & kebijakan privasi ',
-                      ),
-                    ),
-                  );
-                }
-              }
-            },
-            child: const Padding(
-              padding: EdgeInsets.symmetric(vertical: 15),
-
-              child: Text(
-                'SIGN UP',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
               ),
+              disabledBackgroundColor: const Color(0xff7583CA).withOpacity(0.7),
+            ),
+            onPressed:
+                isLoading
+                    ? null
+                    : () async {
+                      if (_formKey.currentState!.validate() && isChecked) {
+                        // Set loading state menjadi true
+                        ref.read(isLoadingProvider.notifier).state = true;
+                        try {
+                          final authNotifier = ref.read(authProvider.notifier);
+                          await authNotifier.signUpWithEmail(
+                            _emailController.text.trim(),
+                            _passwordController.text,
+                          );
+                          // Navigasi sukses akan ditangani oleh listener di signup_page.dart
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Registration failed: ${e.toString()}',
+                                ),
+                              ),
+                            );
+                          }
+                        } finally {
+                          // Set loading state menjadi false setelah selesai
+                          if (mounted) {
+                            ref.read(isLoadingProvider.notifier).state = false;
+                          }
+                        }
+                      } else if (!isChecked) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Tolong setujui kotak ketentuan & kebijakan privasi ',
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                    },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              child:
+                  isLoading
+                      ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 3,
+                        ),
+                      )
+                      : const Text(
+                        'SIGN UP',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
             ),
           ),
         ],

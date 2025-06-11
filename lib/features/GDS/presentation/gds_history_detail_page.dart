@@ -18,18 +18,18 @@ class GDSHistoryDetailPage extends ConsumerWidget {
   static const List<String> questions = [
     "Apakah Anda pada dasarnya puas dengan hidup Anda?",
     "Apakah Anda telah melepaskan banyak kegiatan dan minat Anda?",
-    "Apakah Anda merasa hidup Anda kosong?",
+    "Apakah Anda merasa hidup Anda penuh kehampaan?",
     "Apakah Anda sering merasa bosan?",
     "Apakah Anda dalam suasana hati yang baik hampir sepanjang waktu?",
     "Apakah Anda takut bahwa sesuatu yang buruk akan terjadi pada Anda?",
     "Apakah Anda merasa bahagia hampir sepanjang waktu?",
-    "Apakah Anda sering merasa tidak berdaya?",
+    "Apakah Anda sering merasa elmah atau tak berdaya?",
     "Apakah Anda lebih suka tinggal di rumah daripada pergi keluar dan melakukan hal-hal baru?",
     "Apakah Anda merasa memiliki lebih banyak masalah dengan ingatan daripada kebanyakan orang?",
     "Apakah Anda berpikir bahwa sekarang ini adalah waktu yang indah untuk hidup?",
-    "Apakah Anda merasa tidak berharga seperti sekarang ini?",
+    "Apakah Anda merasa tidak berharga terhadap diri sendiri yang sekarang?",
     "Apakah Anda merasa penuh energi?",
-    "Apakah Anda merasa situasi Anda tidak ada harapan?",
+    "Apakah Anda merasa situasi hidup Anda tak ada harapan?",
     "Apakah Anda berpikir bahwa kebanyakan orang lebih baik daripada Anda?",
   ];
 

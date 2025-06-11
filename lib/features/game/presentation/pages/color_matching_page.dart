@@ -16,7 +16,7 @@ class _ColorGameState extends State<ColorMatchingPage> {
     '🥬': Colors.green,
     '🍋': Colors.yellow,
     '🍎': Colors.red,
-    '🫘': Colors.brown,
+    '🤎': Colors.brown,
     '🥕': Colors.orange,
     '🍇': Colors.purple,
   };

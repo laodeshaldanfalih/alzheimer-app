@@ -59,7 +59,11 @@ class NotificationToggleCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Checkbox(activeColor: Color(0xFF325374),value: allEnabled, onChanged: onChanged),
+        Checkbox(
+          activeColor: Color(0xFF325374),
+          value: allEnabled,
+          onChanged: onChanged,
+        ),
         const Text(
           'Aktifkan semua notifikasi',
           style: TextStyle(fontSize: 14, color: Colors.grey),

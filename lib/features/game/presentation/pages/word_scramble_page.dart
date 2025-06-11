@@ -1,3 +1,4 @@
+// lib/features/game/presentation/word_scramble_page.dart
 import 'package:flutter/material.dart';
 import 'package:project/features/game/domain/models/ws_game_settings.dart';
 import 'package:project/features/game/providers/word_scramble_provider.dart';
@@ -10,6 +11,7 @@ class WordScramblePage extends StatefulWidget {
 }
 
 class _WordScramblePageState extends State<WordScramblePage> {
+  // Daftar kategori diperbarui sesuai data JSON
   final List<String> _categories = [
     "Semua",
     "Buah",
@@ -18,6 +20,10 @@ class _WordScramblePageState extends State<WordScramblePage> {
     "Benda di Rumah",
     "Transportasi",
     "Tempat",
+    "Profesi",
+    "Peralatan",
+    "Alat Musik",
+    "Istilah Ilmiah",
   ];
   final List<String> _difficulties = ["Semua", "Mudah", "Sedang", "Sulit"];
   final List<int> _wordsPerLevelOptions = List.generate(
@@ -97,7 +103,6 @@ class _WordScramblePageState extends State<WordScramblePage> {
                           },
                         ),
                         const SizedBox(height: 20),
-
                         _buildDropdown<String>(
                           label: 'Tingkat Kesulitan:',
                           value: _selectedDifficulty,
@@ -111,7 +116,6 @@ class _WordScramblePageState extends State<WordScramblePage> {
                           },
                         ),
                         const SizedBox(height: 20),
-
                         _buildDropdown<int>(
                           label: 'Jumlah Kata per Level:',
                           value: _selectedWordsPerLevel,
@@ -126,11 +130,9 @@ class _WordScramblePageState extends State<WordScramblePage> {
                           itemLabelBuilder: (item) => '$item kata',
                         ),
                         const SizedBox(height: 40),
-
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Colors.blue.shade700, // Warna tombol konsisten
+                            backgroundColor: Colors.blue.shade700,
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -164,7 +166,6 @@ class _WordScramblePageState extends State<WordScramblePage> {
                       ],
                     ),
                   ),
-                  // --- Akhir Area Form ---
                 ],
               ),
             ),
@@ -181,6 +182,7 @@ class _WordScramblePageState extends State<WordScramblePage> {
     required ValueChanged<T?> onChanged,
     String Function(T)? itemLabelBuilder,
   }) {
+    // Implementasi _buildDropdown tetap sama, tidak perlu diubah.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

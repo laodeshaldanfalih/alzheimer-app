@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   static const String functionUrl =
-      'https://predict-image-jgy4jzef3a-uc.a.run.app';
+      'https://us-central1-medika-alzheimerapp.cloudfunctions.net/predict_image';
 
   static Future<String> uploadImage(File imageFile) async {
     try {

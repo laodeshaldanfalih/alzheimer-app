@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/core/widgets/custom_app_bar_widget.dart';
-import 'package:project/core/widgets/test_dropdown_widget.dart';
+import 'package:project/core/widgets/test_dropdown_widget_gds.dart';
 import 'package:project/core/widgets/test_question_text_widget.dart';
 import 'package:project/core/widgets/test_next_button_widget.dart';
 import 'package:project/features/GDS/providers/gds_test_provider.dart';
@@ -71,7 +71,7 @@ class _GDSTestPageState extends ConsumerState<GDSTestPage> {
                       children: [
                         TestQuestionTextWidget(text: questions[index]),
                         const SizedBox(height: 8),
-                        TestDropdownWidget(
+                        TestDropdownWidgetGds(
                           value: answers[index],
                           options: options,
                           onChanged: (val) {

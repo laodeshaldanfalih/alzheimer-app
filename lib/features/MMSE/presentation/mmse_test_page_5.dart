@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/core/widgets/test_dropdown_widget_mmse.dart';
 import 'package:project/features/MMSE/presentation/mmse_result_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/MMSE/providers/mmse_test_provider.dart';
@@ -206,7 +207,7 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TestDropdownWidget(
+                      TestDropdownWidgetMmse(
                         value: bendaAnswer,
                         options: jumlahBenarOptions,
                         onChanged: (value) {
@@ -238,7 +239,7 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
                             '3. Instruksikan pasien "Ambil kertas ini dengan tangan kanan, lipatlah menjadi dua dan letakkan di lantai".',
                       ),
                       const SizedBox(height: 12),
-                      TestDropdownWidget(
+                      TestDropdownWidgetMmse(
                         value: instruksiAnswer,
                         options: jumlahBenarOptions3,
                         onChanged: (value) {

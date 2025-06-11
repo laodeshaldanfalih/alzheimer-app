@@ -10,6 +10,7 @@ class MMSEHistoryEntry {
 
   // Page 3 - Registration
   final int? registrationScore;
+  final int? finalScoreAnswer;
   final int? registrationRepetitions;
 
   // Page 4 - Attention and Recall
@@ -30,6 +31,7 @@ class MMSEHistoryEntry {
     required this.orientationTimeAnswers,
     required this.orientationPlaceAnswers,
     required this.registrationScore,
+    required this.finalScoreAnswer,
     required this.registrationRepetitions,
     required this.attentionScore,
     required this.recallScore,
@@ -47,6 +49,7 @@ class MMSEHistoryEntry {
     'orientationTimeAnswers': orientationTimeAnswers,
     'orientationPlaceAnswers': orientationPlaceAnswers,
     'registrationScore': registrationScore,
+    'finalScoreAnswer' : finalScoreAnswer,
     'registrationRepetitions': registrationRepetitions,
     'attentionScore': attentionScore,
     'recallScore': recallScore,
@@ -69,6 +72,7 @@ class MMSEHistoryEntry {
           json['orientationPlaceAnswers'],
         ),
         registrationScore: json['registrationScore'],
+        finalScoreAnswer: json['finalScoreAnswer'],
         registrationRepetitions: json['registrationRepetitions'],
         attentionScore: json['attentionScore'],
         recallScore: json['recallScore'],
