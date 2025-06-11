@@ -146,16 +146,6 @@ class _MMSETestPage5State extends ConsumerState<MMSETestPage5> {
     );
   }
 
-  String _getResultDescription(int score) {
-    if (score >= 24) {
-      return 'Hasil tes menunjukkan bahwa fungsi kognitif Anda berada dalam kisaran normal. Tidak ada indikasi gangguan kognitif pada tingkat ini. Terus pertahankan gaya hidup sehat untuk mendukung kesehatan otak.';
-    } else if (score >= 17) {
-      return 'Hasil tes menunjukkan kemungkinan adanya gangguan kognitif ringan. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
-    } else {
-      return 'Hasil tes menunjukkan adanya gangguan kognitif yang signifikan. Penting untuk segera berkonsultasi dengan profesional medis untuk mendapatkan penanganan lebih lanjut dan rencana perawatan yang sesuai.';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>36607507492-1usd929soeddbh757udcpdk9b8enfhol.apps.googleusercontent.com</string>
+	<string>36607507492-vcd0qckodgh0koh2r0na7lkj2kp6kano.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.36607507492-1usd929soeddbh757udcpdk9b8enfhol</string>
+	<string>com.googleusercontent.apps.36607507492-vcd0qckodgh0koh2r0na7lkj2kp6kano</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>36607507492-9nkfu4sbbhi0pmmrs5blg2p2basa15bc.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.alzheimerApp</string>
+	<string>com.medika.alzheimerapp</string>
 	<key>PROJECT_ID</key>
 	<string>medika-alzheimerapp</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:36607507492:ios:2716e9a427edfb1db32cb1</string>
+	<string>1:36607507492:ios:b551a09e2a191d5db32cb1</string>
+	<key>DATABASE_URL</key>
+	<string>https://medika-alzheimerapp-default-rtdb.asia-southeast1.firebasedatabase.app</string>
 </dict>
 </plist>

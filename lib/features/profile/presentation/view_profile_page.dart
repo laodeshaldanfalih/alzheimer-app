@@ -434,40 +434,17 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
                     const SizedBox(height: 20),
 
                     // KARTU EMAIL LOGIN
-                    _buildInfoSection(
-                      context,
-                      null, // Judul null agar langsung menampilkan item
-                      [
-                        _buildProfileDetailItem2(
-                          'Email Login',
-                          // Jika userProfileState.email null atau kosong, dan authUser.email ada, gunakan itu.
-                          // Ini menangani kasus di mana profil Firestore mungkin belum sinkron atau user baru via telepon.
-                          (userProfileState.email?.isEmpty ?? true)
-                              ? (authUser?.email ??
-                                  'Belum diisi') // Tampilkan email dari Auth jika ada, atau "Belum diisi"
-                              : userProfileState
-                                  .email!, // Jika ada di profil, tampilkan
-                          isTitleAsLabel: true,
-                        ),
-                      ],
-                      isSingleItemSection: true,
-                    ),
+                    _buildInfoSection(context, null, [
+                      _buildProfileDetailItem2(
+                        'Email Login',
+                        (userProfileState.email?.isEmpty ?? true)
+                            ? (authUser?.email ?? 'Belum diisi')
+                            : userProfileState.email!,
+                        isTitleAsLabel: true,
+                      ),
+                    ], isSingleItemSection: true),
                     const SizedBox(height: 20),
-
-                    // KARTU NOMOR TELEPON  !!!!!!!! TIDAK DIPAKAI !!!!!!!!
-                    // _buildInfoSection(
-                    //   context,
-                    //   null, // Judul null agar langsung menampilkan item
-                    //   [
-                    //     _buildProfileDetailItem2(
-                    //       'Akun Telepon Login',
-                    //       userProfileState.phone ?? '-',
-                    //       isTitleAsLabel: true,
-                    //     ),
-                    //   ],
-                    //   isSingleItemSection: true,
-                    // ),
-                    const SizedBox(height: 24), // Padding bawah
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -494,11 +471,7 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          // Tambahkan baris ini
-          color: Colors.grey[300]!, // Ganti dengan warna yang Anda inginkan
-          width: 0.5, // Ganti dengan ketebalan border yang Anda inginkan
-        ),
+        border: Border.all(color: Colors.grey[300]!, width: 0.5),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -534,9 +507,7 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
     bool isTitleAsLabel = false,
   }) {
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: isTitleAsLabel ? 0 : 20,
-      ), // Tidak ada bottom padding jika ini adalah item tunggal dengan label sebagai judul
+      padding: EdgeInsets.only(bottom: isTitleAsLabel ? 0 : 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -544,7 +515,7 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
             Text(
               label,
               style: TextStyle(
-                fontSize: isTitleAsLabel ? 14 : 13, // Ukuran label sedikit beda
+                fontSize: isTitleAsLabel ? 14 : 13,
                 color: Colors.grey[700],
                 fontWeight:
                     isTitleAsLabel ? FontWeight.w500 : FontWeight.normal,
@@ -554,16 +525,10 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
           ],
           Container(
             width: double.infinity,
-            // padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
             padding: const EdgeInsets.only(bottom: 8),
             decoration: BoxDecoration(
-              // Hapus warna latar belakang atau sesuaikan jika ingin berbeda dari Scaffold
-              // color: Colors.white, // Opsional: jika ingin latar belakangnya tetap putih
               border: Border(
-                bottom: BorderSide(
-                  color: Colors.grey[400]!, // Warna underline, sesuaikan
-                  width: 1.0, // Ketebalan underline, sesuaikan
-                ),
+                bottom: BorderSide(color: Colors.grey[400]!, width: 1.0),
               ),
             ),
             child: Text(

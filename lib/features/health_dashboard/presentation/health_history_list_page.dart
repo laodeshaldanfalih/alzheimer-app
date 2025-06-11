@@ -1,6 +1,3 @@
-// ======================================================================
-// [CLASS BARU] WIDGET UNTUK TAB 3: RIWAYAT LENGKAP DENGAN AKSI
-// ======================================================================
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -8,20 +5,16 @@ import 'package:project/features/health_dashboard/data/health_data_model.dart';
 import 'package:project/features/health_dashboard/providers/health_provider.dart';
 
 class HealthHistoryListPage extends ConsumerStatefulWidget {
-  // <-- Ubah jika perlu
   const HealthHistoryListPage({super.key});
 
   @override
   ConsumerState<HealthHistoryListPage> createState() =>
-      _HealthHistoryListPageState(); // <-- Buat State Class
+      _HealthHistoryListPageState();
 }
 
 class _HealthHistoryListPageState extends ConsumerState<HealthHistoryListPage> {
-  // <-- State Class Baru
-
-  // Pindahkan logika konfirmasi dan edit dialog ke dalam State class ini jika belum
   void _showDeleteConfirmation(BuildContext context, HealthData record) {
-    bool isDeleting = false; // Biar ada loading/ user gak spam tombol
+    bool isDeleting = false;
 
     showDialog(
       context: context,
@@ -138,11 +131,9 @@ class _HealthHistoryListPageState extends ConsumerState<HealthHistoryListPage> {
   }
 
   void _showEditDialog(BuildContext context, HealthData record) {
-    // ref sekarang diakses via this.ref
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        // _EditHealthRecordDialog mungkin juga perlu akses ref, pastikan ia menerimanya jika perlu
         return _EditHealthRecordDialog(record: record);
       },
     );
@@ -151,10 +142,6 @@ class _HealthHistoryListPageState extends ConsumerState<HealthHistoryListPage> {
   @override
   void initState() {
     super.initState();
-    // Panggil loadHealthRecords saat state pertama kali diinisialisasi
-    // jika data kosong dan belum pernah coba load (atau tidak sedang loading)
-    // Anda mungkin perlu flag di HealthState seperti `initialLoadAttempted`
-    // atau cukup cek seperti ini untuk load awal:
     Future.microtask(() {
       final healthState = ref.read(healthProvider);
       if (healthState.healthRecords.isEmpty && !healthState.isLoading) {
@@ -172,12 +159,10 @@ class _HealthHistoryListPageState extends ConsumerState<HealthHistoryListPage> {
     }
 
     if (!healthState.isLoading && records.isEmpty) {
-      // Tambahkan !healthState.isLoading di sini
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            // Bungkus dengan Column agar bisa tambahkan tombol refresh manual jika mau
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
@@ -192,8 +177,6 @@ class _HealthHistoryListPageState extends ConsumerState<HealthHistoryListPage> {
       );
     }
 
-    // Jika records tidak kosong, tampilkan list
-    // (Pastikan tidak ada kondisi lain yang menyebabkan teks "Belum ada riwayat..." muncul saat list ada isinya)
     if (records.isNotEmpty) {
       return RefreshIndicator(
         onRefresh: () => ref.read(healthProvider.notifier).loadHealthRecords(),
@@ -300,11 +283,7 @@ class _HealthHistoryListPageState extends ConsumerState<HealthHistoryListPage> {
                             foregroundColor:
                                 Theme.of(context).colorScheme.secondary,
                           ),
-                          onPressed:
-                              () => _showEditDialog(
-                                context,
-                                record,
-                              ), // Kirim record, ref diakses dari state
+                          onPressed: () => _showEditDialog(context, record),
                         ),
                         TextButton.icon(
                           icon: const Icon(Icons.delete_outline, size: 20),
@@ -313,10 +292,7 @@ class _HealthHistoryListPageState extends ConsumerState<HealthHistoryListPage> {
                             foregroundColor: Colors.red.shade700,
                           ),
                           onPressed:
-                              () => _showDeleteConfirmation(
-                                context,
-                                record,
-                              ), // Kirim record, ref diakses dari state
+                              () => _showDeleteConfirmation(context, record),
                         ),
                       ],
                     ),
@@ -328,8 +304,6 @@ class _HealthHistoryListPageState extends ConsumerState<HealthHistoryListPage> {
         ),
       );
     }
-    // Fallback jika tidak loading, tidak ada record, dan bukan kondisi kosong yang sudah ditangani.
-    // Seharusnya kondisi ini tidak tercapai jika logika di atas benar.
     return const Center(
       child: Text("Terjadi kesalahan atau state tidak dikenal."),
     );
@@ -360,10 +334,6 @@ class _HealthHistoryListPageState extends ConsumerState<HealthHistoryListPage> {
   }
 }
 
-// ======================================================================
-// [WIDGET BARU] DIALOG UNTUK MENGEDIT DATA KESEHATAN
-// Struktur diubah agar mirip HealthInputPage
-// ======================================================================
 class _EditHealthRecordDialog extends ConsumerStatefulWidget {
   final HealthData record;
   const _EditHealthRecordDialog({required this.record});
@@ -387,7 +357,7 @@ class _EditHealthRecordDialogState
   late TextEditingController _bloodSugarController;
   late TextEditingController _symptomsController;
 
-  bool _isProcessing = false; // Untuk loading, nyegah biar user gak spam tombol
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -407,8 +377,8 @@ class _EditHealthRecordDialogState
     _heartRateController = TextEditingController(text: r.heartRate.toString());
     _bloodSugarController = TextEditingController(
       text: r.bloodSugar?.toString() ?? '',
-    ); // BARU
-    _symptomsController = TextEditingController(text: r.symptoms ?? ''); // BARU
+    );
+    _symptomsController = TextEditingController(text: r.symptoms ?? '');
   }
 
   @override
@@ -421,8 +391,8 @@ class _EditHealthRecordDialogState
     _systolicController.dispose();
     _diastolicController.dispose();
     _heartRateController.dispose();
-    _bloodSugarController.dispose(); // BARU
-    _symptomsController.dispose(); // BARU
+    _bloodSugarController.dispose();
+    _symptomsController.dispose();
     super.dispose();
   }
 
@@ -430,7 +400,6 @@ class _EditHealthRecordDialogState
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
-      // Untuk loading, nyegah biar user gak spam tombol
       _isProcessing = true;
     });
 
@@ -456,11 +425,9 @@ class _EditHealthRecordDialogState
       bloodSugar:
           _bloodSugarController.text.isNotEmpty
               ? double.tryParse(_bloodSugarController.text)
-              : null, // BARU
+              : null,
       symptoms:
-          _symptomsController.text.isNotEmpty
-              ? _symptomsController.text
-              : null, // BARU
+          _symptomsController.text.isNotEmpty ? _symptomsController.text : null,
     );
 
     try {
@@ -480,7 +447,6 @@ class _EditHealthRecordDialogState
         ),
       );
     } finally {
-      // Untuk loading, nyegah biar user gak spam tombol
       if (mounted) {
         setState(() {
           _isProcessing = false;
@@ -542,7 +508,7 @@ class _EditHealthRecordDialogState
                 _bloodSugarController,
                 'Gula Darah (mg/dL)',
                 isRequired: false,
-              ), // Opsional
+              ),
               const SizedBox(height: 12),
 
               Text(
@@ -581,11 +547,8 @@ class _EditHealthRecordDialogState
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blueAccent,
             foregroundColor: Theme.of(context).colorScheme.onPrimary,
-            disabledBackgroundColor: Colors.blueAccent.withOpacity(
-              0.5,
-            ), // Opsional: warna saat disabled
+            disabledBackgroundColor: Colors.blueAccent.withOpacity(0.5),
           ),
-          // Tampilkan CircularProgressIndicator jika _isProcessing true
           onPressed: _isProcessing ? null : _updateData,
           child:
               _isProcessing

@@ -11,8 +11,6 @@ import 'package:project/features/sholat/utils/sholat_time_tile.dart';
 import 'package:project/features/sholat/utils/sholat_utilities.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/sholat_notification_service.dart';
-import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tz;
 
 class SholatPage extends StatefulWidget {
   const SholatPage({super.key});

@@ -43,7 +43,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final fb_auth.FirebaseAuth _firebaseAuth = fb_auth.FirebaseAuth.instance;
 
-  String? _linkingVerificationId;
   bool _isLinkingPhone = false; // State untuk loading khusus phone linking
   final TextEditingController _otpController = TextEditingController();
 
@@ -373,188 +372,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     }
   }
 
-  Future<void> _startPhoneLinkingVerification(String phoneNumber) async {
-    if (!mounted) return;
-    // JANGAN set isLoadingProvider global di sini. Gunakan _isLinkingPhone.
-    setState(() {
-      _isLinkingPhone = true;
-    });
-    _showSnackBar(
-      'Mengirim kode OTP ke $phoneNumber...',
-      isError: false,
-      backgroundColor: Colors.orangeAccent,
-    );
-
-    final fbAuthInstance = ref.read(firebaseAuthProvider);
-    await fbAuthInstance.verifyPhoneNumber(
-      phoneNumber:
-          phoneNumber, // Nomor sudah diformat oleh pemanggil (_handleLinkPhoneNumber)
-      verificationCompleted: (fb_auth.PhoneAuthCredential credential) async {
-        if (!mounted) return;
-        _showSnackBar('Nomor terverifikasi otomatis.', isError: false);
-        await _completePhoneLinking(credential);
-        // setState untuk _isLinkingPhone sudah ada di _completePhoneLinking
-      },
-      verificationFailed: (fb_auth.FirebaseAuthException e) {
-        if (!mounted) return;
-        _showSnackBar('Gagal mengirim OTP: ${e.message}');
-        setState(() {
-          _isLinkingPhone = false;
-        });
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        if (!mounted) return;
-        _showSnackBar('Kode OTP telah dikirim.', isError: false);
-        setState(() {
-          _linkingVerificationId = verificationId;
-          // _isLinkingPhone sudah true
-        });
-        _showOtpDialogForLinking();
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        if (!mounted && _isLinkingPhone) {
-          setState(() {
-            _linkingVerificationId = verificationId;
-          });
-        }
-        print("OTP auto retrieval timeout. Verification ID: $verificationId");
-      },
-    );
-  }
-
-  void _showOtpDialogForLinking() {
-    if (!mounted) return;
-    _otpController.clear();
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (contextDialog) {
-        return AlertDialog(
-          title: Text('Masukkan Kode OTP'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text("Kode OTP telah dikirim ke nomor yang Anda masukkan."),
-              SizedBox(height: 10),
-              TextField(
-                controller: _otpController,
-                keyboardType: TextInputType.number,
-                maxLength: 6,
-                decoration: InputDecoration(
-                  hintText: 'XXXXXX',
-                  counterText: "",
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(contextDialog).pop();
-                setState(() {
-                  _isLinkingPhone = false;
-                  _linkingVerificationId = null;
-                });
-              },
-              child: Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (_linkingVerificationId != null &&
-                    _otpController.text.trim().length == 6) {
-                  final credential = fb_auth.PhoneAuthProvider.credential(
-                    verificationId: _linkingVerificationId!,
-                    smsCode: _otpController.text.trim(),
-                  );
-                  Navigator.of(contextDialog).pop();
-                  await _completePhoneLinking(credential);
-                } else {
-                  _showSnackBar(
-                    "Harap masukkan kode OTP 6 digit.",
-                    isError: true,
-                  );
-                }
-              },
-              child: Text('Verifikasi & Tautkan'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _completePhoneLinking(
-    fb_auth.PhoneAuthCredential credential,
-  ) async {
-    if (!mounted) return;
-    // JANGAN set isLoadingProvider global. _isLinkingPhone sudah true.
-    try {
-      await ref
-          .read(authProvider.notifier)
-          .linkPhoneNumberToCurrentUser(credential);
-      _showSnackBar(
-        'Nomor telepon berhasil ditautkan sebagai metode login!',
-        isError: false,
-      );
-      await ref.read(userProfileProvider.notifier).loadProfile();
-    } on Exception catch (e) {
-      _showSnackBar(
-        'Gagal menautkan nomor telepon: ${e.toString().replaceFirst("Exception: ", "")}',
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLinkingPhone = false;
-          _linkingVerificationId = null;
-          _otpController.clear();
-        });
-      }
-    }
-  }
-
-  // FUNGSI BARU untuk tombol verifikasi telepon
-  Future<void> _handleLinkPhoneNumber() async {
-    final newPhoneRaw = _phoneNumberController.text.trim();
-    if (newPhoneRaw.isEmpty) {
-      _showSnackBar('Masukkan nomor telepon untuk diverifikasi dan ditautkan.');
-      return;
-    }
-
-    String formattedPhoneNumber = newPhoneRaw;
-    if (formattedPhoneNumber.startsWith('0')) {
-      formattedPhoneNumber = '+62${formattedPhoneNumber.substring(1)}';
-    } else if (!formattedPhoneNumber.startsWith('+')) {
-      _showSnackBar(
-        'Format nomor telepon tidak valid. Gunakan 08xx atau +628xx.',
-      );
-      return;
-    }
-
-    final currentUser = _firebaseAuth.currentUser;
-    if (currentUser == null) {
-      _showSnackBar('User tidak terautentikasi.');
-      return;
-    }
-
-    final isAlreadyLinkedWithThisNumber = currentUser.providerData.any(
-      (userInfo) =>
-          userInfo.providerId == fb_auth.PhoneAuthProvider.PROVIDER_ID &&
-          userInfo.phoneNumber == formattedPhoneNumber,
-    );
-
-    if (isAlreadyLinkedWithThisNumber) {
-      _showSnackBar(
-        'Nomor telepon ini sudah terverifikasi dan tertaut ke akun Anda.',
-        isError: false,
-        backgroundColor: Colors.blueAccent,
-      );
-      return;
-    }
-    // Tidak perlu set _isLinkingPhone di sini, akan di-set oleh _startPhoneLinkingVerification
-    await _startPhoneLinkingVerification(formattedPhoneNumber);
-  }
-
-  // --- MODIFIKASI _saveChanges ---
   Future<void> _saveChanges() async {
     if (!_formKey.currentState!.validate()) {
       _showSnackBar('Harap perbaiki error pada form.');
@@ -588,7 +405,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       );
       if (finalPhotoUrl == null) {
         photoUploadSuccess = false;
-        // JANGAN hentikan proses, biarkan data lain tersimpan. Foto gagal diupdate.
         _showSnackBar(
           'Foto profil gagal diunggah, data lain tetap akan disimpan.',
         );
@@ -611,7 +427,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       await ref
           .read(userProfileProvider.notifier)
           .updateProfile(
-            // .isNotEmpty ? {var} : null berarti Simpan null jika kosong
             email: newEmail,
             name: newName,
             phone: newPhone.isNotEmpty ? newPhone : null,
@@ -647,48 +462,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     }
   }
 
-  Future<void> _saveChangesEmail() async {
-    if (!_formKey.currentState!.validate()) {
-      _showSnackBar('Harap perbaiki error pada form.');
-      return;
-    }
-    if (!mounted) return;
-
-    ref.read(isLoadingProvider.notifier).state =
-        true; // Loading utama untuk simpan profil
-    final currentUser = _firebaseAuth.currentUser;
-
-    if (currentUser == null) {
-      _showSnackBar('User tidak terautentikasi.');
-      if (mounted) ref.read(isLoadingProvider.notifier).state = false;
-      return;
-    }
-
-    final newEmail = _emailController.text.trim();
-
-    try {
-      await ref
-          .read(userProfileProvider.notifier)
-          .updateProfile(email: newEmail);
-
-      if (mounted) {
-        Navigator.of(context).pop(true);
-      }
-    } catch (e) {
-      _showSnackBar(
-        'Gagal memperbarui profil: ${e.toString().replaceFirst("Exception: ", "")}',
-      );
-    } finally {
-      if (mounted) {
-        ref.read(isLoadingProvider.notifier).state = false;
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(isLoadingProvider);
-    // Loading utama untuk simpan profil
     final bool isGoogleEmail =
         _firebaseAuth.currentUser?.providerData.any(
           (p) =>
@@ -711,25 +487,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         _isNewEmailFieldValid &&
         !isGoogleEmail &&
         _newEmailController.text.trim() != (currentUser?.email ?? '');
-
-    bool isCurrentPhoneLinked = false;
-    if (currentUser != null && _phoneNumberController.text.isNotEmpty) {
-      String currentFormattedPhone = _phoneNumberController.text.trim();
-      if (currentFormattedPhone.startsWith('0')) {
-        currentFormattedPhone = '+62${currentFormattedPhone.substring(1)}';
-      }
-      isCurrentPhoneLinked = currentUser.providerData.any(
-        (p) =>
-            p.providerId == fb_auth.PhoneAuthProvider.PROVIDER_ID &&
-            p.phoneNumber == currentFormattedPhone,
-      );
-    }
-
-    bool canUpdateAuthEmail =
-        !isGoogleEmail &&
-        _emailController.text.isNotEmpty &&
-        (_firebaseAuth.currentUser?.email != _emailController.text.trim() ||
-            !(_firebaseAuth.currentUser?.emailVerified ?? false));
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F8),
@@ -755,7 +512,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // ... (UI Avatar dan Nama tetap sama)
                     Stack(
                       alignment: Alignment.bottomRight,
                       children: [
@@ -961,14 +717,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                           child: TextFormField(
                             controller: _patientPhoneNumberController,
                             decoration: _fieldInputDecoration(
-                              hintText:
-                                  'Opsional',
+                              hintText: 'Opsional',
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return null; // Tidak wajib
+                                return null;
                               }
-                              // Validasi sederhana untuk nomor Indonesia (8-13 digit setelah 0/62)
                               if (!RegExp(r'^(0|(\+62))\d{8,13}$').hasMatch(
                                 value.replaceAll(RegExp(r'\s+|-'), ''),
                               )) {
@@ -985,15 +739,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
 
                             children: [
-                              // Icon di samping kiri (tetap di baris yang sama)
                               Icon(
                                 Icons.info_outline,
                                 size: 16,
                                 color: Colors.grey[500],
                               ),
-                              const SizedBox(
-                                width: 8,
-                              ), // Jarak antara icon dan teks
+                              const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   "Kosongkan field ini apabila pasien tidak memiliki nomor telepon",
@@ -1052,12 +803,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               onChanged: (_) => setState(() {}),
                             ),
                           ),
-                          // TOMBOL PERBARUI & VERIFIKASI EMAIL AKUN
                           Padding(
                             padding: const EdgeInsets.only(top: 10.0),
                             child:
                                 _isUpdatingEmail
-                                    ? Center(
+                                    ? const Center(
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
@@ -1070,11 +820,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                       ),
                                     )
                                     : ElevatedButton.icon(
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.email_outlined,
                                         size: 18,
                                       ),
-                                      label: Text(
+                                      label: const Text(
                                         'Perbarui & Verifikasi Email Akun',
                                       ),
                                       onPressed:
@@ -1096,116 +846,19 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                     ),
                           ),
                         ] else ...[
-                          // Tampilkan pesan ini jika email Google
                           Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: 8.0,
-                            ), // Disesuaikan paddingnya
+                            padding: const EdgeInsets.only(bottom: 8.0),
                             child: Text(
                               "Email akun Anda tertaut dengan Google, sehingga tidak dapat diubah.",
                               style: TextStyle(
                                 fontSize: 12,
-                                color:
-                                    Colors
-                                        .grey[700], // Warna sedikit diperjelas
+                                color: Colors.grey[700],
                               ),
                             ),
                           ),
                         ],
 
-                        // --- END BAGIAN EMAIL ---
                         const SizedBox(height: 24),
-
-                        // --- NOMOR TELEPON (FIELD + TOMBOL VERIFIKASI) !!!!!!!TIDAK DIPAKAI!!!!!! ---
-                        // _buildLabeledFormField(
-                        //   label: 'Akun Telepon Login ',
-                        //   child: TextFormField(
-                        //     controller: _phoneNumberController,
-                        //     keyboardType: TextInputType.phone,
-                        //     decoration: _fieldInputDecoration(
-                        //       hintText: 'Contoh: 08123456789',
-                        //     ), // Ubah hint ke format lokal
-                        //     validator: (value) {
-                        //       if (value == null || value.isEmpty) {
-                        //         return null; // Tidak wajib
-                        //       }
-                        //       // Validasi sederhana untuk nomor Indonesia (8-13 digit setelah 0/62)
-                        //       if (!RegExp(r'^(0|(\+62))\d{8,13}$').hasMatch(
-                        //         value.replaceAll(RegExp(r'\s+|-'), ''),
-                        //       )) {
-                        //         return 'Format nomor telepon tidak valid (08xx atau +628xx)';
-                        //       }
-                        //       return null;
-                        //     },
-                        //     onChanged: (_) {
-                        //       _validateForm(); // Panggil validate form umum
-                        //       setState(
-                        //         () {},
-                        //       ); // Rebuild untuk update status tombol link
-                        //     },
-                        //   ),
-                        // ),
-                        // // Tombol untuk Verifikasi & Tautkan Nomor Telepon
-                        // if (_phoneNumberController.text.isNotEmpty &&
-                        //     !isCurrentPhoneLinked &&
-                        //     !_isLinkingPhone)
-                        //   Padding(
-                        //     padding: const EdgeInsets.only(top: 8.0),
-                        //     child: ElevatedButton.icon(
-                        //       icon: Icon(
-                        //         Icons.phonelink_ring_outlined,
-                        //         size: 18,
-                        //       ),
-                        //       label: Text('Verifikasi & Tautkan Nomor Telepon'),
-                        //       onPressed:
-                        //           (isLoading || _isLinkingPhone)
-                        //               ? null
-                        //               : _handleLinkPhoneNumber,
-                        //       style: ElevatedButton.styleFrom(
-                        //         backgroundColor: Colors.teal, // Warna berbeda
-                        //         foregroundColor: Colors.white,
-                        //         textStyle: TextStyle(fontSize: 14),
-                        //         minimumSize: Size(double.infinity, 60),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // if (_isLinkingPhone) // Tampilkan loading khusus untuk telepon
-                        //   Padding(
-                        //     padding: const EdgeInsets.only(top: 8.0),
-                        //     child: Center(
-                        //       child: Row(
-                        //         mainAxisSize: MainAxisSize.min,
-                        //         children: [
-                        //           CircularProgressIndicator(strokeWidth: 2),
-                        //           SizedBox(width: 10),
-                        //           Text("Memproses OTP..."),
-                        //         ],
-                        //       ),
-                        //     ),
-                        //   ),
-                        // if (isCurrentPhoneLinked)
-                        //   Padding(
-                        //     padding: const EdgeInsets.only(top: 8.0, left: 4.0),
-                        //     child: Row(
-                        //       children: [
-                        //         Icon(
-                        //           Icons.check_circle,
-                        //           color: Colors.green,
-                        //           size: 24,
-                        //         ),
-                        //         SizedBox(width: 8),
-                        //         Flexible(
-                        //           child: Text(
-                        //             "Nomor ini sudah tertaut sebagai metode login",
-                        //             style: TextStyle(
-                        //               color: Colors.green,
-                        //               fontSize: 12,
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ),
                       ],
                     ),
                     const SizedBox(height: 32),
@@ -1214,9 +867,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               ),
             ),
           ),
-          // Loading utama (untuk _saveChanges)
-          if (isLoading &&
-              !_isLinkingPhone) // Hanya tampilkan jika bukan loading phone linking
+          if (isLoading && !_isLinkingPhone)
             Container(
               color: Colors.black.withOpacity(0.3),
               child: const Center(
@@ -1242,7 +893,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                 ),
                 elevation: 2,
               ),
-              // Tombol Simpan dinonaktifkan jika sedang loading utama ATAU sedang linking phone
               onPressed:
                   (_isFormValid &&
                           !isLoading &&
@@ -1265,14 +915,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     );
   }
 
-  // Fungsi _buildProfileInfoCard, _buildLabeledFormField, _fieldInputDecoration
-  // tetap sama seperti yang sudah Anda miliki dan telah diperbaiki sebelumnya.
-  // Pastikan fungsi-fungsi tersebut ada di sini.
   Widget _buildProfileInfoCard({
     String? title,
     required List<Widget> children,
   }) {
-    // (Pastikan ada)
     return Card(
       elevation: 1.5,
       margin: const EdgeInsets.only(bottom: 0),
@@ -1307,7 +953,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     bool showTooltip = false,
     String tooltipMessage = '',
   }) {
-    // (Pastikan ada)
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Column(
@@ -1359,7 +1004,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     bool readOnly = false,
     bool isDropdown = false,
   }) {
-    // (Pastikan ada)
     return InputDecoration(
       hintText: hintText,
       hintStyle: TextStyle(color: Colors.grey.shade500),
