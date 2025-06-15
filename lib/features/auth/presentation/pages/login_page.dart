@@ -3,17 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/core/providers/shared_providers.dart';
 import 'package:project/core/widgets/main_layout_widget.dart';
 import 'package:project/features/auth/presentation/pages/signup_page.dart';
-import 'package:project/features/auth/presentation/widgets/singin_form.dart';
+import 'package:project/features/auth/presentation/widgets/login_form.dart';
 import 'package:project/features/auth/providers/auth_provider.dart';
 
-class SignInPage extends ConsumerStatefulWidget {
-  const SignInPage({super.key});
+class LoginPage extends ConsumerStatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  ConsumerState<SignInPage> createState() => _SignInPageState();
+  ConsumerState<LoginPage> createState() => _SignInPageState();
 }
 
-class _SignInPageState extends ConsumerState<SignInPage> {
+class _SignInPageState extends ConsumerState<LoginPage> {
   late final ProviderSubscription authSub;
 
   @override
@@ -104,7 +104,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                           ),
                           const SizedBox(width: 10),
                           const Text(
-                            "CONTINUE WITH GOOGLE",
+                            "LANJUT DENGAN GMAIL",
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -121,7 +121,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                     ),
                     const SizedBox(height: 30),
 
-                    const SignInForm(),
+                    const LoginForm(),
 
                     const SizedBox(height: 30),
                     GestureDetector(

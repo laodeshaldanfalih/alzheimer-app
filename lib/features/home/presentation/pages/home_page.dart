@@ -5,9 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:project/core/widgets/geometric_shape_page_widget.dart';
 import 'package:project/core/widgets/live_clock_widget.dart';
-import 'package:project/features/GDS/presentation/gds_history_page.dart';
+import 'package:project/features/GDS/presentation/gds_tab_view_page.dart';
 import 'package:project/features/MMSE/presentation/mmse_history_page.dart';
+import 'package:project/features/MMSE/presentation/mmse_tab_view_page.dart';
 import 'package:project/features/SKILAS/presentation/skilas_history_page.dart';
+import 'package:project/features/SKILAS/presentation/skilas_tab_view_page.dart';
 import 'package:project/features/alzheimer_scan/presentation/pages/alzheimer_scan_page.dart';
 import 'package:project/features/article/data/article_ag_data.dart';
 import 'package:project/features/article/data/article_data.dart';
@@ -175,7 +177,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           'Fitur Aplikasi',
                           style: TextStyle(
                             fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                             color: Color(0xFF2D3142),
                           ),
                         ),
@@ -205,25 +207,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           width: 80,
                                           child: _buildFeatureItem(
                                             icon:
-                                                'assets/svgs/icon_screening_otak_hitam.svg',
-                                            label: 'Klasifikasi\nCitra MRI',
-                                            onTap:
-                                                () => Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder:
-                                                        (context) =>
-                                                            const AlzheimerScanPage(),
-                                                  ),
-                                                ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-
-                                        SizedBox(
-                                          width: 80,
-                                          child: _buildFeatureItem(
-                                            icon:
                                                 'assets/svgs/icon_kesehatan_medikal.svg',
                                             label: 'Dasbor\nKesehatan',
                                             onTap:
@@ -245,7 +228,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           child: _buildFeatureItem(
                                             icon:
                                                 'assets/svgs/icon_pengingat.svg',
-                                            label: 'Notifikasi\nPengingat',
+                                            label: 'Pengingat Jadwal Kegiatan',
                                             onTap:
                                                 () => Navigator.push(
                                                   context,
@@ -264,7 +247,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           child: _buildFeatureItem(
                                             icon:
                                                 'assets/svgs/icon_buletin.svg',
-                                            label: 'Artikel\nPanduan',
+                                            label:
+                                                'Panduan Aplikasi',
                                             onTap:
                                                 () => Navigator.push(
                                                   context,
@@ -272,6 +256,25 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                     builder:
                                                         (context) =>
                                                             const ArticleBuletinPage(),
+                                                  ),
+                                                ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+
+                                        SizedBox(
+                                          width: 80,
+                                          child: _buildFeatureItem(
+                                            icon:
+                                                'assets/svgs/icon_screening_otak_hitam.svg',
+                                            label: 'Klasifikasi\nCitra MRI',
+                                            onTap:
+                                                () => Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder:
+                                                        (context) =>
+                                                            const AlzheimerScanPage(),
                                                   ),
                                                 ),
                                           ),
@@ -376,10 +379,10 @@ class _HomePageState extends ConsumerState<HomePage> {
 
                         // Asesmen Geriatri Section
                         const Text(
-                          'Asesmen Geriatri',
+                          'Formulir Tes Penilaian Kesehatan Lansia',
                           style: TextStyle(
                             fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                             color: Color(0xFF2D3142),
                           ),
                         ),
@@ -389,7 +392,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             Expanded(
                               child: _buildAssessmentItem(
                                 icon: 'assets/svgs/icon_mmse.svg',
-                                title: 'MMSE',
+                                title: 'Tes Mini Mental (MMSE)',
                                 subtitle: 'Mini Mental State Exam',
                                 color: Colors.pink[100]!,
                                 onTap:
@@ -398,7 +401,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       MaterialPageRoute(
                                         builder:
                                             (context) =>
-                                                const MMSEHistoryPage(),
+                                                const MmseTabViewPage(),
                                       ),
                                     ),
                               ),
@@ -412,7 +415,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             Expanded(
                               child: _buildAssessmentItem(
                                 icon: 'assets/svgs/icon_gds.svg',
-                                title: 'GDS',
+                                title: 'Tes Skala Depresi (GDS)',
                                 subtitle: 'The Geriatric Depression Scale',
                                 color: Colors.purple[100]!,
                                 onTap: () {
@@ -420,7 +423,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     context,
                                     MaterialPageRoute(
                                       builder:
-                                          (context) => const GDSHistoryPage(),
+                                          (context) => const GdsTabViewPage(),
                                     ),
                                   );
                                 },
@@ -443,7 +446,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     MaterialPageRoute(
                                       builder:
                                           (context) =>
-                                              const SKILASHistoryPage(),
+                                              const SkilasTabViewPage(),
                                     ),
                                   );
                                 },
@@ -451,7 +454,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                             ),
                           ],
                         ),
-                        
 
                         const SizedBox(height: 24),
 
@@ -460,7 +462,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           'Artikel Panduan Aplikasi',
                           style: TextStyle(
                             fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                             color: Color(0xFF2D3142),
                           ),
                         ),
@@ -476,7 +478,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           'Artikel Panduan Kesehatan',
                           style: TextStyle(
                             fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                             color: Color(0xFF2D3142),
                           ),
                         ),
@@ -509,7 +511,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         splashColor: Colors.grey.withOpacity(0.3),
         highlightColor: Colors.grey.withOpacity(0.1),
         child: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(6),
           child: Column(
             children: [
               SvgPicture.asset(icon, height: 48, width: 48),
@@ -518,8 +520,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 label,
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 10, color: Color(0xFF2D3142)),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                softWrap: true,
+                overflow: TextOverflow.visible,
               ),
             ],
           ),

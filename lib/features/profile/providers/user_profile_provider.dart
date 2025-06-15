@@ -132,8 +132,11 @@ class UserProfileNotifier extends StateNotifier<UserProfile?> {
         if (phone != null) profileData['phone'] = phone;
         if (birthDate != null) profileData['birthDate'] = Timestamp.fromDate(birthDate);
         if (gender != null) profileData['gender'] = gender;
-        if (photoUrl == null) profileData['photoUrl'] = null;
-        else profileData['photoUrl'] = photoUrl;
+        if (photoUrl == null) {
+          profileData['photoUrl'] = null;
+        } else {
+          profileData['photoUrl'] = photoUrl;
+        }
 
         // Kita tidak mengizinkan role diubah dari sini, jadi tidak perlu ditambah ke profileData
         

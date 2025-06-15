@@ -682,8 +682,10 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
                   color: Color(0xFF2D3142),
                 ),
                 const SizedBox(width: 8),
+
                 Text(
-                  "Tanggal Penilaian: ${DateFormat('dd MMMM yyyy').format(entry.date)}",
+                  "Tanggal Penilaian: ${DateFormat('dd MMMM yyyy', 'id_ID').format(entry.date)}",
+
                   style: const TextStyle(
                     fontSize: 12,
                     color: Color(0xFF2D3142),

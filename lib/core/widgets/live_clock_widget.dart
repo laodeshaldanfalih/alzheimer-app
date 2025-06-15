@@ -50,7 +50,7 @@ class _LiveClockWidgetState extends State<LiveClockWidget> {
         Text(
           formattedTime,
           style: const TextStyle(
-            color: Color(0xffFFECCC),
+            color: Color.fromARGB(255, 255, 255, 255),
             fontSize: 36,
             fontWeight: FontWeight.bold,
           ),
@@ -58,7 +58,7 @@ class _LiveClockWidgetState extends State<LiveClockWidget> {
         Text(
           formattedDate,
           style: const TextStyle(
-            color: Color(0xffFFECCC),
+            color: Color.fromARGB(255, 255, 255, 255),
             fontSize: 12,
           ),
         ),

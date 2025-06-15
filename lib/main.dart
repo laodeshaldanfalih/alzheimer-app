@@ -9,11 +9,13 @@ import 'package:project/features/reminder/presentation/reminder_page.dart';
 import 'package:project/features/sholat/presentation/sholat_page.dart';
 import 'package:project/features/splash/presentation/splash_page.dart';
 import 'package:project/firebase_options.dart';
+import 'package:project/app_theme.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await FirebaseAppCheck.instance.activate();
@@ -104,7 +106,8 @@ class MyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       home: const SplashPage(),
       // home: HomePage(),
-      theme: ThemeData(primaryColor: Colors.white, primarySwatch: Colors.blue),
+      // theme: ThemeData(primaryColor: Colors.white, primarySwatch: Colors.blue),
+      theme: AppTheme.lightTheme,
     );
   }
 }

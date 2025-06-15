@@ -35,7 +35,6 @@ class _ArticleApplicationGuidePageState
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Search Bar (Tidak bisa di-scroll)
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: TextField(

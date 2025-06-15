@@ -194,7 +194,7 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
         _confidence = (data['confidence'] as num).toDouble() * 100;
       });
     } catch (e) {
-      _showSnack('Error saat upload: $e');
+      _showSnack('Error saat upload: Silahkan hubungi Admin bersangkutan');
     } finally {
       setState(() {
         _isChecking = false;
@@ -207,7 +207,7 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Pemeriksaan Alzheimer'),
+        title: const Text('Klasifikasi Citra MRI',style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),),
         backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(

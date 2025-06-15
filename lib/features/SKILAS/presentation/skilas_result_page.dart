@@ -35,7 +35,7 @@ class _SKILASResultPageState extends ConsumerState<SKILASResultPage> {
   String _getResultImage(bool isAnyAnswerWrong) {
     return isAnyAnswerWrong 
         ? 'assets/images/skilas_bad.png' 
-        : 'assets/images/skilas_good.png';
+        : 'assets/images/skilas_good1.png';
   }
 
   Color _getResultColor(bool isAnyAnswerWrong) {

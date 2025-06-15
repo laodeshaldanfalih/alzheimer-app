@@ -143,7 +143,7 @@ class _WordScramblePageState extends State<WordScramblePage> {
                             ),
                           ),
                           child: const Text(
-                            'Mulai Bermain',
+                            'Langsung Mulai Bermain',
                             style: TextStyle(color: Colors.white),
                           ),
                           onPressed: () {

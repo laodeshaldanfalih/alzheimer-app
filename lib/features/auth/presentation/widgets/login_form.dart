@@ -5,14 +5,14 @@ import 'package:project/features/auth/presentation/pages/signup_page.dart';
 import 'package:project/features/auth/providers/auth_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class SignInForm extends ConsumerStatefulWidget {
-  const SignInForm({super.key});
+class LoginForm extends ConsumerStatefulWidget {
+  const LoginForm({super.key});
 
   @override
-  ConsumerState<SignInForm> createState() => _SignInFormState();
+  ConsumerState<LoginForm> createState() => _SignInFormState();
 }
 
-class _SignInFormState extends ConsumerState<SignInForm> {
+class _SignInFormState extends ConsumerState<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();

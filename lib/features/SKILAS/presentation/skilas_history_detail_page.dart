@@ -151,7 +151,7 @@ class SKILASHistoryDetailPage extends ConsumerWidget {
                     pw.Divider(height: 20, color: PdfColors.grey300),
                     _buildProfileInfoRowPDF(
                       'Tanggal Penilaian',
-                      DateFormat('dd MMMM yyyy', 'id_ID').format(entry.date),
+                      DateFormat('dd MMMM yyyy').format(entry.date),
                     ),
                     pw.Row(
                       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -595,7 +595,7 @@ class SKILASHistoryDetailPage extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  "Tanggal Penilaian: ${DateFormat('dd MMMM yyyy', 'id_ID').format(entry.date)}",
+                  "Tanggal Penilaian: ${DateFormat('dd MMMM yyyy').format(entry.date)}",
                   style: const TextStyle(
                     fontSize: 12,
                     color: Color(0xFF2D3142),

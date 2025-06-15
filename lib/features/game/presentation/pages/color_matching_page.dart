@@ -16,7 +16,7 @@ class _ColorGameState extends State<ColorMatchingPage> {
     '🥬': Colors.green,
     '🍋': Colors.yellow,
     '🍎': Colors.red,
-    '🤎': Colors.brown,
+    '🟤': Colors.brown,
     '🥕': Colors.orange,
     '🍇': Colors.purple,
   };
@@ -175,7 +175,7 @@ class _ColorGameState extends State<ColorMatchingPage> {
                       const Text(
                         "🎉 KAMU MENANG!",
                         style: TextStyle(
-                          fontSize: 36,
+                          fontSize: 30,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),

@@ -15,8 +15,10 @@ class HealthPage extends StatelessWidget {
         backgroundColor: const Color(0xFFF9FAFB),
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: const Text('Dasbor Kesehatan'),
-          centerTitle: true,
+          title: const Text(
+            'Dasbor Kesehatan',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+          ),
           elevation: 0,
           bottom: const TabBar(
             indicatorSize: TabBarIndicatorSize.tab,

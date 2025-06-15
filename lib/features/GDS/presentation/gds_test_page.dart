@@ -16,21 +16,21 @@ class GDSTestPage extends ConsumerStatefulWidget {
 
 class _GDSTestPageState extends ConsumerState<GDSTestPage> {
   final List<String> questions = [
-    "Apakah Anda pada dasarnya puas dengan hidup Anda?",
-    "Apakah Anda telah melepaskan banyak kegiatan dan minat Anda?",
-    "Apakah Anda merasa hidup Anda kosong?",
-    "Apakah Anda sering merasa bosan?",
-    "Apakah Anda dalam suasana hati yang baik hampir sepanjang waktu?",
-    "Apakah Anda takut bahwa sesuatu yang buruk akan terjadi pada Anda?",
-    "Apakah Anda merasa bahagia hampir sepanjang waktu?",
-    "Apakah Anda sering merasa tidak berdaya?",
-    "Apakah Anda lebih suka tinggal di rumah daripada pergi keluar dan melakukan hal-hal baru?",
-    "Apakah Anda merasa memiliki lebih banyak masalah dengan ingatan daripada kebanyakan orang?",
-    "Apakah Anda berpikir bahwa sekarang ini adalah waktu yang indah untuk hidup?",
-    "Apakah Anda merasa tidak berharga seperti sekarang ini?",
-    "Apakah Anda merasa penuh energi?",
-    "Apakah Anda merasa situasi Anda tidak ada harapan?",
-    "Apakah Anda berpikir bahwa kebanyakan orang lebih baik daripada Anda?",
+    "1. Apakah Anda pada dasarnya puas dengan hidup Anda?",
+    "2. Apakah Anda telah melepaskan banyak kegiatan dan minat Anda?",
+    "3. Apakah Anda merasa hidup Anda kosong?",
+    "4. Apakah Anda sering merasa bosan?",
+    "5. Apakah Anda dalam suasana hati yang baik hampir sepanjang waktu?",
+    "6. Apakah Anda takut bahwa sesuatu yang buruk akan terjadi pada Anda?",
+    "7. Apakah Anda merasa bahagia hampir sepanjang waktu?",
+    "8. Apakah Anda sering merasa tidak berdaya?",
+    "9. Apakah Anda lebih suka tinggal di rumah daripada pergi keluar dan melakukan hal-hal baru?",
+    "10. Apakah Anda merasa memiliki lebih banyak masalah dengan ingatan daripada kebanyakan orang?",
+    "11. Apakah Anda berpikir bahwa sekarang ini adalah waktu yang indah untuk hidup?",
+    "12. Apakah Anda merasa tidak berharga seperti sekarang ini?",
+    "13. Apakah Anda merasa penuh energi?",
+    "14. Apakah Anda merasa situasi Anda tidak ada harapan?",
+    "15. Apakah Anda berpikir bahwa kebanyakan orang lebih baik daripada Anda?",
   ];
 
   final List<String?> answers = List.filled(15, null);

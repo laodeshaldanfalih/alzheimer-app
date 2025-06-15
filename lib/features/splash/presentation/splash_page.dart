@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/core/widgets/main_layout_widget.dart';
-import 'package:project/features/auth/presentation/pages/signin_page.dart';
+import 'package:project/features/auth/presentation/pages/login_page.dart';
 import 'package:project/features/auth/providers/auth_provider.dart';
 
 class SplashPage extends ConsumerStatefulWidget {
@@ -30,7 +30,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     } else {
       Navigator.of(
         context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => const SignInPage()));
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const LoginPage()));
     }
   }
 

@@ -42,8 +42,19 @@ class ResultCardWidget extends StatelessWidget {
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              DateFormat('dd MMMM yyyy', 'id_ID').format(date),
+              style: TextStyle(
+                color: Colors.grey.shade700,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -61,7 +72,7 @@ class ResultCardWidget extends StatelessWidget {
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,21 +85,13 @@ class ResultCardWidget extends StatelessWidget {
                             child: Text(
                               title,
                               style: const TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black87,
                               ),
                             ),
                           ),
                         ],
-                      ),
-                      Text(
-                        DateFormat('dd MMMM yyyy').format(date),
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
                       ),
                     ],
                   ),
@@ -141,12 +144,17 @@ class ResultCardWidget extends StatelessWidget {
                   ),
               ],
             ),
-            // Hapus Row kosong di bawah jika tidak digunakan lagi
-            // const SizedBox(height: 8),
-            // const Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [],
-            // ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              subtitle,
+              style: TextStyle(
+                color: Colors.grey.shade700,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
       ),

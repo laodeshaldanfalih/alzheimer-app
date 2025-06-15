@@ -18,44 +18,66 @@ class GDSHistoryDetailPage extends ConsumerWidget {
   static const List<String> questions = [
     "Apakah Anda pada dasarnya puas dengan hidup Anda?",
     "Apakah Anda telah melepaskan banyak kegiatan dan minat Anda?",
-    "Apakah Anda merasa hidup Anda penuh kehampaan?",
+    "Apakah Anda merasa hidup Anda kosong?",
     "Apakah Anda sering merasa bosan?",
     "Apakah Anda dalam suasana hati yang baik hampir sepanjang waktu?",
     "Apakah Anda takut bahwa sesuatu yang buruk akan terjadi pada Anda?",
     "Apakah Anda merasa bahagia hampir sepanjang waktu?",
-    "Apakah Anda sering merasa elmah atau tak berdaya?",
+    "Apakah Anda sering merasa tidak berdaya?",
     "Apakah Anda lebih suka tinggal di rumah daripada pergi keluar dan melakukan hal-hal baru?",
     "Apakah Anda merasa memiliki lebih banyak masalah dengan ingatan daripada kebanyakan orang?",
     "Apakah Anda berpikir bahwa sekarang ini adalah waktu yang indah untuk hidup?",
-    "Apakah Anda merasa tidak berharga terhadap diri sendiri yang sekarang?",
+    "Apakah Anda merasa tidak berharga seperti sekarang ini?",
     "Apakah Anda merasa penuh energi?",
-    "Apakah Anda merasa situasi hidup Anda tak ada harapan?",
+    "Apakah Anda merasa situasi Anda tidak ada harapan?",
     "Apakah Anda berpikir bahwa kebanyakan orang lebih baik daripada Anda?",
   ];
 
-  Color get statusColor =>
-      entry.isDepressed ? const Color(0xFFD32F2F) : const Color(0xFF388E3C);
-  String get statusText => entry.isDepressed ? 'Terindikasi Depresi' : 'Normal';
+  Color getStatusColor(int score) {
+    if (score <= 5) {
+      return const Color(0xFF4CAF50);
+    } else if (score > 5 && score <= 10) {
+      return const Color(0xFFFFA000);
+    } else if (score > 10) {
+      return const Color(0xFFD32F2F);
+    } else {
+      return Colors.blueGrey;
+    }
+  }
+
+  String getStatusText(int score) {
+    if (score <= 5) {
+      return 'Normal';
+    } else if (score > 5 && score <= 10) {
+      return 'Ada Indikasi Depresi';
+    } else if (score > 10) {
+      return 'Terindikasi Depresi';
+    } else {
+      return 'assets/images/unknown.png';
+    }
+  }
 
   // Fungsi PDF tidak diubah
   Future<void> _generateAndSharePDF(BuildContext context, WidgetRef ref) async {
     final userProfile = ref.read(userProfileProvider);
+    final statusText = getStatusText(entry.score);
 
     if (userProfile == null || !userProfile.isProfileComplete) {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Profil Belum Lengkap'),
-          content: const Text(
-            'Anda harus melengkapi data diri pasien terlebih dahulu pada halaman profil untuk mengunduh hasil test.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
+        builder:
+            (context) => AlertDialog(
+              title: const Text('Profil Belum Lengkap'),
+              content: const Text(
+                'Anda harus melengkapi data diri pasien terlebih dahulu pada halaman profil untuk mengunduh hasil test.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
       return;
     }
@@ -91,14 +113,20 @@ class GDSHistoryDetailPage extends ConsumerWidget {
                 padding: const pw.EdgeInsets.all(16),
                 decoration: pw.BoxDecoration(
                   border: pw.Border.all(color: PdfColors.grey300),
-                  borderRadius: const pw.BorderRadius.all(pw.Radius.circular(10)),
+                  borderRadius: const pw.BorderRadius.all(
+                    pw.Radius.circular(10),
+                  ),
                 ),
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
                       'Informasi Pasien',
-                      style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: PdfColors.blueGrey700),
+                      style: pw.TextStyle(
+                        fontSize: 18,
+                        fontWeight: pw.FontWeight.bold,
+                        color: PdfColors.blueGrey700,
+                      ),
                     ),
                     pw.Divider(height: 20),
                     if (profileImage != null && profileImage.existsSync())
@@ -114,8 +142,18 @@ class GDSHistoryDetailPage extends ConsumerWidget {
                       ),
                     pw.SizedBox(height: 10),
                     _buildProfileInfoRow('Nama', userProfile.name ?? '-'),
-                    _buildProfileInfoRow('Gender', userProfile.gender == 'Male' ? 'Laki-laki' : 'Perempuan'),
-                    _buildProfileInfoRow('Tanggal Lahir', userProfile.birthDate != null ? DateFormat('dd MMMM yyyy').format(userProfile.birthDate!) : '-'),
+                    _buildProfileInfoRow(
+                      'Gender',
+                      userProfile.gender == 'Male' ? 'Laki-laki' : 'Perempuan',
+                    ),
+                    _buildProfileInfoRow(
+                      'Tanggal Lahir',
+                      userProfile.birthDate != null
+                          ? DateFormat(
+                            'dd MMMM yyyy',
+                          ).format(userProfile.birthDate!)
+                          : '-',
+                    ),
                   ],
                 ),
               ),
@@ -124,29 +162,47 @@ class GDSHistoryDetailPage extends ConsumerWidget {
                 padding: const pw.EdgeInsets.all(16),
                 decoration: pw.BoxDecoration(
                   border: pw.Border.all(color: PdfColors.grey300),
-                  borderRadius: const pw.BorderRadius.all(pw.Radius.circular(10)),
+                  borderRadius: const pw.BorderRadius.all(
+                    pw.Radius.circular(10),
+                  ),
                 ),
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    pw.Text('Hasil Penilaian', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: PdfColors.blueGrey700)),
+                    pw.Text(
+                      'Hasil Penilaian',
+                      style: pw.TextStyle(
+                        fontSize: 18,
+                        fontWeight: pw.FontWeight.bold,
+                        color: PdfColors.blueGrey700,
+                      ),
+                    ),
                     pw.Divider(height: 20),
-                    _buildProfileInfoRow('Tanggal Penilaian', DateFormat('dd MMMM yyyy').format(entry.date)),
+                    _buildProfileInfoRow(
+                      'Tanggal Penilaian',
+                      DateFormat('dd MMMM yyyy', 'id_ID').format(entry.date),
+                    ),
                     _buildProfileInfoRow('Skor', entry.score.toString()),
                     pw.Row(
                       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                       children: [
-                        pw.Text("Status", style: const pw.TextStyle(fontSize: 12)),
+                        pw.Text(
+                          "Status",
+                          style: const pw.TextStyle(fontSize: 12),
+                        ),
                         pw.Text(
                           statusText,
                           style: pw.TextStyle(
                             fontSize: 12,
                             fontWeight: pw.FontWeight.bold,
-                            color: entry.isDepressed ? PdfColors.red700 : PdfColors.green700,
+                            color:
+                                entry.isDepressed
+                                    ? PdfColors.red700
+                                    : PdfColors.green700,
                           ),
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -163,7 +219,14 @@ class GDSHistoryDetailPage extends ConsumerWidget {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text('Jawaban Pertanyaan', style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold, color: PdfColors.blueGrey800)),
+              pw.Text(
+                'Jawaban Pertanyaan',
+                style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.blueGrey800,
+                ),
+              ),
               pw.SizedBox(height: 20),
               _buildSectionPDF('Geriatric Depression Scale (GDS)', [
                 ...List.generate(
@@ -181,10 +244,14 @@ class GDSHistoryDetailPage extends ConsumerWidget {
     );
 
     final output = await getTemporaryDirectory();
-    final file = File('${output.path}/gds_result_${entry.date.millisecondsSinceEpoch}.pdf');
+    final file = File(
+      '${output.path}/gds_result_${entry.date.millisecondsSinceEpoch}.pdf',
+    );
     await file.writeAsBytes(await pdf.save());
 
-    await Share.shareXFiles([XFile(file.path)], text: 'Hasil Test GDS - ${userProfile.name ?? 'Pasien'}');
+    await Share.shareXFiles([
+      XFile(file.path),
+    ], text: 'Hasil Test GDS - ${userProfile.name ?? 'Pasien'}');
   }
 
   pw.Widget _buildSectionPDF(String title, List<pw.Widget> children) {
@@ -205,34 +272,48 @@ class GDSHistoryDetailPage extends ConsumerWidget {
     );
   }
 
-pw.Widget _buildQuestionAnswerPDF(String question, String? answer) {
-  return pw.Container( // 1. Bungkus dengan Container
-    color: PdfColors.white, // 2. Beri warna latar belakang
-    child: pw.Column(
-      children: [
-        pw.Padding( // 3. Tambahkan Padding agar teks tidak menempel
-          padding: const pw.EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-          child: pw.Row(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Expanded(flex: 4, child: pw.Text(question, style: const pw.TextStyle(fontSize: 11))),
-              pw.SizedBox(width: 10),
-              pw.Expanded(
-                flex: 1,
-                child: pw.Text(
-                  answer ?? "-",
-                  style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold),
-                  textAlign: pw.TextAlign.right,
+  pw.Widget _buildQuestionAnswerPDF(String question, String? answer) {
+    return pw.Container(
+      // 1. Bungkus dengan Container
+      color: PdfColors.white, // 2. Beri warna latar belakang
+      child: pw.Column(
+        children: [
+          pw.Padding(
+            // 3. Tambahkan Padding agar teks tidak menempel
+            padding: const pw.EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            child: pw.Row(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Expanded(
+                  flex: 4,
+                  child: pw.Text(
+                    question,
+                    style: const pw.TextStyle(fontSize: 11),
+                  ),
                 ),
-              ),
-            ],
+                pw.SizedBox(width: 10),
+                pw.Expanded(
+                  flex: 1,
+                  child: pw.Text(
+                    answer ?? "-",
+                    style: pw.TextStyle(
+                      fontSize: 11,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                    textAlign: pw.TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        pw.Divider(color: PdfColors.grey200, height: 1), // Atur ulang tinggi Divider
-      ],
-    ),
-  );
-}
+          pw.Divider(
+            color: PdfColors.grey200,
+            height: 1,
+          ), // Atur ulang tinggi Divider
+        ],
+      ),
+    );
+  }
 
   pw.Widget _buildProfileInfoRow(String label, String value) {
     return pw.Padding(
@@ -241,7 +322,10 @@ pw.Widget _buildQuestionAnswerPDF(String question, String? answer) {
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
           pw.Text(label, style: const pw.TextStyle(fontSize: 12)),
-          pw.Text(value, style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+          pw.Text(
+            value,
+            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+          ),
         ],
       ),
     );
@@ -260,7 +344,11 @@ pw.Widget _buildQuestionAnswerPDF(String question, String? answer) {
         ),
         title: const Text(
           "Laporan Hasil Penilaian",
-          style: TextStyle(color: Color(0xFF2D3142), fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Color(0xFF2D3142),
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         actions: [
           IconButton(
@@ -305,9 +393,8 @@ pw.Widget _buildQuestionAnswerPDF(String question, String? answer) {
       color: Colors.white,
       elevation: 0.5,
       margin: EdgeInsets.zero,
-      
+
       shape: RoundedRectangleBorder(
-      
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: Colors.grey.shade200),
       ),
@@ -318,12 +405,30 @@ pw.Widget _buildQuestionAnswerPDF(String question, String? answer) {
           children: [
             const Text(
               "Informasi Pasien",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2D3142)),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2D3142),
+              ),
             ),
             const Divider(height: 24),
-            _buildInfoRow(Icons.person_outline, "Nama Pasien", userProfile.name ?? "-"),
-            _buildInfoRow(Icons.cake_outlined, "Tanggal Lahir", userProfile.birthDate != null ? DateFormat('dd MMMM yyyy').format(userProfile.birthDate!) : "-"),
-            _buildInfoRow(Icons.wc_outlined, "Gender", userProfile.gender == 'Male' ? 'Laki-laki' : 'Perempuan'),
+            _buildInfoRow(
+              Icons.person_outline,
+              "Nama Pasien",
+              userProfile.name ?? "-",
+            ),
+            _buildInfoRow(
+              Icons.cake_outlined,
+              "Tanggal Lahir",
+              userProfile.birthDate != null
+                  ? DateFormat('dd MMMM yyyy').format(userProfile.birthDate!)
+                  : "-",
+            ),
+            _buildInfoRow(
+              Icons.wc_outlined,
+              "Gender",
+              userProfile.gender == 'Male' ? 'Laki-laki' : 'Perempuan',
+            ),
           ],
         ),
       ),
@@ -337,15 +442,27 @@ pw.Widget _buildQuestionAnswerPDF(String question, String? answer) {
         children: [
           Icon(icon, color: Colors.blue.shade700, size: 20),
           const SizedBox(width: 12),
-          Text(label, style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
+          Text(
+            label,
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          ),
           const Spacer(),
-          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF2D3142))),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2D3142),
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildScoreCard() {
+    final statusColor = getStatusColor(entry.score);
+    final statusText = getStatusText(entry.score);
     return Card(
       elevation: 2,
       margin: EdgeInsets.zero,
@@ -365,22 +482,43 @@ pw.Widget _buildQuestionAnswerPDF(String question, String? answer) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text("Status Kesehatan Mental", style: TextStyle(fontSize: 14, color: Color(0xFF2D3142), fontWeight: FontWeight.w500)),
+            const Text(
+              "Status Kesehatan Mental",
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF2D3142),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(20)),
+              decoration: BoxDecoration(
+                color: statusColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
               child: Text(
                 statusText.toUpperCase(),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
               ),
             ),
             const SizedBox(height: 24),
-            const Text("Skor GDS", style: TextStyle(fontSize: 14, color: Colors.grey)),
+            const Text(
+              "Skor GDS",
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
             const SizedBox(height: 4),
             Text(
               entry.score.toString(),
-              style: const TextStyle(fontSize: 52, fontWeight: FontWeight.bold, color: Color(0xFF2D3142)),
+              style: const TextStyle(
+                fontSize: 52,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2D3142),
+              ),
             ),
             Text(
               "dari ${questions.length} total poin",
@@ -392,11 +530,18 @@ pw.Widget _buildQuestionAnswerPDF(String question, String? answer) {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.calendar_today_outlined, size: 16, color: Color(0xFF2D3142)),
+                const Icon(
+                  Icons.calendar_today_outlined,
+                  size: 16,
+                  color: Color(0xFF2D3142),
+                ),
                 const SizedBox(width: 8),
                 Text(
-                  "Tanggal Penilaian: ${DateFormat('dd MMMM yyyy').format(entry.date)}",
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF2D3142)),
+                  "Tanggal Penilaian: ${DateFormat('dd MMMM yyyy', 'id_ID').format(entry.date)}",
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF2D3142),
+                  ),
                 ),
               ],
             ),
@@ -420,7 +565,14 @@ pw.Widget _buildQuestionAnswerPDF(String question, String? answer) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2D3142))),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2D3142),
+              ),
+            ),
             const SizedBox(height: 16),
             ...children,
           ],
@@ -429,7 +581,11 @@ pw.Widget _buildQuestionAnswerPDF(String question, String? answer) {
     );
   }
 
-  Widget _buildQuestionAnswer(String question, String? answer, {bool isLast = false}) {
+  Widget _buildQuestionAnswer(
+    String question,
+    String? answer, {
+    bool isLast = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -440,22 +596,25 @@ pw.Widget _buildQuestionAnswerPDF(String question, String? answer) {
               flex: 4,
               child: Text(
                 question,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade800, height: 1.4),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade800,
+                  height: 1.4,
+                ),
               ),
             ),
             const SizedBox(width: 16),
             Text(
               answer ?? "-",
-              style: TextStyle(fontSize: 14, color: Colors.blue.shade800, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.blue.shade800,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
-        if (!isLast)
-          const Divider(
-            height: 28,
-          )
-        else
-          const SizedBox(height: 12),
+        if (!isLast) const Divider(height: 28) else const SizedBox(height: 12),
       ],
     );
   }

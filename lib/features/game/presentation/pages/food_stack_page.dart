@@ -223,7 +223,7 @@ class _FoodStackPageState extends State<FoodStackPage> {
                                     numberOfParticles: 30,
                                     maxBlastForce: 10,
                                     minBlastForce: 5,
-                                    colors: [
+                                    colors: const [
                                       Colors.green,
                                       Colors.blue,
                                       Colors.pink,
@@ -296,7 +296,7 @@ class _FoodStackPageState extends State<FoodStackPage> {
           if (showWinOverlay)
             AnimatedOpacity(
               opacity: overlayOpacity,
-              duration: Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 500),
               curve: Curves.easeInOut,
               child: Positioned.fill(
                 child: Container(
@@ -305,10 +305,10 @@ class _FoodStackPageState extends State<FoodStackPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           "🎉 KAMU MENANG!",
                           style: TextStyle(
-                            fontSize: 36,
+                            fontSize: 30,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
@@ -332,7 +332,7 @@ class _FoodStackPageState extends State<FoodStackPage> {
           if (showLoseOverlay)
             AnimatedOpacity(
               opacity: overlayOpacity,
-              duration: Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 500),
               curve: Curves.easeInOut,
               child: Positioned.fill(
                 child: Container(
@@ -341,7 +341,7 @@ class _FoodStackPageState extends State<FoodStackPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           "😓 Coba Lagi!",
                           style: TextStyle(
                             fontSize: 32,
@@ -349,7 +349,7 @@ class _FoodStackPageState extends State<FoodStackPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: () {
                             setState(() {
@@ -357,7 +357,7 @@ class _FoodStackPageState extends State<FoodStackPage> {
                               resetGame();
                             });
                           },
-                          child: Text("Ulangi"),
+                          child: const Text("Ulangi"),
                         ),
                       ],
                     ),

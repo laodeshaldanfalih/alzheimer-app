@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:project/core/providers/shared_providers.dart';
-import 'package:project/features/auth/presentation/pages/signin_page.dart';
+import 'package:project/features/auth/presentation/pages/login_page.dart';
 import 'package:project/features/auth/providers/auth_provider.dart';
 import 'package:project/features/profile/presentation/edit_profile_page.dart';
 import 'package:project/features/profile/providers/user_profile_provider.dart';
@@ -185,7 +185,7 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
                       rootNavigator: true,
                     ).pushAndRemoveUntil(
                       MaterialPageRoute(
-                        builder: (context) => const SignInPage(),
+                        builder: (context) => const LoginPage(),
                       ),
                       (Route<dynamic> route) => false,
                     );
@@ -428,7 +428,7 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
                       ),
                       _buildProfileDetailItem(
                         'Nomor Telepon Pasien',
-                        userProfileState.patientPhone ?? '-',
+                        userProfileState.patientPhone ?? '',
                       ),
                     ]),
                     const SizedBox(height: 20),
@@ -489,7 +489,7 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
               title,
               style: const TextStyle(
                 fontSize: 17,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
                 color: Color(0xFF4B5563),
               ),
             ),
@@ -518,7 +518,7 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
                 fontSize: isTitleAsLabel ? 14 : 13,
                 color: Colors.grey[700],
                 fontWeight:
-                    isTitleAsLabel ? FontWeight.w500 : FontWeight.normal,
+                    isTitleAsLabel ? FontWeight.bold : FontWeight.normal,
               ),
             ),
             SizedBox(height: isTitleAsLabel ? 8 : 6),
@@ -532,10 +532,10 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
               ),
             ),
             child: Text(
-              value.isEmpty ? '-' : value,
+              value.isEmpty ? '' : value,
               style: const TextStyle(
                 fontSize: 15,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
                 color: Color(0xFF4B5563),
               ),
             ),

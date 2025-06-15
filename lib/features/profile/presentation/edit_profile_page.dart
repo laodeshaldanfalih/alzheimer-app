@@ -747,7 +747,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  "Kosongkan field ini apabila pasien tidak memiliki nomor telepon",
+                                  "Hapus tanda (-) atau kosongkan field ini apabila pasien tidak memiliki nomor telepon",
                                   style: Theme.of(
                                     context,
                                   ).textTheme.labelMedium?.copyWith(

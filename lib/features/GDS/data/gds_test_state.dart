@@ -13,7 +13,7 @@ class GDSTestResult {
 }
 
 class GDSTestState extends ChangeNotifier {
-  List<GDSTestResult> _testHistory = [];
+  final List<GDSTestResult> _testHistory = [];
   int _currentScore = 0;
 
   List<GDSTestResult> get testHistory => _testHistory;

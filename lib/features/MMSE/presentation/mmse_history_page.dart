@@ -89,11 +89,11 @@ class _MMSEHistoryPageState extends ConsumerState<MMSEHistoryPage> {
     final sortedHistory = historyState.sortedHistory;
 
     return Scaffold(
-      appBar: CustomAppBarWidget(
-        title: "Mini-Mental State Exam (MMSE)",
-        showCloseButton: true,
-        onClose: () => Navigator.of(context).popUntil((route) => route.isFirst),
-      ),
+      // appBar: CustomAppBarWidget(
+      //   title: "Mini-Mental State Exam (MMSE)",
+      //   showCloseButton: true,
+      //   onClose: () => Navigator.of(context).popUntil((route) => route.isFirst),
+      // ),
       backgroundColor: const Color(0xFFF8FAFB),
       body: SafeArea(
         child: Column(
@@ -102,7 +102,7 @@ class _MMSEHistoryPageState extends ConsumerState<MMSEHistoryPage> {
             const Padding(
               padding: EdgeInsets.only(left: 24, top: 24, bottom: 8),
               child: Text(
-                "Riwayat Test",
+                "Riwayat Tes MMSE",
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 20,
@@ -143,6 +143,31 @@ class _MMSEHistoryPageState extends ConsumerState<MMSEHistoryPage> {
                 ),
               ),
             ),
+
+            const SizedBox(height: 8),
+
+            Padding(
+              padding: const EdgeInsets.only(left: 24, right: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+
+                children: [
+                  Icon(Icons.info_outline, size: 16, color: Colors.grey[500]),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      "Riwayat² yang muncul di bawah ini dapat dipencet untuk dilihat detailnya",
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+
             Expanded(
               child:
                   historyState.isLoading

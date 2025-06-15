@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/features/GDS/presentation/gds_tab_view_page.dart';
 import 'package:project/features/GDS/providers/gds_test_provider.dart';
 import 'package:project/features/GDS/providers/gds_history_provider.dart';
 import 'package:project/features/GDS/models/gds_history_entry.dart';
-import 'package:project/features/GDS/presentation/gds_history_page.dart';
 
 class GDSResultPage extends ConsumerStatefulWidget {
   const GDSResultPage({super.key});
@@ -35,34 +35,50 @@ class _GDSResultPageState extends ConsumerState<GDSResultPage> {
   }
 
   String _getResultTitle(int score) {
-    if (score < 5) {
-      return 'Pasien mendapatkan skor <5!';
+    if (score <= 5) {
+      return 'Pasien mendapatkan skor $score!\n Skornya ≤ 5';
+    } else if (score > 5 && score <= 10) {
+      return 'Pasien mendapatkan skor $score!\n Skornya diantara 5~10';
+    } else if (score < 10) {
+      return 'Pasien mendapatkan skor $score!\n Skornya > 10';
     } else {
-      return 'Pasien mendapatkan skor >5!';
+      return '-';
     }
   }
 
   String _getResultDescription(int score) {
-    if (score < 5) {
-      return 'Hasil tes menunjukkan bahwa kesehatan mental depresi Anda berada dalam kisaran normal. Tidak ada indikasi gangguan depresi yang signifikan pada tingkat ini. Terus pertahankan gaya hidup sehat untuk mendukung kesehatan.';
+    if (score <= 5) {
+      return 'Skor dengan kurang dari 5 menunjukkan bahwa kesehatan mental depresi Anda berada dalam kisaran normal. Tidak ada indikasi gangguan depresi yang signifikan pada tingkat ini. Terus pertahankan gaya hidup sehat untuk mendukung kesehatan.';
+    } else if (score > 5 && score <= 10) {
+      return 'Skor dengan 5~10 menunjukkan adanya keumngkinan kecil gejala depresi. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
+    } else if (score < 10) {
+      return 'Skor dengan lebih dari 10 menunjukkan kemungkinan adanya gejala depresi. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
     } else {
-      return 'Hasil tes menunjukkan kemungkinan adanya gejala depresi. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
+      return '-';
     }
   }
 
   String _getResultImage(int score) {
-    if (score < 5) {
+    if (score <= 5) {
       return 'assets/images/gds_happy.png';
-    } else {
+    } else if (score > 5 && score <= 10) {
       return 'assets/images/gds_sad.png';
+    } else if (score < 10) {
+      return 'assets/images/gds_very_bad.png';
+    } else {
+      return 'assets/images/unknown.png';
     }
   }
 
   Color _getResultColor(int score) {
-    if (score < 5) {
-      return const Color(0xFFB2E59E); // green
+    if (score <= 5) {
+      return const Color(0xFF4CAF50);
+    } else if (score > 5 && score <= 10) {
+      return const Color(0xFFFFD54F);
+    } else if (score < 10) {
+      return const Color(0xFFD32F2F);
     } else {
-      return const Color(0xFFFFE082); // yellow
+      return Colors.blueGrey;
     }
   }
 
@@ -97,7 +113,10 @@ class _GDSResultPageState extends ConsumerState<GDSResultPage> {
         body: Center(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 18.0,
+                vertical: 12,
+              ),
               child: Container(
                 width: double.infinity,
                 constraints: const BoxConstraints(maxWidth: 400),
@@ -112,7 +131,10 @@ class _GDSResultPageState extends ConsumerState<GDSResultPage> {
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -155,6 +177,17 @@ class _GDSResultPageState extends ConsumerState<GDSResultPage> {
                         height: 1.5,
                       ),
                     ),
+
+                    const Text(
+                      'Klik tombol di bawah untuk kembali ke halaman riwayat!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF2563EB),
+                        height: 1.5,
+                        fontWeight: FontWeight.w600
+                      ),
+                    ),
                     const SizedBox(height: 28),
                     // Button
                     SizedBox(
@@ -172,13 +205,15 @@ class _GDSResultPageState extends ConsumerState<GDSResultPage> {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const GDSHistoryPage(),
+                              builder: (context) => const GdsTabViewPage(),
                             ),
                             (route) => route.isFirst,
                           );
                         },
                         child: const Text(
                           'Kembali ke Halaman Utama',
+                          textAlign: TextAlign.center,
+
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,

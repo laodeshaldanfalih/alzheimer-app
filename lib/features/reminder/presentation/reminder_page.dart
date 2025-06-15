@@ -94,8 +94,8 @@ class _ReminderPageState extends State<ReminderPage> {
                     },
                   )
                   : null,
-          hintText: 'Cari Reminder',
-          hintStyle: const TextStyle(color: Color(0xFF6D6D6D), fontSize: 16),
+          hintText: 'Cari daftar pengingat jadwal...',
+          hintStyle: const TextStyle(color: Color(0xFF6D6D6D), fontSize: 14),
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
           border: InputBorder.none,
           enabledBorder: const UnderlineInputBorder(
@@ -345,15 +345,14 @@ class _ReminderPageState extends State<ReminderPage> {
       child: Scaffold(
         backgroundColor: Colors.grey.shade50,
         appBar: AppBar(
-          centerTitle: false,
           elevation: 0,
           backgroundColor: Colors.white,
           title: const Text(
-            'Daftar Reminder',
+            'Pengingat Jadwal',
             style: TextStyle(
               color: Colors.black87,
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
+              fontWeight: FontWeight.w500,
+              fontSize: 20,
             ),
           ),
           actions: [
@@ -395,6 +394,19 @@ class _ReminderPageState extends State<ReminderPage> {
                                 fontSize: 16,
                                 color: Colors.grey.shade600,
                               ),
+                            ),
+
+                            IconButton(
+                              onPressed: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const AddReminderPage(),
+                                  ),
+                                );
+                                _loadReminders();
+                              },
+                              icon: const Icon(Icons.add, color: Colors.blue),
                             ),
                           ],
                         ),

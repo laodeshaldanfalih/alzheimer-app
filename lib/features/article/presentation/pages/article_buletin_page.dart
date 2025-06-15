@@ -13,10 +13,9 @@ class ArticleBuletinPage extends StatelessWidget {
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text(
-            'Artikel Panduan',
-            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 24),
+            'Panduan Aplikasi dan Artikel',
+            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
           ),
-          centerTitle: true,
 
           backgroundColor: Colors.white,
           elevation: 0,

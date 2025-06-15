@@ -30,7 +30,10 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
   }
 
   // Method untuk menampilkan dialog konfirmasi penghapusan
-  Future<void> _showDeleteConfirmationDialog(BuildContext context, dynamic entry) async {
+  Future<void> _showDeleteConfirmationDialog(
+    BuildContext context,
+    dynamic entry,
+  ) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // User must tap button!
@@ -47,7 +50,10 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Batal'),
+              child: const Text(
+                'Batal',
+                style: TextStyle(color: Colors.black87),
+              ),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
@@ -62,12 +68,18 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
                 // Contoh: ref.read(gdsHistoryProvider.notifier).deleteEntry(entry);
                 // Untuk placeholder, kita akan mengasumsikan ada metode deleteEntry(entry)
                 try {
-                   ref.read(gdsHistoryProvider.notifier).deleteEntry(entry);
+                  ref.read(gdsHistoryProvider.notifier).deleteEntry(entry);
                 } catch (e) {
                   // Handle jika metode deleteEntry belum ada atau error lain
-                  debugPrint("Error deleting GDS entry: $e. Pastikan provider memiliki metode 'deleteEntry'.");
+                  debugPrint(
+                    "Error deleting GDS entry: $e. Pastikan provider memiliki metode 'deleteEntry'.",
+                  );
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Gagal menghapus riwayat. Metode belum diimplementasi di provider.')),
+                    const SnackBar(
+                      content: Text(
+                        'Gagal menghapus riwayat. Metode belum diimplementasi di provider.',
+                      ),
+                    ),
                   );
                 }
                 Navigator.of(dialogContext).pop();
@@ -85,24 +97,25 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
     final sortedHistory = historyState.sortedHistory;
 
     return Scaffold(
-      appBar: CustomAppBarWidget(
-        title: "Geriatric Depression Scale (GDS)",
-        showCloseButton: true,
-        onClose: () => Navigator.of(context).popUntil((route) => route.isFirst),
-      ),
+      // appBar: CustomAppBarWidget(
+      //   title: "Geriatric Depression Scale (GDS)",
+      //   showCloseButton: true,
+      //   onClose: () => Navigator.of(context).popUntil((route) => route.isFirst),
+      // ),
       backgroundColor: const Color(0xFFF8FAFB),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Padding(
-              padding: EdgeInsets.only(left: 24, top: 24, bottom: 8),
-              child: Text(
-                "Riwayat Test",
+              padding: EdgeInsets.only(left: 24, top: 12, bottom: 8),
+              child: Text(textAlign: TextAlign.center,
+                "Riwayat Tes GDS",
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 20,
                   color: Color(0xFF222B45),
+                  
                 ),
               ),
             ),
@@ -139,6 +152,30 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
                 ),
               ),
             ),
+
+            const SizedBox(height: 8),
+
+            Padding(
+              padding: const EdgeInsets.only(left: 24, right: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+
+                children: [
+                  Icon(Icons.info_outline, size: 16, color: Colors.grey[500]),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      "Riwayat² yang muncul di bawah ini dapat dipencet untuk dilihat detailnya",
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
             Expanded(
               child:
                   historyState.isLoading
@@ -159,7 +196,11 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.history_rounded, size: 80, color: Colors.grey.shade300),
+                                      Icon(
+                                        Icons.history_rounded,
+                                        size: 80,
+                                        color: Colors.grey.shade300,
+                                      ),
                                       const SizedBox(height: 16),
                                       const Text(
                                         'Belum ada riwayat tes.',
@@ -185,16 +226,26 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
                                     Color stageColor;
                                     String subtitle;
 
-                                    if (entry.isDepressed) {
+                                    if (entry.score > 10) {
                                       stage = 'Depresi';
                                       stageColor = const Color(0xFFD32F2F);
                                       subtitle =
-                                          'Skor ≥ 5 mengindikasikan gejala depresi';
-                                    } else {
+                                          'Skor ≥ 10 mengindikasikan gejala depresi';
+                                    } else if (entry.score > 5 &&
+                                        entry.score <= 10) {
+                                      stage = 'Ada Indikasi';
+                                      stageColor = const Color(0xFFFBBC05);
+                                      subtitle =
+                                          'Skor diantara 5~10 mengindikasikan kecil adanya gejala depresi';
+                                    } else if (entry.score <= 5) {
                                       stage = 'Normal';
                                       stageColor = const Color(0xFF4CAF50);
                                       subtitle =
-                                          'Skor < 5 mengindikasikan tidak ada gejala depresi';
+                                          'Skor ≤ 5 mengindikasikan tidak ada gejala depresi';
+                                    } else {
+                                      stage = '-';
+                                      stageColor = Colors.blueGrey;
+                                      subtitle = '-';
                                     }
 
                                     return ResultCardWidget(
@@ -216,8 +267,12 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
                                           ),
                                         );
                                       },
-                                      onDeletePressed: () { // Tambahkan ini
-                                        _showDeleteConfirmationDialog(context, entry);
+                                      onDeletePressed: () {
+                                        // Tambahkan ini
+                                        _showDeleteConfirmationDialog(
+                                          context,
+                                          entry,
+                                        );
                                       },
                                     );
                                   },
