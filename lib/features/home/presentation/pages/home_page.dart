@@ -6,9 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:project/core/widgets/geometric_shape_page_widget.dart';
 import 'package:project/core/widgets/live_clock_widget.dart';
 import 'package:project/features/GDS/presentation/gds_tab_view_page.dart';
-import 'package:project/features/MMSE/presentation/mmse_history_page.dart';
 import 'package:project/features/MMSE/presentation/mmse_tab_view_page.dart';
-import 'package:project/features/SKILAS/presentation/skilas_history_page.dart';
 import 'package:project/features/SKILAS/presentation/skilas_tab_view_page.dart';
 import 'package:project/features/alzheimer_scan/presentation/pages/alzheimer_scan_page.dart';
 import 'package:project/features/article/data/article_ag_data.dart';
@@ -247,8 +245,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           child: _buildFeatureItem(
                                             icon:
                                                 'assets/svgs/icon_buletin.svg',
-                                            label:
-                                                'Panduan Aplikasi',
+                                            label: 'Panduan Aplikasi',
                                             onTap:
                                                 () => Navigator.push(
                                                   context,

@@ -30,7 +30,6 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
     final userProfile = ref.read(userProfileProvider);
 
     if (userProfile == null || !userProfile.isProfileComplete) {
-      final missingFields = userProfile?.missingProfileFields ?? 'profil';
       showDialog(
         context: context,
         builder:

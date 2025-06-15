@@ -13,9 +13,8 @@ class SkilasTabViewPage extends StatelessWidget {
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text(
-            'Geriatric Depression Scale (GDS)',
+            'Skrining Lansia Sederhana (SKILAS)',
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
-            
           ),
 
           backgroundColor: Colors.white,
