@@ -23,6 +23,12 @@ class SKILASHistoryDetailPage extends ConsumerWidget {
           ? const Color(0xFF388E3C)
           : const Color(0xFFD32F2F); // Green for Sehat, Red for Perlu
 
+String _getResultImage() {
+  if (entry.score == 1) return 'assets/images/skilas_good1.png';
+  if (entry.score == 2) return 'assets/images/skilas_warning.png';
+  return 'assets/images/skilas_bad.png';
+}
+
   Future<void> _generateAndSharePDF(BuildContext context, WidgetRef ref) async {
     final userProfile = ref.read(userProfileProvider);
 
@@ -571,6 +577,24 @@ class SKILASHistoryDetailPage extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 24),
+
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: statusColor,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Image.asset(
+                  _getResultImage(),
+                  height: 100,
+                  width: 100,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
             Text(
               entry.score == 1
                   ? "Kondisi pasien terindikasi sehat."
@@ -583,6 +607,7 @@ class SKILASHistoryDetailPage extends ConsumerWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
+
             Divider(color: Colors.grey.shade200),
             const SizedBox(height: 16),
             Row(

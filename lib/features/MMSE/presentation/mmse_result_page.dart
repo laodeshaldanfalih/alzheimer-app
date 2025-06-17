@@ -166,6 +166,18 @@ class _MMSEResultPageState extends ConsumerState<MMSEResultPage> {
                       ),
                     ),
                     const SizedBox(height: 28),
+
+                    const Text(
+                      'Klik tombol di bawah untuk kembali ke halaman riwayat!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF2563EB),
+                        height: 1.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 28),
                     // Button
                     SizedBox(
                       width: double.infinity,
@@ -188,7 +200,7 @@ class _MMSEResultPageState extends ConsumerState<MMSEResultPage> {
                           );
                         },
                         child: const Text(
-                          'Lihat Riwayat',
+                          'Kembali ke Halaman Utama',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,

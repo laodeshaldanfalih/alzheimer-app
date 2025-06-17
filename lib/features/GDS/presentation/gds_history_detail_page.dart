@@ -57,6 +57,18 @@ class GDSHistoryDetailPage extends ConsumerWidget {
     }
   }
 
+  String getResultDescription(int score) {
+    if (score <= 5) {
+      return 'Skor dengan kurang dari 5 menunjukkan bahwa kesehatan mental depresi Anda berada dalam kisaran normal. Tidak ada indikasi gangguan depresi yang signifikan pada tingkat ini. Terus pertahankan gaya hidup sehat untuk mendukung kesehatan.';
+    } else if (score > 5 && score <= 10) {
+      return 'Skor dengan 5~10 menunjukkan adanya keumngkinan kecil gejala depresi. Meskipun tidak pasti, kisaran ini masih tergolong kisaran normal namun perlu penanganan tepat untuk menguranginya. Kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
+    } else if (score > 10) {
+      return 'Skor dengan lebih dari 10 menunjukkan kemungkinan adanya gejala depresi. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
+    } else {
+      return '-';
+    }
+  }
+
   // Fungsi PDF tidak diubah
   Future<void> _generateAndSharePDF(BuildContext context, WidgetRef ref) async {
     final userProfile = ref.read(userProfileProvider);
@@ -463,6 +475,7 @@ class GDSHistoryDetailPage extends ConsumerWidget {
   Widget _buildScoreCard() {
     final statusColor = getStatusColor(entry.score);
     final statusText = getStatusText(entry.score);
+    final resultText = getResultDescription(entry.score);
     return Card(
       elevation: 2,
       margin: EdgeInsets.zero,
@@ -524,6 +537,14 @@ class GDSHistoryDetailPage extends ConsumerWidget {
               "dari ${questions.length} total poin",
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
+            const SizedBox(height: 16),
+
+            Text(
+              resultText,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              textAlign: TextAlign.center,
+            ),
+            
             const SizedBox(height: 24),
             Divider(color: Colors.grey.shade200),
             const SizedBox(height: 16),

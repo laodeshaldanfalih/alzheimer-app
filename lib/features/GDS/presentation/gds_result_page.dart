@@ -50,7 +50,7 @@ class _GDSResultPageState extends ConsumerState<GDSResultPage> {
     if (score <= 5) {
       return 'Skor dengan kurang dari 5 menunjukkan bahwa kesehatan mental depresi Anda berada dalam kisaran normal. Tidak ada indikasi gangguan depresi yang signifikan pada tingkat ini. Terus pertahankan gaya hidup sehat untuk mendukung kesehatan.';
     } else if (score > 5 && score <= 10) {
-      return 'Skor dengan 5~10 menunjukkan adanya keumngkinan kecil gejala depresi. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
+      return 'Skor dengan 5~10 menunjukkan adanya kemungkinan kecil gejala depresi. Meskipun tidak pasti, kisaran ini masih tergolong kisaran normal namun perlu penanganan tepat untuk menguranginya. Kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
     } else if (score > 10) {
       return 'Skor dengan lebih dari 10 menunjukkan kemungkinan adanya gejala depresi. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
     } else {

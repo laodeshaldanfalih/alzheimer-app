@@ -20,10 +20,24 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
     return const Color(0xFFD32F2F);
   }
 
+  String getResultDescription(int score) {
+    if (score >= 24) {
+      return 'Hasil tes menunjukkan bahwa fungsi kognitif Anda berada dalam kisaran normal. Tidak ada indikasi gangguan kognitif pada tingkat ini. Terus pertahankan gaya hidup sehat untuk mendukung kesehatan otak.';
+    } else if (score >= 17) {
+      return 'Hasil tes menunjukkan kemungkinan adanya gangguan kognitif ringan. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
+    } else {
+      return 'Hasil tes menunjukkan adanya gangguan kognitif yang signifikan. Penting untuk segera berkonsultasi dengan profesional medis untuk mendapatkan penanganan lebih lanjut dan rencana perawatan yang sesuai.';
+    }
+  }
+
   String getStatusText(int score) {
-    if (score >= 24) return 'Normal';
-    if (score >= 18) return 'Ringan';
-    return 'Berat';
+    if (score >= 24) {
+      return 'Normal';
+    } else if (score >= 18) {
+      return 'Ringan';
+    } else {
+      return 'Berat';
+    }
   }
 
   Future<void> _generateAndSharePDF(BuildContext context, WidgetRef ref) async {
@@ -608,6 +622,9 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
 
   // Widget Kartu Skor (diadaptasi dari GDS)
   Widget _buildScoreCard(Color statusColor, String statusText) {
+    final statusColor = getStatusColor(entry.score);
+    final statusText = getStatusText(entry.score);
+    final resultText = getResultDescription(entry.score);
     return Card(
       elevation: 2,
       margin: EdgeInsets.zero,
@@ -668,6 +685,14 @@ class MMSEHistoryDetailPage extends ConsumerWidget {
             Text(
               "dari 30 total poin",
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+
+            const SizedBox(height: 16),
+
+            Text(
+              resultText,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             Divider(color: Colors.grey.shade200),

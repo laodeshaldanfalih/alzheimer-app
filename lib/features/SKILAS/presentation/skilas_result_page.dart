@@ -21,7 +21,9 @@ class _SKILASResultPageState extends ConsumerState<SKILASResultPage> {
     Future.microtask(() {
       final skilasState = ref.read(skilasTestProvider);
       final isBad = skilasState.isAnyAnswerWrong;
-      ref.read(skilasHistoryProvider.notifier).addEntry(
+      ref
+          .read(skilasHistoryProvider.notifier)
+          .addEntry(
             SKILASHistoryEntry(
               score: isBad ? 0 : 1, // 0 for bad, 1 for good
               date: DateTime.now(),
@@ -34,14 +36,14 @@ class _SKILASResultPageState extends ConsumerState<SKILASResultPage> {
   }
 
   String _getResultImage(bool isAnyAnswerWrong) {
-    return isAnyAnswerWrong 
-        ? 'assets/images/skilas_bad.png' 
+    return isAnyAnswerWrong
+        ? 'assets/images/skilas_bad.png'
         : 'assets/images/skilas_good1.png';
   }
 
   Color _getResultColor(bool isAnyAnswerWrong) {
-    return isAnyAnswerWrong 
-        ? const Color(0xFFFF8A65).withOpacity(0.1) 
+    return isAnyAnswerWrong
+        ? const Color(0xFFFF8A65).withOpacity(0.1)
         : const Color(0xFFAFE073).withOpacity(0.1);
   }
 
@@ -73,7 +75,10 @@ class _SKILASResultPageState extends ConsumerState<SKILASResultPage> {
         body: Center(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 18.0,
+                vertical: 12,
+              ),
               child: Container(
                 width: double.infinity,
                 constraints: const BoxConstraints(maxWidth: 400),
@@ -88,7 +93,10 @@ class _SKILASResultPageState extends ConsumerState<SKILASResultPage> {
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -112,12 +120,17 @@ class _SKILASResultPageState extends ConsumerState<SKILASResultPage> {
                     const SizedBox(height: 24),
                     // Title
                     Text(
-                      isBad ? 'Perlu Pemeriksaan Lebih ke Instansi KEsehatan' : 'Terindikasi Sehat!',
+                      isBad
+                          ? 'Perlu Pemeriksaan Lebih ke Instansi Kesehatan'
+                          : 'Terindikasi Sehat!',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 18,
-                        color: isBad ? const Color(0xFFFF8A65) : const Color(0xFFAFE073),
+                        color:
+                            isBad
+                                ? const Color(0xFFFF8A65)
+                                : const Color(0xFFAFE073),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -131,6 +144,18 @@ class _SKILASResultPageState extends ConsumerState<SKILASResultPage> {
                         fontSize: 14,
                         color: Color(0xFF6B7280),
                         height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+
+                    const Text(
+                      'Klik tombol di bawah untuk kembali ke halaman riwayat!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF2563EB),
+                        height: 1.5,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 28),
@@ -156,7 +181,7 @@ class _SKILASResultPageState extends ConsumerState<SKILASResultPage> {
                           );
                         },
                         child: const Text(
-                          'Lihat Riwayat',
+                          'Kembali ke Halaman Utama',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
