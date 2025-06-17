@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/SKILAS/models/skilas_test_entry.dart';
+import 'package:project/features/SKILAS/presentation/skilas_tab_view_page.dart';
 import 'package:project/features/SKILAS/providers/skilas_test_provider.dart';
 import 'package:project/features/SKILAS/providers/skilas_history_provider.dart';
 import 'skilas_history_page.dart';
@@ -149,7 +150,7 @@ class _SKILASResultPageState extends ConsumerState<SKILASResultPage> {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const SKILASHistoryPage(),
+                              builder: (context) => const SkilasTabViewPage(),
                             ),
                             (route) => route.isFirst,
                           );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/features/MMSE/presentation/mmse_tab_view_page.dart';
 import 'package:project/features/MMSE/providers/mmse_test_provider.dart';
 import 'package:project/features/MMSE/providers/mmse_history_provider.dart';
 import 'package:project/features/MMSE/models/mmse_history_entry.dart';
@@ -181,7 +182,7 @@ class _MMSEResultPageState extends ConsumerState<MMSEResultPage> {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const MMSEHistoryPage(),
+                              builder: (context) => const MmseTabViewPage(),
                             ),
                             (route) => route.isFirst,
                           );

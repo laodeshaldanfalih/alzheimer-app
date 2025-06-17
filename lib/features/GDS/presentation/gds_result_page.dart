@@ -39,7 +39,7 @@ class _GDSResultPageState extends ConsumerState<GDSResultPage> {
       return 'Pasien mendapatkan skor $score!\n Skornya ≤ 5';
     } else if (score > 5 && score <= 10) {
       return 'Pasien mendapatkan skor $score!\n Skornya diantara 5~10';
-    } else if (score < 10) {
+    } else if (score > 10) {
       return 'Pasien mendapatkan skor $score!\n Skornya > 10';
     } else {
       return '-';
@@ -51,7 +51,7 @@ class _GDSResultPageState extends ConsumerState<GDSResultPage> {
       return 'Skor dengan kurang dari 5 menunjukkan bahwa kesehatan mental depresi Anda berada dalam kisaran normal. Tidak ada indikasi gangguan depresi yang signifikan pada tingkat ini. Terus pertahankan gaya hidup sehat untuk mendukung kesehatan.';
     } else if (score > 5 && score <= 10) {
       return 'Skor dengan 5~10 menunjukkan adanya keumngkinan kecil gejala depresi. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
-    } else if (score < 10) {
+    } else if (score > 10) {
       return 'Skor dengan lebih dari 10 menunjukkan kemungkinan adanya gejala depresi. Meskipun tidak pasti, kami sarankan untuk berkonsultasi lebih lanjut dengan profesional medis untuk evaluasi yang lebih mendalam.';
     } else {
       return '-';
@@ -63,7 +63,7 @@ class _GDSResultPageState extends ConsumerState<GDSResultPage> {
       return 'assets/images/gds_happy.png';
     } else if (score > 5 && score <= 10) {
       return 'assets/images/gds_sad.png';
-    } else if (score < 10) {
+    } else if (score > 10) {
       return 'assets/images/gds_very_bad.png';
     } else {
       return 'assets/images/unknown.png';
