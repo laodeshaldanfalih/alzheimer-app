@@ -37,13 +37,326 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
   @override
   void initState() {
     super.initState();
-    // Gunakan post-frame callback untuk memastikan build selesai
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _prepareWords();
     });
   }
 
-  void _prepareWords() {
+  // --- FUNGSI BARU: MENGGANTI SOAL SAAT INI DENGAN SOAL LAIN DARI LEVEL YANG SAMA ---
+  void _changeCurrentWord() {
+    // Ambil daftar kata yang belum dimainkan di level ini
+    final remainingWords = _currentLevelWords.sublist(_currentWordInLevelIndex);
+
+    // Jika hanya tersisa satu kata, tidak ada kata lain untuk diganti
+    if (remainingWords.length <= 1) {
+      // Optional: Tampilkan pesan bahwa ini adalah kata terakhir
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Ini adalah soal terakhir di level ini, tidak bisa diganti."),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    // Acak urutan sisa kata tersebut
+    remainingWords.shuffle(_random);
+
+    // Ganti blok kata yang belum dimainkan dengan yang sudah diacak
+    _currentLevelWords.replaceRange(
+        _currentWordInLevelIndex, _currentLevelWords.length, remainingWords);
+
+    // Muat ulang soal di indeks saat ini (yang sekarang berisi kata baru)
+    // _loadWord() sudah memanggil setState di dalamnya.
+    _loadWord();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(
+          child: _loadingError != null
+              ? Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _loadingError!,
+                        style: const TextStyle(color: Colors.red, fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_loadingError!
+                              .contains("Tidak ada kata yang cocok")) {
+                            Navigator.of(context).pop();
+                          } else {
+                            _prepareWords();
+                          }
+                        },
+                        child: Text(
+                          _loadingError!.contains("Tidak ada kata yang cocok")
+                              ? "Ubah Pengaturan"
+                              : "Coba Lagi",
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    final appBarHeight = AppBar().preferredSize.height;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final minBodyHeight =
+        screenHeight - appBarHeight - statusBarHeight - bottomPadding;
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blue.shade700,
+        elevation: 0,
+        title: const Text("Susun Kata"),
+
+      ),
+      body: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: minBodyHeight),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.blue.shade100, Colors.blue.shade300],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildInfoChip(
+                            "Tebakan",
+                            "${_currentWordInLevelIndex + 1}/${widget.settings.wordsPerLevel}",
+                            Icons.format_list_numbered,
+                            Colors.blue.shade700,
+                          ),
+                          _buildInfoChip(
+                            "Skor",
+                            "$_score",
+                            Icons.emoji_events_outlined,
+                            Colors.green.shade600,
+                          ),
+                          _buildInfoChip(
+                            "Nyawa",
+                            "$_lives",
+                            Icons.favorite_border,
+                            Colors.red.shade600,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  if (_currentWordData != null &&
+                      _currentWordData!.petunjuk.isNotEmpty)
+                    Card(
+                      elevation: 2,
+                      color: Colors.white.withOpacity(0.9),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 16.0,
+                        ),
+                        child: Text(
+                          "Petunjuk: ${_currentWordData!.petunjuk}",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.blueGrey.shade700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 20.0,
+                      horizontal: 10.0,
+                    ),
+                    margin: const EdgeInsets.only(bottom: 20.0),
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(12.0),
+                      border: Border.all(color: Colors.blue.shade700, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      _userInputLetters.join(' ').toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                  if (_scrambledLetters.isNotEmpty)
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: _calculateCrossAxisCount(
+                          _scrambledLetters.length,
+                        ),
+                        crossAxisSpacing: 8.0,
+                        mainAxisSpacing: 8.0,
+                        childAspectRatio: 1.5,
+                      ),
+                      itemCount: _scrambledLetters.length,
+                      itemBuilder: (context, index) {
+                        return ElevatedButton(
+                          onPressed: _letterUsed[index]
+                              ? null
+                              : () => _onLetterTapped(index),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _letterUsed[index]
+                                ? Colors.grey.shade400
+                                : Colors.blue.shade600,
+                            disabledBackgroundColor: Colors.grey.shade300,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            elevation: _letterUsed[index] ? 0 : 3,
+                          ),
+                          child: Text(
+                            _scrambledLetters[index].toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.undo, color: Colors.white),
+                        label: const Text(
+                          'Hapus',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        onPressed:
+                            _userInputLetters.isNotEmpty ? _onUndoLetter : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange.shade700,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          disabledBackgroundColor: Colors.grey.shade400,
+                        ),
+                      ),
+                      ElevatedButton.icon(
+                        icon: const Icon(
+                          Icons.check_circle_outline,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          'Periksa',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        onPressed:
+                            _userInputLetters.length == _currentWord.length
+                                ? _checkAnswer
+                                : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green.shade700,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          disabledBackgroundColor: Colors.grey.shade400,
+                        ),
+                      ),
+
+                                            ElevatedButton.icon(
+                        icon: const Icon(
+                          Icons.refresh,
+                          color: Colors.lightBlueAccent,
+                        ),
+                        label: const Text(
+                          'Ganti Soal',
+                          style: TextStyle(color: Colors.lightBlueAccent, fontSize: 16),
+                        ),
+                        onPressed:
+                            _changeCurrentWord,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          disabledBackgroundColor: Colors.grey.shade400,
+                        ),
+                      ),
+
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // --- Sisa fungsi-fungsi lainnya (tidak ada perubahan) ---
+  // ... (Sisipkan semua fungsi helper lainnya dari kode sebelumnya di sini)
+    void _prepareWords() {
     if (!mounted) return;
     setState(() {
       _isLoading = true;
@@ -51,7 +364,6 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
     });
 
     try {
-      // Ambil data dari list lokal, bukan Firestore
       if (randomWordsData.isEmpty) {
         setState(() {
           _loadingError = "Tidak ada kata ditemukan di sumber data lokal.";
@@ -60,7 +372,6 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
         return;
       }
 
-      // Ubah data Map menjadi objek WordScrambleWordData
       _allWordsFromSource = randomWordsData.asMap().entries.map((entry) {
         int index = entry.key;
         Map<String, dynamic> data = entry.value;
@@ -90,7 +401,6 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
       _ensureEnoughWords();
       _startGame();
       
-      // Setelah semua siap, set state loading menjadi false
       setState(() {
         _isLoading = false;
       });
@@ -115,24 +425,13 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
     }).toList();
     _filteredWordsForGame.shuffle(_random);
   }
-  
-  // Fungsi _ensureEnoughWords, _startGame, _prepareNextLevelWords, _loadWord dan sisanya
-  // TIDAK PERLU DIUBAH karena mereka beroperasi pada list yang sudah dipersiapkan,
-  // bukan pada sumber datanya langsung.
-  
-  // Namun, kita perlu menyesuaikan fungsi restart/retry untuk memanggil _prepareWords.
 
   void _restartGame() {
     if (!mounted) return;
     _lives = 3;
     _score = 0;
-    _prepareWords(); // Panggil fungsi persiapan data lokal
+    _prepareWords();
   }
-
-
-  // --- PASTE SEMUA FUNGSI LAINNYA DI SINI ---
-  // (Fungsi-fungsi di bawah ini tidak berubah secara signifikan, hanya panggilannya saja)
-  // Pastikan Anda menyalin fungsi-fungsi ini dari file asli Anda.
 
   void _ensureEnoughWords() {
     int targetWordCount = 30; 
@@ -189,6 +488,10 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
       }
     }
 
+    // Hapus kata yang sudah dipilih untuk level dari pool utama
+    _filteredWordsForGame.removeWhere((word) => _currentLevelWords.contains(word));
+
+
     if (_currentLevelWords.isEmpty) {
       _showGameDialog(
         "Kesalahan",
@@ -214,8 +517,7 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
     _currentWord = _currentWordData!.kataAsli.trim().toLowerCase();
 
     if (_currentWord.isEmpty) {
-      _currentWordInLevelIndex++;
-      _loadWord();
+      _proceedToNextWordOrLevel();
       return;
     }
 
@@ -226,9 +528,7 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
     _userInputLetters = [];
     _letterUsed = List.generate(_scrambledLetters.length, (_) => false);
 
-    setStateIfMounted(() {
-      _isLoading = false;
-    });
+    setStateIfMounted(() {});
   }
 
   void setStateIfMounted(VoidCallback f) {
@@ -292,7 +592,7 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
     _currentWordInLevelIndex++;
     if (_currentWordInLevelIndex >= _currentLevelWords.length ||
         _currentWordInLevelIndex >= widget.settings.wordsPerLevel) {
-      _showLevelCompleteDialog();
+      _prepareNextLevelWords(); // Mempersiapkan set kata baru untuk level berikutnya
     } else {
       _loadWord();
     }
@@ -326,7 +626,6 @@ return Dialog(
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Bagian Header dengan Ikon dan Judul
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -341,7 +640,6 @@ return Dialog(
         ),
         const SizedBox(height: 20),
         
-        // Judul dan Informasi Skor
         Text(
           "Level Selesai!",
           style: TextStyle(
@@ -361,7 +659,7 @@ return Dialog(
         ),
         const SizedBox(height: 8),
         Text(
-          "Selamat! Anda menyelesaikan level ini",
+          "Bersiap untuk level berikutnya!",
           style: TextStyle(
             fontSize: 14,
             color: Colors.grey[600],
@@ -369,10 +667,8 @@ return Dialog(
         ),
         const SizedBox(height: 24),
         
-        // Tombol-tombol Aksi
         Column(
           children: [
-            // Tombol Ulangi Permainan
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -386,10 +682,10 @@ return Dialog(
                 ),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  _restartGame(); // Mempertahankan fungsi asli
+                  _proceedToNextWordOrLevel();
                 },
                 child: const Text(
-                  'Ulangi Permainan',
+                  'Lanjut ke Level Berikutnya',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -400,7 +696,6 @@ return Dialog(
             ),
             const SizedBox(height: 12),
             
-            // Tombol Kembali ke Halaman Utama
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
@@ -413,10 +708,7 @@ return Dialog(
                   ),
                 ),
                 onPressed: () {
-                  Navigator.of(context).pop();
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
+                  Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 child: const Text(
                   'Kembali ke Halaman Utama',
@@ -437,270 +729,6 @@ return Dialog(
     );
   }
   
- 
-   @override
-  Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(
-        body: Center(
-          child:
-              _loadingError != null
-                  ? Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          _loadingError!,
-                          style: const TextStyle(color: Colors.red, fontSize: 16),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_loadingError!.contains("Tidak ada kata yang cocok")) {
-                              Navigator.of(context).pop();
-                            } else {
-                              _prepareWords(); // Panggil fungsi lokal
-                            }
-                          },
-                          child: Text(
-                            _loadingError!.contains("Tidak ada kata yang cocok")
-                                ? "Ubah Pengaturan"
-                                : "Coba Lagi",
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                  : const CircularProgressIndicator(),
-        ),
-      );
-    }
-
-    // Sisanya sama, salin dari kode asli Anda
-    // ...
-    // (Widget build lengkap)
-    final appBarHeight = AppBar().preferredSize.height;
-    final statusBarHeight = MediaQuery.of(context).padding.top;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
-    final minBodyHeight =
-        screenHeight - appBarHeight - statusBarHeight - bottomPadding;
-
-    return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.blue.shade700, elevation: 0),
-      body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: minBodyHeight),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.blue.shade100, Colors.blue.shade300],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildInfoChip(
-                            "Tebakan",
-                            "${_currentWordInLevelIndex + 1}/${widget.settings.wordsPerLevel}",
-                            Icons.format_list_numbered,
-                            Colors.blue.shade700,
-                          ),
-                          _buildInfoChip(
-                            "Skor",
-                            "$_score",
-                            Icons.emoji_events_outlined,
-                            Colors.green.shade600,
-                          ),
-                          _buildInfoChip(
-                            "Nyawa",
-                            "$_lives",
-                            Icons.favorite_border,
-                            Colors.red.shade600,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  if (_currentWordData != null &&
-                      _currentWordData!.petunjuk.isNotEmpty)
-                    Card(
-                      elevation: 2,
-                      color: Colors.white.withOpacity(0.9),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal: 16.0,
-                        ),
-                        child: Text(
-                          "Petunjuk: ${_currentWordData!.petunjuk}",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.blueGrey.shade700,
-                          ),
-                        ),
-                      ),
-                    ),
-                  const SizedBox(height: 10),
-
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 20.0,
-                      horizontal: 10.0,
-                    ),
-                    margin: const EdgeInsets.only(bottom: 20.0),
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(12.0),
-                      border: Border.all(color: Colors.blue.shade700, width: 2),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      _userInputLetters.join(' ').toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ),
-
-                  if (_scrambledLetters.isNotEmpty)
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: _calculateCrossAxisCount(
-                          _scrambledLetters.length,
-                        ),
-                        crossAxisSpacing: 8.0,
-                        mainAxisSpacing: 8.0,
-                        childAspectRatio: 1.5,
-                      ),
-                      itemCount: _scrambledLetters.length,
-                      itemBuilder: (context, index) {
-                        return ElevatedButton(
-                          onPressed:
-                              _letterUsed[index]
-                                  ? null
-                                  : () => _onLetterTapped(index),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                _letterUsed[index]
-                                    ? Colors.grey.shade400
-                                    : Colors.blue.shade600,
-                            disabledBackgroundColor: Colors.grey.shade300,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            padding: const EdgeInsets.all(8),
-                            elevation: _letterUsed[index] ? 0 : 3,
-                          ),
-                          child: Text(
-                            _scrambledLetters[index].toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  const SizedBox(height: 20),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.undo, color: Colors.white),
-                        label: const Text(
-                          'Hapus',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                        onPressed:
-                            _userInputLetters.isNotEmpty ? _onUndoLetter : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange.shade700,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          disabledBackgroundColor: Colors.grey.shade400,
-                        ),
-                      ),
-                      ElevatedButton.icon(
-                        icon: const Icon(
-                          Icons.check_circle_outline,
-                          color: Colors.white,
-                        ),
-                        label: const Text(
-                          'Periksa',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                        onPressed:
-                            _userInputLetters.length == _currentWord.length
-                                ? _checkAnswer
-                                : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green.shade700,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          disabledBackgroundColor: Colors.grey.shade400,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-  
-  // Salin fungsi helper dari kode asli
   Widget _buildInfoChip(String label, String value, IconData icon, Color color) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -732,8 +760,7 @@ return Dialog(
     return 5;
   }
   
-  // Salin juga _showFeedbackDialog dan _showGameDialog, lalu sesuaikan tombol retry/restart.
-  void _showFeedbackDialog(String title, String content, bool isCorrect) { /* ... salin dari asli ... */
+  void _showFeedbackDialog(String title, String content, bool isCorrect) {
       if (!mounted) return;
     showDialog(
       context: context,
@@ -833,7 +860,7 @@ return Dialog(
     );
   }
 
-  void _showGameDialog(String title, String content) { /* ... salin dari asli dan modifikasi tombol restart ... */ 
+  void _showGameDialog(String title, String content) {
       if (!mounted) return;
     showDialog(
       context: context,
@@ -930,7 +957,7 @@ return Dialog(
                           ),
                           onPressed: () {
                             Navigator.of(context).pop();
-                            _restartGame(); // PANGGIL FUNGSI RESTART
+                            _restartGame();
                           },
                           child: const Text(
                             'Coba Lagi',

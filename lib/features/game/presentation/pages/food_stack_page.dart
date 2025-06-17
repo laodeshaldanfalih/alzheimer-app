@@ -136,7 +136,23 @@ class _FoodStackPageState extends State<FoodStackPage> {
     double aspectRatio = itemWidth / (itemHeight * 0.8);
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Susun Menu Makanan'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Acak Ulang Makanan',
+            onPressed: () {
+              setState(() {
+                showWinOverlay = false;
+                showLoseOverlay = false;
+                overlayOpacity = 0.0;
+                resetGame();
+              });
+            },
+          ),
+        ],
+      ),
       body: Stack(
         children: [
           SafeArea(
