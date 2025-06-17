@@ -150,6 +150,7 @@ flutter:
     - assets/images/gds_happy.png
     - assets/images/menyusunKata.png
     - assets/images/unknown.png
+    - assets/images/gds_very_bad.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

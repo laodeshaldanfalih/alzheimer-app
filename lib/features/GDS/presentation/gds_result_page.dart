@@ -75,7 +75,7 @@ class _GDSResultPageState extends ConsumerState<GDSResultPage> {
       return const Color(0xFF4CAF50);
     } else if (score > 5 && score <= 10) {
       return const Color(0xFFFFD54F);
-    } else if (score < 10) {
+    } else if (score > 10) {
       return const Color(0xFFD32F2F);
     } else {
       return Colors.blueGrey;
