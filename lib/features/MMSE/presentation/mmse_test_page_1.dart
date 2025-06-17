@@ -33,7 +33,9 @@ class _MMSETestPage1State extends ConsumerState<MMSETestPage1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBarWidget(title: "Mini-Mental State Exam (MMSE)"),
+      appBar: const CustomAppBarWidget(
+        title: "Mini-Mental State Examination (MMSE)",
+      ),
       backgroundColor: const Color(0xFFF8FAFB),
       body: SafeArea(
         child: Padding(

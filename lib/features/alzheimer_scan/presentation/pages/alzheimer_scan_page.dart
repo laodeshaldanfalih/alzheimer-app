@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:project/features/alzheimer_scan/widgets/build_picker_option.dart';
 import 'package:project/features/alzheimer_scan/utils/api_service.dart';
 
 class AlzheimerScanPage extends StatefulWidget {
@@ -85,7 +86,7 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                _buildPickerOption(
+                buildPickerOption(
                   icon: Icons.camera_alt,
                   title: 'Ambil Foto',
                   subtitle: 'Gunakan kamera untuk mengambil gambar',
@@ -94,7 +95,7 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
                     _pickImage(ImageSource.camera);
                   },
                 ),
-                _buildPickerOption(
+                buildPickerOption(
                   icon: Icons.photo_library,
                   title: 'Pilih dari Galeri',
                   subtitle: 'Pilih gambar dari galeri foto',
@@ -109,69 +110,6 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
           ),
         ),
   );
-
-  Widget _buildPickerOption({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[200]!),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF667eea).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(icon, color: const Color(0xFF667eea), size: 24),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2D3748),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16,
-                  color: Colors.grey,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   void _showSnack(String msg) => ScaffoldMessenger.of(
     context,
@@ -207,7 +145,10 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Klasifikasi Citra MRI',style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),),
+        title: const Text(
+          'Klasifikasi Citra MRI',
+          style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
+        ),
         backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -347,7 +288,7 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
                               _confidence = 0.0;
                             }),
                         child: Container(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Colors.black54, // latar gelap transparan
                             shape: BoxShape.circle, // bentuk lingkaran
                           ),
@@ -371,7 +312,7 @@ class _AlzheimerScanPageState extends State<AlzheimerScanPage> {
                 child: ElevatedButton(
                   onPressed: _isChecking ? null : _checkImage,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFA1A4B2),
+                    backgroundColor: const Color(0xFFA1A4B2),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),

@@ -4,10 +4,7 @@ import 'package:project/features/GDS/providers/gds_history_provider.dart';
 import 'package:project/features/GDS/presentation/gds_test_page.dart';
 import 'package:project/core/widgets/start_test_button_widget.dart';
 import 'package:project/core/widgets/result_card_widget.dart';
-import 'package:project/core/widgets/custom_app_bar_widget.dart';
 import 'package:project/features/GDS/presentation/gds_history_detail_page.dart';
-// Asumsi GDSHistoryEntry adalah tipe data untuk entri riwayat GDS
-// import 'package:project/features/GDS/models/gds_history_entry.dart'; // Anda mungkin perlu import modelnya
 
 class GDSHistoryPage extends ConsumerStatefulWidget {
   const GDSHistoryPage({super.key});
@@ -97,11 +94,6 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
     final sortedHistory = historyState.sortedHistory;
 
     return Scaffold(
-      // appBar: CustomAppBarWidget(
-      //   title: "Geriatric Depression Scale (GDS)",
-      //   showCloseButton: true,
-      //   onClose: () => Navigator.of(context).popUntil((route) => route.isFirst),
-      // ),
       backgroundColor: const Color(0xFFF8FAFB),
       body: SafeArea(
         child: Column(
@@ -109,13 +101,13 @@ class _GDSHistoryPageState extends ConsumerState<GDSHistoryPage> {
           children: [
             const Padding(
               padding: EdgeInsets.only(left: 24, top: 12, bottom: 8),
-              child: Text(textAlign: TextAlign.center,
+              child: Text(
+                textAlign: TextAlign.center,
                 "Riwayat Tes GDS",
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 20,
                   color: Color(0xFF222B45),
-                  
                 ),
               ),
             ),

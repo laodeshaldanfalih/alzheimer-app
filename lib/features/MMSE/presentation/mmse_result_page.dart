@@ -89,7 +89,7 @@ class _MMSEResultPageState extends ConsumerState<MMSEResultPage> {
           elevation: 0.5,
           centerTitle: false,
           title: const Text(
-            'Mini–Mental State Exam (MMSE)',
+            'Mini-Mental State Examination (MMSE)',
             style: TextStyle(
               color: Color(0xFF222B45),
               fontWeight: FontWeight.w500,

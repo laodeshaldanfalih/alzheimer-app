@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project/features/GDS/presentation/gds_history_page.dart';
 import 'package:project/features/article/presentation/pages/article_application_guide_page.dart';
-import 'package:project/features/article/presentation/pages/article_health_page.dart';
 
 class GdsTabViewPage extends StatelessWidget {
   const GdsTabViewPage({super.key});
@@ -16,7 +15,6 @@ class GdsTabViewPage extends StatelessWidget {
           title: const Text(
             'Geriatric Depression Scale (GDS)',
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
-            
           ),
 
           backgroundColor: Colors.white,

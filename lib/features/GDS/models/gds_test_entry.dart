@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class GDSHistoryEntry {
   final DateTime date;
   final int score;

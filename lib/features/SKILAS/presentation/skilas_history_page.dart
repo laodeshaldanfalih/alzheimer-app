@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/features/SKILAS/providers/skilas_history_provider.dart';
-import 'package:project/core/widgets/custom_app_bar_widget.dart';
 import 'package:project/core/widgets/result_card_widget.dart';
 import 'package:project/core/widgets/start_test_button_widget.dart';
 import 'skilas_test_page_1.dart';
 import 'skilas_history_detail_page.dart';
-// Asumsi SKILASHistoryEntry adalah tipe data untuk entri riwayat SKILAS
-// import 'package:project/features/SKILAS/models/skilas_history_entry.dart'; // Anda mungkin perlu import modelnya
 
 class SKILASHistoryPage extends ConsumerStatefulWidget {
   const SKILASHistoryPage({super.key});
@@ -29,7 +26,6 @@ class _SKILASHistoryPageState extends ConsumerState<SKILASHistoryPage> {
     );
   }
 
-  // Method untuk menampilkan dialog konfirmasi penghapusan
   Future<void> _showDeleteConfirmationDialog(
     BuildContext context,
     dynamic entry,
@@ -88,16 +84,9 @@ class _SKILASHistoryPageState extends ConsumerState<SKILASHistoryPage> {
   @override
   Widget build(BuildContext context) {
     final historyState = ref.watch(skilasHistoryProvider);
-    // Menggunakan sortedHistory dari state jika ada, jika tidak, fallback ke history
     final sortedHistory = historyState.sortedHistory;
 
     return Scaffold(
-      // appBar: CustomAppBarWidget(
-      //   // Menambahkan onClose untuk konsistensi
-      //   title: "Skrining Lansia Sederhana (SKILAS)",
-      //   showCloseButton: true,
-      //   onClose: () => Navigator.of(context).popUntil((route) => route.isFirst),
-      // ),
       backgroundColor: const Color(0xFFF8FAFB),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

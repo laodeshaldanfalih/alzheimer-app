@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget _buildPickerOption({
+Widget buildPickerOption({
   required IconData icon,
   required String title,
   required String subtitle,
