@@ -52,7 +52,9 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
       // Optional: Tampilkan pesan bahwa ini adalah kata terakhir
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Ini adalah soal terakhir di level ini, tidak bisa diganti."),
+          content: Text(
+            "Ini adalah soal terakhir di level ini, tidak bisa diganti.",
+          ),
           duration: Duration(seconds: 2),
         ),
       );
@@ -64,7 +66,10 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
 
     // Ganti blok kata yang belum dimainkan dengan yang sudah diacak
     _currentLevelWords.replaceRange(
-        _currentWordInLevelIndex, _currentLevelWords.length, remainingWords);
+      _currentWordInLevelIndex,
+      _currentLevelWords.length,
+      remainingWords,
+    );
 
     // Muat ulang soal di indeks saat ini (yang sekarang berisi kata baru)
     // _loadWord() sudah memanggil setState di dalamnya.
@@ -76,37 +81,42 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
     if (_isLoading) {
       return Scaffold(
         body: Center(
-          child: _loadingError != null
-              ? Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _loadingError!,
-                        style: const TextStyle(color: Colors.red, fontSize: 16),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (_loadingError!
-                              .contains("Tidak ada kata yang cocok")) {
-                            Navigator.of(context).pop();
-                          } else {
-                            _prepareWords();
-                          }
-                        },
-                        child: Text(
-                          _loadingError!.contains("Tidak ada kata yang cocok")
-                              ? "Ubah Pengaturan"
-                              : "Coba Lagi",
+          child:
+              _loadingError != null
+                  ? Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _loadingError!,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                    ],
-                  ),
-                )
-              : const CircularProgressIndicator(),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_loadingError!.contains(
+                              "Tidak ada kata yang cocok",
+                            )) {
+                              Navigator.of(context).pop();
+                            } else {
+                              _prepareWords();
+                            }
+                          },
+                          child: Text(
+                            _loadingError!.contains("Tidak ada kata yang cocok")
+                                ? "Ubah Pengaturan"
+                                : "Coba Lagi",
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                  : const CircularProgressIndicator(),
         ),
       );
     }
@@ -122,8 +132,27 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
       appBar: AppBar(
         backgroundColor: Colors.blue.shade700,
         elevation: 0,
-        title: const Text("Susun Kata"),
-
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.refresh, color: Colors.lightBlueAccent),
+              label: const Text(
+                'Ganti Soal',
+                style: TextStyle(color: Colors.lightBlueAccent, fontSize: 16),
+              ),
+              onPressed: _changeCurrentWord,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                disabledBackgroundColor: Colors.grey.shade400,
+              ),
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: ConstrainedBox(
@@ -244,13 +273,15 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
                       itemCount: _scrambledLetters.length,
                       itemBuilder: (context, index) {
                         return ElevatedButton(
-                          onPressed: _letterUsed[index]
-                              ? null
-                              : () => _onLetterTapped(index),
+                          onPressed:
+                              _letterUsed[index]
+                                  ? null
+                                  : () => _onLetterTapped(index),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: _letterUsed[index]
-                                ? Colors.grey.shade400
-                                : Colors.blue.shade600,
+                            backgroundColor:
+                                _letterUsed[index]
+                                    ? Colors.grey.shade400
+                                    : Colors.blue.shade600,
                             disabledBackgroundColor: Colors.grey.shade300,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
@@ -318,31 +349,6 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
                           disabledBackgroundColor: Colors.grey.shade400,
                         ),
                       ),
-
-                                            ElevatedButton.icon(
-                        icon: const Icon(
-                          Icons.refresh,
-                          color: Colors.lightBlueAccent,
-                        ),
-                        label: const Text(
-                          'Ganti Soal',
-                          style: TextStyle(color: Colors.lightBlueAccent, fontSize: 16),
-                        ),
-                        onPressed:
-                            _changeCurrentWord,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          disabledBackgroundColor: Colors.grey.shade400,
-                        ),
-                      ),
-
                     ],
                   ),
                 ],
@@ -356,7 +362,7 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
 
   // --- Sisa fungsi-fungsi lainnya (tidak ada perubahan) ---
   // ... (Sisipkan semua fungsi helper lainnya dari kode sebelumnya di sini)
-    void _prepareWords() {
+  void _prepareWords() {
     if (!mounted) return;
     setState(() {
       _isLoading = true;
@@ -372,11 +378,17 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
         return;
       }
 
-      _allWordsFromSource = randomWordsData.asMap().entries.map((entry) {
-        int index = entry.key;
-        Map<String, dynamic> data = entry.value;
-        return WordScrambleWordData.fromMap(data, index.toString());
-      }).where((wordData) => wordData.kataAsli.trim().isNotEmpty).toList();
+      _allWordsFromSource =
+          randomWordsData
+              .asMap()
+              .entries
+              .map((entry) {
+                int index = entry.key;
+                Map<String, dynamic> data = entry.value;
+                return WordScrambleWordData.fromMap(data, index.toString());
+              })
+              .where((wordData) => wordData.kataAsli.trim().isNotEmpty)
+              .toList();
 
       if (!mounted) return;
       if (_allWordsFromSource.isEmpty) {
@@ -397,18 +409,18 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
         });
         return;
       }
-      
+
       _ensureEnoughWords();
       _startGame();
-      
+
       setState(() {
         _isLoading = false;
       });
-
     } catch (e) {
       if (mounted) {
         setState(() {
-          _loadingError = "Gagal memuat atau mempersiapkan kata: ${e.toString()}";
+          _loadingError =
+              "Gagal memuat atau mempersiapkan kata: ${e.toString()}";
           _isLoading = false;
         });
       }
@@ -416,13 +428,18 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
   }
 
   void _filterWordsBasedOnSettings() {
-    _filteredWordsForGame = _allWordsFromSource.where((word) {
-      bool categoryMatch = widget.settings.category == "Semua" ||
-          word.kategori.toLowerCase() == widget.settings.category.toLowerCase();
-      bool difficultyMatch = widget.settings.difficulty == "Semua" ||
-          word.levelKesulitan.toLowerCase() == widget.settings.difficulty.toLowerCase();
-      return categoryMatch && difficultyMatch;
-    }).toList();
+    _filteredWordsForGame =
+        _allWordsFromSource.where((word) {
+          bool categoryMatch =
+              widget.settings.category == "Semua" ||
+              word.kategori.toLowerCase() ==
+                  widget.settings.category.toLowerCase();
+          bool difficultyMatch =
+              widget.settings.difficulty == "Semua" ||
+              word.levelKesulitan.toLowerCase() ==
+                  widget.settings.difficulty.toLowerCase();
+          return categoryMatch && difficultyMatch;
+        }).toList();
     _filteredWordsForGame.shuffle(_random);
   }
 
@@ -434,14 +451,12 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
   }
 
   void _ensureEnoughWords() {
-    int targetWordCount = 30; 
+    int targetWordCount = 30;
     if (_filteredWordsForGame.isNotEmpty &&
         _filteredWordsForGame.length < targetWordCount) {
       List<WordScrambleWordData> tempWords = List.from(_filteredWordsForGame);
       while (_filteredWordsForGame.length < targetWordCount) {
-        _filteredWordsForGame.addAll(
-          tempWords.map((w) => w),
-        );
+        _filteredWordsForGame.addAll(tempWords.map((w) => w));
         if (_filteredWordsForGame.length >= targetWordCount) break;
         if (tempWords.isEmpty) break;
       }
@@ -473,24 +488,21 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
     }
 
     _currentLevelWords = [];
-    List<WordScrambleWordData> tempPool = List.from(
-      _filteredWordsForGame,
-    );
+    List<WordScrambleWordData> tempPool = List.from(_filteredWordsForGame);
     tempPool.shuffle(_random);
 
     for (int i = 0; i < widget.settings.wordsPerLevel; i++) {
       if (tempPool.isNotEmpty) {
-        _currentLevelWords.add(
-          tempPool.removeAt(0 % tempPool.length),
-        );
+        _currentLevelWords.add(tempPool.removeAt(0 % tempPool.length));
       } else {
         break;
       }
     }
 
     // Hapus kata yang sudah dipilih untuk level dari pool utama
-    _filteredWordsForGame.removeWhere((word) => _currentLevelWords.contains(word));
-
+    _filteredWordsForGame.removeWhere(
+      (word) => _currentLevelWords.contains(word),
+    );
 
     if (_currentLevelWords.isEmpty) {
       _showGameDialog(
@@ -604,132 +616,136 @@ class _MenyusunKataState extends State<WordScrambleProvider> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-return Dialog(
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(20.0),
-  ),
-  elevation: 0,
-  backgroundColor: Colors.transparent,
-  child: Container(
-    padding: const EdgeInsets.all(24),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          blurRadius: 20,
-          offset: const Offset(0, 10),
-        ),
-      ],
-    ),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.green[50],
-            shape: BoxShape.circle,
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
           ),
-          child: Icon(
-            Icons.celebration,
-            size: 40,
-            color: Colors.green[600],
-          ),
-        ),
-        const SizedBox(height: 20),
-        
-        Text(
-          "Level Selesai!",
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.green[800],
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          "Skor Anda: $_score",
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.grey[700],
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          "Bersiap untuk level berikutnya!",
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[600],
-          ),
-        ),
-        const SizedBox(height: 24),
-        
-        Column(
-          children: [
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[600],
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  _proceedToNextWordOrLevel();
-                },
-                child: const Text(
-                  'Lanjut ke Level Berikutnya',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+              ],
             ),
-            const SizedBox(height: 12),
-            
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.blue[600],
-                  side: BorderSide(color: Colors.blue[600]!),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.green[50],
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.celebration,
+                    size: 40,
+                    color: Colors.green[600],
                   ),
                 ),
-                onPressed: () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                },
-                child: const Text(
-                  'Kembali ke Halaman Utama',
+                const SizedBox(height: 20),
+
+                Text(
+                  "Level Selesai!",
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
+                    color: Colors.green[800],
                   ),
                 ),
-              ),
+                const SizedBox(height: 12),
+                Text(
+                  "Skor Anda: $_score",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[700],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Bersiap untuk level berikutnya!",
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                ),
+                const SizedBox(height: 24),
+
+                Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[600],
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _proceedToNextWordOrLevel();
+                        },
+                        child: const Text(
+                          'Lanjut ke Level Berikutnya',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.blue[600],
+                          side: BorderSide(color: Colors.blue[600]!),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(
+                            context,
+                          ).popUntil((route) => route.isFirst);
+                        },
+                        child: const Text(
+                          'Kembali ke Halaman Utama',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
-      ],
-    ),
-  ),
-);
+          ),
+        );
       },
     );
   }
-  
-  Widget _buildInfoChip(String label, String value, IconData icon, Color color) {
+
+  Widget _buildInfoChip(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -759,9 +775,9 @@ return Dialog(
     if (numberOfLetters <= 15) return 5;
     return 5;
   }
-  
+
   void _showFeedbackDialog(String title, String content, bool isCorrect) {
-      if (!mounted) return;
+    if (!mounted) return;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -861,7 +877,7 @@ return Dialog(
   }
 
   void _showGameDialog(String title, String content) {
-      if (!mounted) return;
+    if (!mounted) return;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -926,11 +942,9 @@ return Dialog(
                           elevation: 0,
                         ),
                         onPressed: () {
-                          Navigator.of(context).pop(); 
+                          Navigator.of(context).pop();
                           if (Navigator.of(context).canPop()) {
-                            Navigator.of(
-                              context,
-                            ).pop();
+                            Navigator.of(context).pop();
                           }
                         },
                         child: const Text(

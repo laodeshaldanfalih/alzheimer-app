@@ -137,7 +137,6 @@ class _FoodStackPageState extends State<FoodStackPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Susun Menu Makanan'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
