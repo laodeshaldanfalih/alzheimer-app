@@ -17,9 +17,9 @@ class MMSETestPage2 extends ConsumerStatefulWidget {
 class _MMSETestPage2State extends ConsumerState<MMSETestPage2> {
   final List<String> questions = [
     "Sekarang kita berada di mana?",
-    "Sekarang kita berada di kota apa?",
-    "Sekarang kita berada di provinsi apa?",
-    "Sekarang kita berada di negara apa?",
+    "Sekarang kita berada di kota mana?",
+    "Sekarang kita berada di provinsi mana?",
+    "Sekarang kita berada di negara mana?",
     "Sekarang kita berada di lantai berapa?",
   ];
 

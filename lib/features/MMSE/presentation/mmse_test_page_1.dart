@@ -16,10 +16,10 @@ class MMSETestPage1 extends ConsumerStatefulWidget {
 
 class _MMSETestPage1State extends ConsumerState<MMSETestPage1> {
   final List<String> questions = [
-    "Sekarang tahun apa?",
+    "Sekarang tahun berapa?",
     "Sekarang musim apa?",
     "Sekarang bulan apa?",
-    "Sekarang tanggal apa?",
+    "Sekarang tanggal berapa?",
     "Sekarang hari apa?",
   ];
 
