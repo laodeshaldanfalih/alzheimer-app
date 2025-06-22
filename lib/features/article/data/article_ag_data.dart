@@ -10,8 +10,26 @@ final List<ArticleItem> articlesAG = [
         "Mini-Mental State Examination (MMSE) merupakan alat skrining standar untuk menilai fungsi kognitif pada lansia. Pelajari cara administrasi dan interpretasi hasilnya.",
     content: """
 Mini-Mental State Examination (MMSE) adalah alat skrining kognitif yang terdiri dari 11 komponen untuk menilai berbagai domain kognitif. Total skor maksimal adalah 30 poin.
-#
-#
+
+### Persiapan Pasien
+
+#### Tidak ada persiapan khusus sebelum melakukan pemeriksaan mini mental state examination (MMSE). Namun selalu minta persetujuan pasien sebelum melakukan pemeriksaan dan jelaskan tujuan dilakukannya pemeriksaan. Situasi pemeriksaan dibuat senyaman mungkin bagi pasien untuk meminimalkan stress.
+
+### Peralatan
+Alat yang diperlukan untuk melakukan pemeriksaan mini mental state examination (MMSE) adalah instrumen MMSE, selembar kertas kosong, selembar kertas dengan tulisan perintah "ANGKAT TANGAN KIRI ANDA!", dan dua macam objek misalnya pensil dan jam tangan. (Pada aplikasi ini gambar sudah disedikan secara digital, hanya memerlukan kertas kosong dan alat tulis untuk menggambar)
+
+### Posisi Pasien
+Tidak ada posisi khusus untuk pemeriksaan mini mental state examination (MMSE). Pasien hanya diminta untuk duduk berhadapan dengan pemeriksa, sehingga pasien bisa dengan jelas melihat dan mendengar perintah dari pemeriksa. Kemudian, lakukan penilaian singkat apakah pasien bisa melihat dan mendengar pemeriksa dengan jelas, misalnya dengan menanyakan nama pasien. Pastikan apakah pasien menggunakan alat bantu dengar atau kacamata.
+
+Perkenalkan diri dan sampaikan bahwa pemeriksa akan melakukan pemeriksaan memori dan kognisi. Hal ini untuk menghindari timbulnya resistensi selama pemeriksaan.
+
+### Prosedural
+Pemeriksaan mini mental state examination (MMSE) umumnya dilakukan pada pasien yang dicurigai mengalami dementia. Pemeriksaan ini bisa dilakukan oleh dokter, perawat, atau asisten terlatih. Pasien sering kali malu mengakui gangguan kognitif yang dialaminya sehingga pemeriksa perlu menyadari dan mengantisipasi hal ini.
+
+Pemeriksa tidak boleh melakukan hal-hal yang mungkin menjadi petunjuk bagi pasien untuk menjawab atau memperbaiki jawaban, misalnya menggelengkan kepala ketika jawaban pasien salah.
+
+MMSE mencakup 11 item penilaian yang digunakan untuk menilai atensi dan orientasi, memori, registrasi, recall, kalkulasi, kemampuan bahasa, dan kemampuan untuk menggambar poligon kompleks.
+
 ### Domain Penilaian MMSE
 #
 #
@@ -21,22 +39,22 @@ Mini-Mental State Examination (MMSE) adalah alat skrining kognitif yang terdiri 
 * **Tempat:** Menanyakan lokasi saat ini (negara, provinsi, kota, rumah sakit/tempat, lantai).
 
 #### 2. Registrasi (3 poin)
-* Meminta klien untuk mengulang dan mengingat 3 nama benda (contoh: apel, meja, koin).
+* Meminta pasien untuk mengulang dan mengingat 3 nama benda (contoh: apel, meja, koin).
 
 #### 3. Atensi dan Kalkulasi (5 poin)
-* Meminta klien untuk berhitung mundur selisih 7 dari 100 sebanyak lima kali (100, 93, 86, 79, 72).
-* *Alternatif:* Meminta klien mengeja kata "DUNIA" dari belakang (A-I-N-U-D).
+* Meminta pasien untuk berhitung mundur selisih 7 dari 100 sebanyak lima kali (100, 93, 86, 79, 72).
+* *Alternatif:* Meminta pasien mengeja kata "WAHYU" dari belakang (U-Y-H-A-W).
 
 #### 4. Mengingat Kembali (Recall) (3 poin)
-* Meminta klien untuk menyebutkan kembali 3 nama benda yang telah disebutkan pada tahap registrasi.
+* Meminta pasien untuk menyebutkan kembali 3 nama benda yang telah disebutkan pada tahap registrasi.
 
 #### 5. Bahasa dan Praksis (9 poin)
-* **Penamaan:** Menunjuk benda (misal: pensil, jam tangan) dan meminta klien menamainya (2 poin).
-* **Mengulang:** Meminta klien mengulang kalimat "tanpa kalau dan atau tetapi" (1 poin).
+* **Penamaan:** Menunjuk benda (misal: pensil, jam tangan) dan meminta pasien menamainya (2 poin).
+* **Mengulang:** Meminta pasien mengulang kalimat "tanpa kalau dan atau tetapi" (1 poin).
 * **Perintah 3 Tahap:** Memberi perintah verbal seperti "ambil kertas ini, lipat dua, dan letakkan di lantai" (3 poin).
-* **Membaca & Mengikuti:** Memperlihatkan tulisan "tutup mata Anda" dan meminta klien melakukannya (1 poin).
-* **Menulis:** Meminta klien menulis sebuah kalimat spontan yang memiliki subjek dan predikat (1 poin).
-* **Menyalin:** Meminta klien untuk menyalin gambar dua pentagon yang saling bersinggungan (1 poin).
+* **Membaca & Mengikuti:** Memperlihatkan tulisan "tutup mata Anda" dan meminta pasien melakukannya (1 poin).
+* **Menulis:** Meminta pasien menulis sebuah kalimat spontan yang memiliki subjek dan predikat (1 poin).
+* **Menyalin:** Meminta pasien untuk menyalin gambar dua pentagon yang saling bersinggungan (1 poin).
 #
 #
 ### Interpretasi Hasil Skor
@@ -49,7 +67,7 @@ Mini-Mental State Examination (MMSE) adalah alat skrining kognitif yang terdiri 
 * Hasil dapat dipengaruhi oleh tingkat pendidikan dan latar belakang budaya.
 * Kurang sensitif untuk mendeteksi gangguan kognitif yang sangat ringan.
 
-*Sumber: Folstein et al. (1975), Crum et al. (1993)*
+*Sumber: dr. Irwan Supriyanto PhD SpKJ - [Alomedika - Teknik Mini Mental State Examination](https://www.alomedika.com/tindakan-medis/psikiatri/mini-mental-state-examination/teknik)*
 """,
     imagePath:
         "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1000",
@@ -98,20 +116,22 @@ Geriatric Depression Scale (GDS) adalah alat skrining yang dirancang khusus untu
     content: """
 Skrining Lansia Sederhana (SKILAS) adalah daftar periksa berisi 10 pertanyaan yang dikembangkan oleh Kemenkes RI. Tujuannya adalah untuk skrining cepat masalah kesehatan pada lansia yang dapat dilakukan oleh kader kesehatan atau anggota keluarga.
 
-#
+### Tujuan Skrining
+Skrining ini dirancang untuk mendeteksi enam kondisi prioritas yang bisa menjadi indikasi penurunan kapasitas intrinsik pada lansia. Beberapa pertanyaan yang diajukan difokuskan pada aspek-aspek tertentu yang menjadi bagian dari skrining ini.
+
+### Pelaksanaan
+Skrining ini dapat dilakukan dengan mudah oleh anggota keluarga yang merawat lansia, sehingga mereka bisa lebih peka terhadap perubahan kondisi kesehatan lansia. Selain itu, kader kesehatan juga dapat melakukannya secara mandiri. Bila terdapat minimal satu gangguan yang terdeteksi dari pemeriksaan ini, maka lansia dianjurkan untuk dirujuk ke Puskesmas agar dapat segera ditangani lebih lanjut oleh tenaga medis.
 
 # Domain Penilaian SKILAS
-Setiap item menanyakan ada atau tidaknya masalah dalam 3 bulan terakhir.
-1.  **Goyah/Risiko Jatuh:** Apakah pernah jatuh atau merasa goyah saat berjalan?
-2.  **Penurunan BB:** Apakah mengalami penurunan berat badan yang tidak diinginkan >3 kg?
-3.  **Daya Ingat:** Apakah mengalami masalah daya ingat?
-4.  **Kesedihan:** Apakah sering merasa sedih, murung, atau putus asa?
-5.  **Inkontinensia:** Apakah mengalami masalah tidak dapat menahan buang air kecil?
-6.  **Kesulitan Berjalan:** Apakah mengalami kesulitan berjalan sejauh 100-200 meter?
-7.  **Bantuan Aktivitas:** Apakah memerlukan bantuan untuk aktivitas sehari-hari (makan, mandi, dll)?
-8.  **Nyeri:** Apakah mengalami nyeri yang mengganggu aktivitas?
-9.  **Banyak Obat:** Apakah mengonsumsi 5 macam obat atau lebih setiap hari?
-10. **Penglihatan/Pendengaran:** Apakah mengalami masalah penglihatan atau pendengaran?
+
+* #### Pemeriksaan Fungsi Kognitif
+Pada bagian ini, lansia akan diberikan pertanyaan untuk menilai kemampuan kognitifnya. Mereka akan diminta mengingat tiga kata benda dan menjawab pertanyaan seputar orientasi waktu, seperti tanggal dan lokasi saat ini.
+
+* #### Skrining Risiko Malnutrisi
+Lansia akan dievaluasi terhadap potensi malnutrisi melalui beberapa pertanyaan, seperti perubahan berat badan, hilangnya nafsu makan, dan pengukuran lingkar lengan atas.
+
+* #### Pemeriksaan Gejala Depresi
+Dalam pemeriksaan ini, lansia akan ditanya mengenai perasaan sedih atau pengalaman kehilangan yang dirasakan dalam 14 hari terakhir.
 
 #
 
@@ -128,7 +148,7 @@ Setiap item menanyakan ada atau tidaknya masalah dalam 3 bulan terakhir.
 
 #
 
-*Sumber: Kemenkes RI (2019), WHO (2019)*
+*Sumber: Statistik Penduduk Lanjut Usia 2023 (Badan Pusat Statistik), Keputusan Menteri Kesehatan Nomor HK.01.07./MENKES/2015/2023 Tentang Petunjuk Teknis Integrasi Pelayanan Kesehatan Primer*
 """,
     imagePath:
         "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=1000",
