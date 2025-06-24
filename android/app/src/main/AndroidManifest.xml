@@ -17,7 +17,7 @@
     <application
         android:label="MediKa"
         android:name="${applicationName}"
-        android:icon="@mipmap/logo_app">
+        android:icon="@mipmap/logo_medika_round">
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:project/core/widgets/main_layout_widget.dart';
 import 'package:project/features/auth/presentation/pages/login_page.dart';
 import 'package:project/features/auth/providers/auth_provider.dart';
@@ -36,21 +37,20 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.white,
+    return Scaffold(
+      backgroundColor: Colors.blueAccent,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Add your logo or splash screen content here
-            // Image.asset(
-            //   'assets/images/app_logo.png', // Replace with your actual logo
-            //   width: 150,
-            //   height: 150,
-            // ),
-            SizedBox(height: 24),
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff7583CA)),
+            SvgPicture.asset(
+              'assets/svgs/MedikA.svg', // Replace with your actual logo
+              width: 50,
+              height: 50,
+            ),
+            const SizedBox(height: 24),
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             ),
           ],
         ),

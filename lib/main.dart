@@ -35,7 +35,7 @@ void main() async {
 }
 
 Future<void> _initializeNotifications() async {
-  await AwesomeNotifications().initialize('resource://drawable/logo_app', [
+  await AwesomeNotifications().initialize('resource://drawable/logo_medika_round', [
     NotificationChannel(
       channelKey: 'sholat_channel',
       channelName: 'Jadwal Sholat',
@@ -46,7 +46,7 @@ Future<void> _initializeNotifications() async {
       playSound: true,
       enableLights: true,
       enableVibration: true,
-      icon: 'resource://drawable/logo_app',
+      icon: 'resource://drawable/logo_medika_round',
       // soundSource: 'resource://raw/res_gio_alarm',
     ),
     NotificationChannel(
@@ -59,7 +59,7 @@ Future<void> _initializeNotifications() async {
       playSound: true,
       enableLights: true,
       enableVibration: true,
-      icon: 'resource://drawable/logo_app',
+      icon: 'resource://drawable/logo_medika_round',
       soundSource: 'resource://raw/res_gio_alarm',
     ),
   ], debug: true);
