@@ -402,7 +402,7 @@ class _AddReminderPageState extends State<AddReminderPage>
           style: const TextStyle(
             color: Color(0xFF1F2937),
             fontWeight: FontWeight.bold,
-            fontSize: 22,
+            fontSize: 14,
           ),
         ),
         leading: IconButton(

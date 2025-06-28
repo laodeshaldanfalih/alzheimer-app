@@ -4,7 +4,6 @@ import 'package:project/features/MMSE/presentation/mmse_tab_view_page.dart';
 import 'package:project/features/MMSE/providers/mmse_test_provider.dart';
 import 'package:project/features/MMSE/providers/mmse_history_provider.dart';
 import 'package:project/features/MMSE/models/mmse_history_entry.dart';
-import 'package:project/features/MMSE/presentation/mmse_history_page.dart';
 
 class MMSEResultPage extends ConsumerStatefulWidget {
   const MMSEResultPage({super.key});

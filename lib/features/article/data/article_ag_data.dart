@@ -13,7 +13,7 @@ Mini-Mental State Examination (MMSE) adalah alat skrining kognitif yang terdiri 
 
 ### Persiapan Pasien
 
-#### Tidak ada persiapan khusus sebelum melakukan pemeriksaan mini mental state examination (MMSE). Namun selalu minta persetujuan pasien sebelum melakukan pemeriksaan dan jelaskan tujuan dilakukannya pemeriksaan. Situasi pemeriksaan dibuat senyaman mungkin bagi pasien untuk meminimalkan stress.
+Tidak ada persiapan khusus sebelum melakukan pemeriksaan mini mental state examination (MMSE). Namun selalu minta persetujuan pasien sebelum melakukan pemeriksaan dan jelaskan tujuan dilakukannya pemeriksaan. Situasi pemeriksaan dibuat senyaman mungkin bagi pasien untuk meminimalkan stress.
 
 ### Peralatan
 Alat yang diperlukan untuk melakukan pemeriksaan mini mental state examination (MMSE) adalah instrumen MMSE, selembar kertas kosong, selembar kertas dengan tulisan perintah "ANGKAT TANGAN KIRI ANDA!", dan dua macam objek misalnya pensil dan jam tangan. (Pada aplikasi ini gambar sudah disedikan secara digital, hanya memerlukan kertas kosong dan alat tulis untuk menggambar)

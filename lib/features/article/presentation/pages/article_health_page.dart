@@ -70,9 +70,9 @@ class _ArticleHealthPageState extends State<ArticleHealthPage> {
             child: Column(
               children: [
                 const SizedBox(height: 10),
-                ..._filteredArticles
-                    .map((article) => _buildArticleItem(context, article))
-                    ,
+                ..._filteredArticles.map(
+                  (article) => _buildArticleItem(context, article),
+                ),
               ],
             ),
           ),
@@ -108,6 +108,15 @@ class _ArticleHealthPageState extends State<ArticleHealthPage> {
                 fit: BoxFit.cover,
                 height: 80,
                 width: 100,
+                errorBuilder:
+                    (context, error, stackTrace) => Container(
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
+                    ),
               ),
             ),
             const SizedBox(width: 20),

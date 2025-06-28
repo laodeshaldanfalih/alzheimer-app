@@ -4,6 +4,105 @@ import 'package:project/features/article/models/article_item.dart';
 
 final List<ArticleItem> articlesH = [
   const ArticleItem(
+    title: "Apa itu Alzheimer",
+    tag: "Kesehatan Mental",
+    description:
+        "Usia tua menjadi salah satu faktor risiko beragam penyakit, salah satunya alzheimer. Penyakit yang menyerang otak ini rentan dialami lansia di atas 65 tahun. Penyakit ini sering kali ditandai dengan penurunan daya ingat yang disertai gangguan kognitif pada penderitanya.",
+    content: """
+Menjaga kesehatan mental lansia merupakan aspek penting dalam merawat orang tua atau kakek nenek kita. Berikut adalah beberapa cara efektif yang dapat dilakukan:
+
+## Apa Itu Penyakit Alzheimer?
+Penyakit Alzheimer adalah kondisi otak degeneratif yang menyebabkan penurunan progresif dalam sejumlah aspek.
+
+Mulai dari ingatan, kognitif atau kemampuan berpikir, kemampuan bicara dan perilaku.
+
+Penyakit ini dapat menyasar orang dewasa yang masih muda. Namun, sebagian besar kasusnya terjadi pada mereka yang berusia lebih dari 60 tahun (lansia).
+
+Pada tahap awal, pengidapnya akan mengalami gangguan daya ingat bersifat ringan. Contohnya seperti mengalami kesulitan mengingat nama benda, percakapan dengan siapa saja hingga peristiwa yang belum lama terjadi. 
+
+Penyakit ini dapat memburuk seiring waktu sehingga membuat pengidapnya tidak mampu melakukan aktivitas sehari-hari. Bahkan, pada kasus yang sudah parah, penyakit Alzheimer dapat membuat pengidapnya linglung. 
+
+* **Luangkan waktu:** Mengobrol dan dengarkan cerita mereka secara aktif.
+* **Libatkan dalam keluarga:** Ajak dalam aktivitas atau diskusi keluarga.
+* **Dukung pertemanan:** Dorong untuk tetap terhubung dengan teman-teman sebayanya.
+
+## Faktor Risiko Alzheimer
+
+#### Beberapa faktor pemicu Alzheimer antara lain:
+* **Jalan santai:** Ajak jalan-jalan pagi atau sore di sekitar rumah.
+* **Usia.** Risiko Alzheimer semakin meningkat seiring berjalannya usia akibat pola hidup tidak sehat.
+* **Riwayat keluarga dan genetika.** Adanya perubahan mutasi genetik dalam keluarga meningkatkan risiko Alzheimer pada 1 persen pengidap.
+* **Sindrom Down.** Alzheimer berkaitan dengan tiga salinan kromosom 21 yang pengidap Sindrom Down miliki. 
+* **Jenis kelamin.** Wanita berisiko lebih tinggi terkena Alzheimer ketimbang pria.
+* **Gangguan kognitif.** Pengidap gangguan kognitif akan mengalami masalah memori yang berisiko berkembang menjadi demensia akibat Alzheimer.
+* **Trauma kepala.** Cedera kepala akibat berolahraga, kecelakaan, dan prosedur operasi berisiko terjangkit Alzheimer di kemudian hari.
+* **Polusi udara.** Partikel polusi udara mempercepat degenerasi sistem saraf yang meningkatkan risiko Alzheimer.
+* **Konsumsi alkohol berlebihan.** Alkohol memicu perubahan pada otak yang berkaitan dengan peningkatan risiko demensia sedari awal.
+* **Pola tidur yang buruk.** Kesulitan tidur dan tidak memiliki kualitas tidur yang baik berkaitan dengan peningkatan risiko Alzheimer.
+* **Gaya hidup dan kesehatan jantung.** Kurang olahraga, obesitas, merokok, kolesterol, hipertensi, dan diabetes tipe 2 yang tidak terkontrol memicu Alzheimer di kemudian hari.
+
+## Gejala Penyakit Alzheimer
+Gejala kondisi ini muncul seiring dengan perkembangan penyakit dan pola hidup yang pengidapnya jalani.
+
+Secara umum, gejala awal Alzheimer adalah penurunan daya ingat atau pikun dan fungsi otak pengidapnya. 
+
+Kendati begitu, pikun hanyalah gejala awalnya saja. Semakin penyakitnya berkembang, maka akan bermunculan gejala-gejala lain 
+
+## Apa yang Pengidap Penyakit Alzheimer Rasakan?
+#### 1. Gejala Kehilangan Memori
+* Mengulangi pernyataan dan pertanyaan.
+* Melupakan obrolan, janji pertemuan.
+* Lupa meletakkan benda.
+* Tersesat di tempat yang dikenali.
+* Lupa nama anggota keluarga.
+* Lupa nama benda yang sering digunakan.
+* Kesulitan mengungkapkan pikiran.
+
+#### 2. Gejala Kehilangan Nalar dalam berpikir
+* Kesulitan berkonsentrasi dan berpikir, terutama saat menghitung.
+* Sulit melakukan dua pekerjaan sekaligus.
+* Sulit mengelola keuangan.
+Akhirnya, pengidap tidak dapat mengenali dan berhitung.
+
+#### 3. Salah Membuat Penilaian dan Keputusan
+Pengidap mengalami penurunan kemampuan dalam membuat keputusan dan penilaian yang masuk akal. Mengenakan pakaian yang tidak sesuai dengan tema acara, misalnya. 
+
+#### 4. Merencanakan Melakukan Tugas Harian
+Pengidap membutuhkan rencana dalam melakukan rutinitas harian berurutan.
+Seiring dengan perkembangan penyakit, pengidap menjadi sering lupa bagaimana cara melakukan aktivitas sederhana seperti berpakaian dan mandi.
+
+#### 5. Gejala Perubahan Kepribadian dan Perilaku
+* Depresi.
+* Apatis.
+* Tidak mau bergaul.
+* Perubahan suasana hati.
+* Tidak percaya pada orang lain.
+* Perubahan pola tidur.
+* Delusi.
+
+## Pencegahan Penyakit Alzheimer
+Meskipun ada beberapa faktor risiko Alzheimer yang tidak dapat seseorang ubah. Misalnya seperti usia dan faktor genetik, kamu mungkin dapat mengelola faktor lain untuk membantu mengurangi risikonya. 
+
+Penelitian menunjukkan bahwa memiliki gaya hidup sehat membantu melindungi otak dari penurunan kognitif.
+
+Strategi berikut dapat membantu mengurangi risiko kamu terkena penyakit Alzheimer:
+
+* **Tetap aktif secara mental.** Cobalah untuk sering memainkan permainan seperti catur, membaca, mengerjakan teka-teki silang, memainkan alat musik, atau melakukan hobi lain yang membutuhkan kekuatan otak.
+* **Aktif secara fisik.** Olahraga meningkatkan aliran darah dan oksigen ke otak yang dapat memengaruhi kesehatan sel otak. Kenakan tutup kepala pelindung jika kamu berpartisipasi dalam aktivitas yang meningkatkan risiko cedera kepala.
+* **Tetap aktif secara sosial.** Secara teratur berbicara dengan teman dan keluarga dan bergabung dalam kegiatan kelompok dapat menjaga daya ingat. 
+* **Konsumsi makanan sehat tinggi antioksidan.** Antioksidan bermanfaat dalam meningkatkan kemampuan sel otak dan mempertahankan ingatan jangka panjang. Selain dari makanan, kamu juga bisa mengonsumsi suplemen kesehatan agar asupan antioksidan terpenuhi, untuk mengurangi risiko penyakit Alzheimer. 
+* **Hindari asupan tertentu.** Pastikan untuk membatasi atau tidak mengonsumsi minuman beralkohol. Sebab, alkohol berkaitan erat dengan penurunan kemampuan fungsi kognitif otak. 
+
+*Sumber: halodoc, siloamhospital, Mayo Clinic. Diakses pada 2023. Alzheimer’s disease.
+National Health Service UK. Diakses pada 2023. Alzheimer’s disease.
+Alzheimer’s Association. Diakses pada 2023. What is Alzheimer’s Disease? 
+Cleveland Clinic. Diakses pada 2023. Alzheimer’s Disease. 
+CDC.gov. Diakses pada 2023. Alzheimer’s Disease and Related Dementias.*
+
+""",
+    imagePath:
+        "https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2021/06/14034131/Penyakit-Alzheimer.jpg.webp",
+  ),  const ArticleItem(
     title: "Tips Menjaga Kesehatan Mental Lansia",
     tag: "Kesehatan Mental",
     description:

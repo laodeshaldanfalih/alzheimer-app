@@ -636,9 +636,18 @@ class _HomePageState extends ConsumerState<HomePage> {
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
                 article.imagePath,
-                width: 80,
-                height: 80,
                 fit: BoxFit.cover,
+                height: 80,
+                width: 100,
+                errorBuilder:
+                    (context, error, stackTrace) => Container(
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
+                    ),
               ),
             ),
             const SizedBox(width: 12),

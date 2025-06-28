@@ -67,6 +67,8 @@ class ArticleDetailPage extends StatelessWidget {
                     child: Image.network(
                       article.imagePath,
                       fit: BoxFit.cover,
+                      height: 80,
+                      width: 100,
                       errorBuilder:
                           (context, error, stackTrace) => Container(
                             color: Colors.grey[300],
@@ -147,8 +149,7 @@ class ArticleDetailPage extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Colors.grey[700],
                           height: 1.5,
-                          fontStyle: FontStyle.italic
-
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
                       const SizedBox(height: 24),
