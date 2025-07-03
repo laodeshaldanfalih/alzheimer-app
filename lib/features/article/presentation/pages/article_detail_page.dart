@@ -395,12 +395,21 @@ class ArticleDetailPage extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  recArticle.imagePath,
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                ),
+              child: Image.network(
+                article.imagePath,
+                fit: BoxFit.cover,
+                height: 80,
+                width: 100,
+                errorBuilder:
+                    (context, error, stackTrace) => Container(
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
+                    ),
+              ),
               ),
               const SizedBox(width: 16),
               Expanded(

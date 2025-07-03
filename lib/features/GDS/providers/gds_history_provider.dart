@@ -96,16 +96,8 @@ class GDSHistoryNotifier extends StateNotifier<GDSHistoryState> {
         'answers': entry.answers,
       });
 
-      // Ambil data terbaru setelah menambahkan untuk konsistensi, atau tambahkan secara lokal
-      // Untuk saat ini, kita tambahkan secara lokal dan berharap sinkron.
-      // Idealnya, Anda mungkin ingin memuat ulang atau memastikan ID entri dilampirkan.
       final newHistory = [entry, ...state.history]; // Tambahkan ke depan agar urutan default (tanggal terbaru) terjaga jika tidak ada sort khusus
-      // Atau jika ingin menambahkan di akhir: final newHistory = [...state.history, entry];
-      // Sesuaikan dengan bagaimana Anda ingin daftar awal ditampilkan sebelum sorting.
-      // Mengingat loadHistory mengurutkan berdasarkan 'date descending', menambahkan ke depan lebih konsisten.
       state = state.copyWith(history: newHistory);
-      // Untuk memastikan data paling baru dan terurut, panggil loadHistory lagi bisa jadi pilihan
-      // await loadHistory(); // Uncomment jika ingin selalu refresh dari Firestore setelah add
     } catch (e) {
       print('Error adding GDS entry: $e');
     }

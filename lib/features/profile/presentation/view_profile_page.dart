@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:project/core/providers/shared_providers.dart';
 import 'package:project/features/auth/presentation/pages/login_page.dart';
 import 'package:project/features/auth/providers/auth_provider.dart';
+import 'package:project/features/health_dashboard/providers/health_provider.dart';
 import 'package:project/features/profile/presentation/edit_profile_page.dart';
 import 'package:project/features/profile/providers/user_profile_provider.dart';
 
@@ -179,6 +180,8 @@ class _ViewProfilePageState extends ConsumerState<ViewProfilePage> {
                 ref.read(isLoadingProvider.notifier).state = true;
                 try {
                   await ref.read(authProvider.notifier).signOut();
+                  ref.invalidate(userProfileProvider);
+                  ref.invalidate(healthProvider);
                   if (mounted) {
                     Navigator.of(
                       context,

@@ -29,7 +29,7 @@ Future<void> signInWithGoogle() async {
   try {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     if (googleUser == null) {
-      return; // Pengguna membatalkan login
+      return;
     }
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
@@ -45,18 +45,15 @@ Future<void> signInWithGoogle() async {
       final docRef = _firestore.collection('user_profiles').doc(user.uid);
       final docSnap = await docRef.get();
 
-      // HANYA buat dokumen profil jika belum ada
       if (!docSnap.exists) {
         await docRef.set({
           'email': user.email,
           'createdAt': FieldValue.serverTimestamp(),
-          'role': 'user', // Role default untuk pengguna baru
+          'role': 'user',
         });
         print('Profil baru dibuat untuk pengguna Google.');
       } else {
         print('Pengguna Google sudah ada, tidak ada perubahan role.');
-        // Jika dokumen sudah ada, kita tidak melakukan apa-apa.
-        // Ini akan mempertahankan peran 'admin' atau data lain yang sudah diubah manual.
       }
     }
   } catch (e) {
@@ -78,11 +75,6 @@ Future<void> signInWithGoogle() async {
       );
       state = userCredential.user;
 
-      // HAPUS: Tidak ada update displayName dengan username di sini.
-      // await userCredential.user!.updateDisplayName(username);
-
-      // Buat dokumen profil dasar di Firestore.
-      // Nama akan diisi/diupdate nanti melalui halaman profil.
       if (userCredential.user != null) {
         await _firestore
             .collection('user_profiles')

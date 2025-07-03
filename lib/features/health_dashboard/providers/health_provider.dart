@@ -4,13 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:project/features/health_dashboard/data/health_data_model.dart';
 
-// --- Provider untuk Firebase (Tidak ada perubahan) ---
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
 final firestoreProvider = Provider<FirebaseFirestore>((ref) => FirebaseFirestore.instance);
-
-// ======================================================================
-// 1. KELAS STATE (STATE OBJECT) - Tidak ada perubahan
-// ======================================================================
 class HealthState {
   final List<HealthData> healthRecords;
   final bool isLoading;
@@ -30,10 +25,6 @@ class HealthState {
     );
   }
 }
-
-// ======================================================================
-// 2. KELAS NOTIFIER (STATE LOGIC) - DITAMBAHKAN FUNGSI EDIT & DELETE
-// ======================================================================
 class HealthNotifier extends StateNotifier<HealthState> {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
@@ -50,10 +41,6 @@ class HealthNotifier extends StateNotifier<HealthState> {
         .collection('health_records');
   }
 
-
-  // --- METHODS ---
-
-  /// Memuat semua riwayat data kesehatan dari Firestore. (Tidak ada perubahan)
   Future<void> loadHealthRecords() async {
     state = state.copyWith(isLoading: true);
     try {
@@ -68,11 +55,9 @@ class HealthNotifier extends StateNotifier<HealthState> {
     }
   }
 
-  /// Menambahkan satu entri data kesehatan baru. (Tidak ada perubahan)
   Future<void> addHealthRecord(HealthData entry) async {
     try {
       await _getHealthRecordsCollection().add(entry.toMap());
-      // Muat ulang data untuk memastikan konsistensi
       await loadHealthRecords();
     } catch (e) {
       print('Error adding health record: $e');
@@ -80,7 +65,6 @@ class HealthNotifier extends StateNotifier<HealthState> {
     }
   }
 
-  /// [BARU] Memperbarui data kesehatan yang sudah ada di Firestore.
   Future<void> updateHealthRecord(HealthData updatedRecord) async {
     if (updatedRecord.id == null) return; // Butuh ID untuk update
 
@@ -102,7 +86,6 @@ class HealthNotifier extends StateNotifier<HealthState> {
     }
   }
 
-  /// [BARU] Menghapus data kesehatan dari Firestore.
   Future<void> deleteHealthRecord(String recordId) async {
     try {
       await _getHealthRecordsCollection().doc(recordId).delete();
@@ -117,10 +100,6 @@ class HealthNotifier extends StateNotifier<HealthState> {
   }
 }
 
-
-// ======================================================================
-// 3. DEFINISI PROVIDER (RIVERPOD PROVIDER) - Tidak ada perubahan
-// ======================================================================
 final healthProvider = StateNotifierProvider<HealthNotifier, HealthState>((ref) {
   final firestore = ref.watch(firestoreProvider);
   final auth = ref.watch(firebaseAuthProvider);
