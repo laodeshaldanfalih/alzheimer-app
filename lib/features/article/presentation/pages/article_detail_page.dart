@@ -64,7 +64,8 @@ class ArticleDetailPage extends StatelessWidget {
                     borderRadius: const BorderRadius.vertical(
                       bottom: Radius.circular(24),
                     ),
-                    child: Image.network(
+                    child: Image.network(    
+                       
                       article.imagePath,
                       fit: BoxFit.cover,
                       height: 80,
@@ -356,7 +357,6 @@ class ArticleDetailPage extends StatelessWidget {
     );
   }
 
-  /// Builds a card for a single recommended article.
   Widget _buildRecommendedArticleCard(
     BuildContext context,
     ArticleItem recArticle,
@@ -396,7 +396,7 @@ class ArticleDetailPage extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
               child: Image.network(
-                article.imagePath,
+                recArticle.imagePath,
                 fit: BoxFit.cover,
                 height: 80,
                 width: 100,
