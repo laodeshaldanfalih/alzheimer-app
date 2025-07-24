@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "36607507492",
+    "project_id": "medika-alzheimerapp",
+    "storage_bucket": "medika-alzheimerapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:36607507492:android:da877a4cb685577cb32cb1",
+        "android_client_info": {
+          "package_name": "com.medika.alzheimerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "36607507492-9nkfu4sbbhi0pmmrs5blg2p2basa15bc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.medika.alzheimerapp",
+            "certificate_hash": "cc4bf30ccf681417232da7e4b06cae809444c90b"
+          }
+        },
+        {
+          "client_id": "36607507492-puo96hpe8hvfcc8grb5h8bj1o4i2n2ml.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAixPDT-0c8BnZoxK4D_i8AZuKMVOWrUEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "36607507492-puo96hpe8hvfcc8grb5h8bj1o4i2n2ml.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "36607507492-1usd929soeddbh757udcpdk9b8enfhol.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.alzheimerApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

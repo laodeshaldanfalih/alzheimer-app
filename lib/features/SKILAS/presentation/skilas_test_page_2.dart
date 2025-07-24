@@ -1,0 +1,114 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/features/SKILAS/presentation/skilas_test_page_3.dart';
+import 'package:project/features/SKILAS/providers/skilas_test_provider.dart';
+import 'package:project/core/widgets/test_dropdown_widget.dart';
+import 'package:project/core/widgets/test_question_text_widget.dart';
+import 'package:project/core/widgets/test_next_button_widget.dart';
+
+class SKILASPage2 extends ConsumerStatefulWidget {
+  const SKILASPage2({super.key});
+
+  @override
+  ConsumerState<SKILASPage2> createState() => _SKILASPage2State();
+}
+
+class _SKILASPage2State extends ConsumerState<SKILASPage2> {
+  final List<String> questions = [
+    'Apakah berat badan pasien berkurang >3 kg dalam 3 bulan terakhir atau pakaian menjadi lebih longgar?',
+    'Apakah pasien hilang nafsu makan Atau mengalami kesulitan makan (misal batuk atau tersedak saat makan, menggunakan selang makan/sonde)?',
+    'Apakah ukuran lingkar lengan atas (LiLA) <21 cm?',
+  ];
+
+  final List<String?> answers = List.filled(3, null);
+  final List<String> options = ["Benar", "Salah"];
+
+  bool _isPageComplete() {
+    return !answers.contains(null);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          "Skrining Lansia Sederhana (SKILAS)",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: false,
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
+      backgroundColor: const Color(0xFFF8FAFB),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 8),
+              const Text(
+                "Malnutrisi",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                  color: Color(0xFF222B45),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: questions.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 16),
+                  itemBuilder: (context, index) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TestQuestionTextWidget(text: questions[index]),
+                        const SizedBox(height: 8),
+                        TestDropdownWidget(
+                          value: answers[index],
+                          options: options,
+                          onChanged: (val) {
+                            setState(() {
+                              answers[index] = val;
+                            });
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 12),
+              TestNextButtonWidget(
+                isComplete: _isPageComplete(),
+                onPressed: () {
+                  ref
+                      .read(skilasTestProvider.notifier)
+                      .setPage2Answers(answers);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SKILASPage3(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

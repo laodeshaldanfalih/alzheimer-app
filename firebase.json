@@ -1,0 +1,30 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "medika-alzheimerapp",
+                    "appId": "1:36607507492:android:da877a4cb685577cb32cb1",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "ios": {
+                "default": {
+                    "projectId": "medika-alzheimerapp",
+                    "appId": "1:36607507492:ios:2716e9a427edfb1db32cb1",
+                    "uploadDebugSymbols": false,
+                    "fileOutput": "ios/Runner/GoogleService-Info.plist"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "medika-alzheimerapp",
+                    "configurations": {
+                        "android": "1:36607507492:android:da877a4cb685577cb32cb1",
+                        "ios": "1:36607507492:ios:2716e9a427edfb1db32cb1"
+                    }
+                }
+            }
+        }
+    }
+}

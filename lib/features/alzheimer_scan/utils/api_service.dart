@@ -1,0 +1,27 @@
+import 'dart:io';
+import 'package:http/http.dart' as http;
+
+class ApiService {
+  static const String functionUrl =
+      'https://us-central1-medika-alzheimerapp.cloudfunctions.net/predict_image';
+
+  static Future<String> uploadImage(File imageFile) async {
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(functionUrl));
+      request.files.add(
+        await http.MultipartFile.fromPath('image', imageFile.path),
+      );
+
+      var response = await request.send();
+      final respStr = await response.stream.bytesToString();
+
+      if (response.statusCode == 200) {
+        return respStr;
+      } else {
+        throw Exception('Failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+}

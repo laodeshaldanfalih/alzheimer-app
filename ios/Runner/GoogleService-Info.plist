@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>36607507492-vcd0qckodgh0koh2r0na7lkj2kp6kano.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.36607507492-vcd0qckodgh0koh2r0na7lkj2kp6kano</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>36607507492-9nkfu4sbbhi0pmmrs5blg2p2basa15bc.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDaIeOJSanp0CzcpliHtB9dwNVQtaOSkCc</string>
+	<key>GCM_SENDER_ID</key>
+	<string>36607507492</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.medika.alzheimerapp</string>
+	<key>PROJECT_ID</key>
+	<string>medika-alzheimerapp</string>
+	<key>STORAGE_BUCKET</key>
+	<string>medika-alzheimerapp.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:36607507492:ios:b551a09e2a191d5db32cb1</string>
+	<key>DATABASE_URL</key>
+	<string>https://medika-alzheimerapp-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+</dict>
+</plist>
